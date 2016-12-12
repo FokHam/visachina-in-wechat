@@ -1,9 +1,11 @@
 <template>
   <nav>
-    <div v-for="item in list" class="tabbar-btn">
-      <img :src="item.imgPath" :alt="item.name">
-      <p>{{ item.name }}</p>
-    </div>
+    <router-link v-for="item in list" v-bind:to="'/insurancelist/' + item.type">
+      <div class="tabbar-btn">
+        <img :src="item.imgPath" :alt="item.name">
+        <p>{{ item.name }}</p>
+      </div>
+    </router-link>
   </nav>
 </template>
 
@@ -15,13 +17,16 @@ export default {
       list: [
         {
           "name": "申根险",
-          "imgPath": "/static/images/insurance/tab-sg.png"
+          "imgPath": "/static/images/insurance/tab-sg.png",
+          "type": "sg"
         },{
           "name": "境外险",
-          "imgPath": "/static/images/insurance/tab-jw.png"
+          "imgPath": "/static/images/insurance/tab-jw.png",
+          "type": "jw"
         },{
           "name": "宝岛险",
-          "imgPath": "/static/images/insurance/tab-tw.png"
+          "imgPath": "/static/images/insurance/tab-bd.png",
+          "type": "bd"
         }
       ]
     };

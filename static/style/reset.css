@@ -47,7 +47,7 @@ input,textarea,select {
 }
 p,a,span {
   font-size: 0.7rem;
-  vertical-align: top;
+  color: #333;
 }
 html {
   font-size:20px;

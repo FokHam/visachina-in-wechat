@@ -23,15 +23,21 @@ export default {
         {
           "name": "惠择 - 申根国专属保障计划",
           "price": "19",
-          "id": "110",
+          "id": "1105",
           "detail": ["身故残疾", "交通意外", "恭喜发财"],
           "imgPath": "/static/images/insurance/hot2.png"
         }, {
           "name": "惠择 - 申根国专属保障计划",
-          "price": "19",
-          "id": "110",
+          "price": "138",
+          "id": "1101",
           "detail": ["身故残疾", "交通意外", "恭喜发财"],
           "imgPath": "/static/images/insurance/hot1.png"
+        }, {
+          "name": "惠择 - 申根国专属保障计划",
+          "price": "219",
+          "id": "1106",
+          "detail": ["身故残疾", "交通意外", "恭喜发财"],
+          "imgPath": "/static/images/insurance/hot3.jpg"
         }
       ]
     });
@@ -52,7 +58,8 @@ export default {
   .hot-item {
     margin-bottom: 1rem;
     img {
-      border-radius: 5px;
+      border-radius: 0.25rem;
+      max-height: 7.5rem;
     }
   }
   .item-detail {

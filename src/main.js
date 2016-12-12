@@ -9,6 +9,7 @@ import 'mint-ui/lib/style.css'
 import App from './App'
 import Home from './components/Home'
 import VisaList from './views/visa/VisaList'
+import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
 import WifiList from './views/wifi/WifiList'
 import HotelList from './views/hotel/HotelList'
@@ -27,13 +28,16 @@ const routes = [{
   component: VisaList
 },{
   path: "/insurance",
-  component: InsuranceList
+  component: InsuranceIndex
 },{
   path: "/wifi",
   component: WifiList
 },{
   path: "/hotel",
   component: HotelList
+},{
+  path: "/insuranceList/:type",
+  component: InsuranceList
 }];
 
 const resource = "/src/assets";
