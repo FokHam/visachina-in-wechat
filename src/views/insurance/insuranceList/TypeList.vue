@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <div v-for="item in typeList" class="tabbar-btn">
+    <div v-for="item in list" class="tabbar-btn">
       <img :src="item.imgPath" :alt="item.name">
       <p>{{ item.name }}</p>
     </div>
@@ -12,7 +12,7 @@ import $ from "jquery"
 export default {
   data: function () {
     return {
-      typeList: [
+      list: [
         {
           "name": "申根险",
           "imgPath": "/static/images/insurance/tab-sg.png"
@@ -29,8 +29,20 @@ export default {
 }
 </script>
 
-<style language="less" scoped>
+<style lang="less" scoped>
+   nav {
+     margin: 1rem 0.5rem;
+     text-align: center;
+   }
   .tabbar-btn {
     display: inline-block;
+    width: 33.3%;
+    font-size: 0.7rem;
+    img {
+      width: 55%;
+    }
+    p {
+      margin-top: 0.2rem;
+    }
   }
 </style>

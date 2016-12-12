@@ -1,13 +1,14 @@
 <template>
-  <div class="">
-    <tabbar></tabbar>
-    <h1>保险</h1>
+  <div>
+    <type-list></type-list>
+    <hot-list></hot-list>
   </div>
 </template>
 
 <script>
-  import Mock from 'mockjs'
-  import Tabbar from './InsuranceList/Tabbar'
+  import Mock from "mockjs"
+  import TypeList from "./insuranceList/TypeList"
+  import HotList from "./insuranceList/HotList"
 
   export default {
     data: function () {
@@ -23,7 +24,8 @@
       return isrList;
     },
     components: {
-      Tabbar
+      TypeList: TypeList,
+      HotList
     }
   }
 </script>
