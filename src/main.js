@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
 import MintUI from 'mint-ui'
+import Mock from 'mockjs'
+import $ from 'jquery'
 import 'mint-ui/lib/style.css'
 
 import App from './App'
@@ -33,6 +35,8 @@ const routes = [{
   path: "/hotel",
   component: HotelList
 }];
+
+const resource = "/src/assets";
 
 const router = new VueRouter({
   routes
