@@ -9,22 +9,22 @@
           <span>紧急救援</span>
         </div>
       </div>
-      <div class="info-wrapper">
+      <div class="info-wrapper clearfix">
         <div class="indemnity-list">
-          <div class="indemnity">
+          <div class="indemnity clearfix">
             <span class="title">意外身故/伤残</span>
             <span class="amount">300,000元</span>
           </div>
-          <div class="indemnity">
+          <div class="indemnity clearfix">
             <span class="title">意外身故/伤残</span>
             <span class="amount">300,000元</span>
           </div>
-          <div class="indemnity">
+          <div class="indemnity clearfix">
             <span class="title">意外身故/伤残</span>
             <span class="amount">300,000元</span>
           </div>
         </div>
-        <div class="price">
+        <div class="price-box">
           <span class="age">18-85岁</span>
           <span class="price">¥299</span>
         </div>
@@ -95,8 +95,37 @@ export default {
       }
     }
     .info-wrapper {
-      .indemnity span {
-        color: #666;
+      position: relative;
+      .indemnity-list {
+        width: 50%;
+        float: left;
+        margin: 0.1rem 0.5rem 0.4rem;
+      }
+      .indemnity {
+        span {
+          font-size: 0.6rem;
+          color: #666;
+        }
+        .title {
+          float: left;
+        }
+        .amount {
+          float: right;
+        }
+        .price-box {
+          position: absolute;
+          right: 1rem;
+          bottom: 1rem;
+          .price {
+            font-size: 1rem;
+            color: #FC4949;
+            font-weight: bold;
+          }
+          .age {
+            font-size: 0.5rem;
+            color: #999;
+          }
+        }
       }
       .amount {
         float: right;
