@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Home from './components/Home'
+import Home from './views/home/Home'
 
 export default {
   name: 'app',
