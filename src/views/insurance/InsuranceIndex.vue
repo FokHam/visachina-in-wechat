@@ -12,7 +12,7 @@
 
   export default {
     components: {
-      TypeList: TypeList,
+      TypeList,
       HotList
     }
   }

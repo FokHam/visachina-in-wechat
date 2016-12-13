@@ -2,48 +2,51 @@
   <div class="hot-list-wrapper">
     <p class="hot-title"><i class="icon-hot"></i> 热销推荐</p>
     <ul class="hot-list">
-      <li class="hot-item clearfix" v-for="item in list">
-        <img :src="item.imgPath" alt="热销推荐产品图">
-        <div class="item-detail">
-          <p class="title">惠择 - 申根国专属保障计划</p>
-          <span class="price">{{ '¥' + item.price }}</span>
-          <span class="spec" v-for="detail in item.detail">{{ detail }}</span>
-        </div>
-      </li>
+      <router-link :to="'/insuranceDetail/' + item.id" v-for="item in list">
+        <li class="hot-item clearfix">
+          <img :src="item.imgPath" alt="热销推荐产品图">
+          <div class="item-detail">
+            <p class="title">{{ item.name }}</p>
+            <span class="price">{{ '¥' + item.price }}</span>
+            <span class="spec" v-for="detail in item.detail">{{ detail }}</span>
+          </div>
+        </li>
+      </router-link>
     </ul>
   </div>
 </template>
 
 <script>
-import Mock from "mockjs"
-export default {
-  data: function () {
-    var obj = Mock.mock({
-      "list": [
-        {
-          "name": "惠择 - 申根国专属保障计划",
-          "price": "19",
-          "id": "1105",
-          "detail": ["身故残疾", "交通意外", "恭喜发财"],
-          "imgPath": "/static/images/insurance/hot2.png"
-        }, {
-          "name": "惠择 - 申根国专属保障计划",
-          "price": "138",
-          "id": "1101",
-          "detail": ["身故残疾", "交通意外", "恭喜发财"],
-          "imgPath": "/static/images/insurance/hot1.png"
-        }, {
-          "name": "惠择 - 申根国专属保障计划",
-          "price": "219",
-          "id": "1106",
-          "detail": ["身故残疾", "交通意外", "恭喜发财"],
-          "imgPath": "/static/images/insurance/hot3.jpg"
-        }
-      ]
-    });
-    return obj;
+  import Mock from "mockjs"
+
+  export default {
+    data: function () {
+      var obj = Mock.mock({
+        "list": [
+          {
+            "name": "惠择 - 申根国专属保障计划",
+            "price": "19",
+            "id": "1105",
+            "detail": ["身故残疾", "交通意外", "恭喜发财"],
+            "imgPath": "/static/images/insurance/hot2.png"
+          }, {
+            "name": "惠择 - 申根国专属保障计划",
+            "price": "138",
+            "id": "1101",
+            "detail": ["身故残疾", "交通意外", "恭喜发财"],
+            "imgPath": "/static/images/insurance/hot1.png"
+          }, {
+            "name": "惠择 - 申根国专属保障计划",
+            "price": "219",
+            "id": "1106",
+            "detail": ["身故残疾", "交通意外", "恭喜发财"],
+            "imgPath": "/static/images/insurance/hot3.jpg"
+          }
+        ]
+      });
+      return obj;
+    }
   }
-}
 </script>
 
 <style lang="less" scoped>
