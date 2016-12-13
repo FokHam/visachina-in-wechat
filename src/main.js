@@ -7,7 +7,7 @@ import $ from 'jquery'
 import 'mint-ui/lib/style.css'
 
 import App from './App'
-import Home from './components/Home'
+import Home from './views/home/Home'
 import VisaList from './views/visa/VisaList'
 import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
@@ -16,6 +16,7 @@ import HotelList from './views/hotel/HotelList'
 
 Vue.use(VueRouter);
 Vue.use(VueResource);
+Vue.use(MintUI);
 
 const routes = [{
   path: "/",
