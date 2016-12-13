@@ -30,6 +30,36 @@
         </div>
       </div>
     </div>
+    <div class="insurance-item">
+      <div class="img-wrapper">
+        <img src="/static/images/insurance/pic1.png" alt="保险产品图片">
+        <p>“乐游全球”境外旅行保障计划 黄金计划</p>
+        <div class="label-list">
+          <span>意外伤害</span>
+          <span>紧急救援</span>
+        </div>
+      </div>
+      <div class="info-wrapper clearfix">
+        <div class="indemnity-list">
+          <div class="indemnity clearfix">
+            <span class="title">意外身故/伤残</span>
+            <span class="amount">300,000元</span>
+          </div>
+          <div class="indemnity clearfix">
+            <span class="title">意外身故/伤残</span>
+            <span class="amount">300,000元</span>
+          </div>
+          <div class="indemnity clearfix">
+            <span class="title">意外身故/伤残</span>
+            <span class="amount">300,000元</span>
+          </div>
+        </div>
+        <div class="price-box">
+          <span class="age">18-85岁</span>
+          <span class="price">¥299</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,6 +96,7 @@ export default {
 
 <style lang="less" scoped>
   .insurance-list {
+    padding: 1rem 0;
     background-color: #f0f0f0;
   }
   .insurance-item {
@@ -100,36 +131,34 @@ export default {
         width: 50%;
         float: left;
         margin: 0.1rem 0.5rem 0.4rem;
-      }
-      .indemnity {
-        span {
-          font-size: 0.6rem;
-          color: #666;
-        }
-        .title {
-          float: left;
-        }
-        .amount {
-          float: right;
-        }
-        .price-box {
-          position: absolute;
-          right: 1rem;
-          bottom: 1rem;
-          .price {
-            font-size: 1rem;
-            color: #FC4949;
-            font-weight: bold;
+        .indemnity {
+          line-height: 0.9rem;
+          span {
+            font-size: 0.6rem;
+            color: #666;
           }
-          .age {
-            font-size: 0.5rem;
-            color: #999;
+          .title {
+            float: left;
+          }
+          .amount {
+            float: right;
           }
         }
       }
-      .amount {
-        float: right;
-
+      .price-box {
+        position: absolute;
+        right: 0.5rem;
+        bottom: 0.4rem;
+        .price {
+          font-size: 1rem;
+          color: #FC4949;
+          font-weight: bold;
+        }
+        .age {
+          margin-right: 0.2rem;
+          font-size: 0.5rem;
+          color: #999;
+        }
       }
     }
   }
