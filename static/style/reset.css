@@ -2,9 +2,10 @@ html {
   font-family:"PingFangSC-Regular","sans-serif","STHeitiSC-Light","微软雅黑","Microsoft YaHei";
   color: #333;
 }
+body{background-color: #f0f0f0;}
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td {
   margin:0;
-  padding:0;
+  padding:0;  
 }
 table {
   border-collapse:collapse;
@@ -49,6 +50,7 @@ p,a,span {
   font-size: 0.7rem;
   vertical-align: top;
 }
+a{text-decoration: none !important;color: #333333;}
 html {
   font-size:20px;
 }

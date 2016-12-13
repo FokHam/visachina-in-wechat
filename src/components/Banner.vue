@@ -3,17 +3,16 @@
     <img src="/static/images/home/placeholder.png" width="100%">
     <div class="inner">
       <mt-swipe :auto="4000">
-        <mt-swipe-item><img src="/static/images/home/pic1.png"></mt-swipe-item>
-        <mt-swipe-item><img src="/static/images/home/pic1.png"></mt-swipe-item>
-        <mt-swipe-item><img src="/static/images/home/pic1.png"></mt-swipe-item>
+        <mt-swipe-item v-for="item in pics"><router-link :to="item.link"><img :src="item.pic"></router-link></mt-swipe-item>        
       </mt-swipe>
     </div>
   </div>
 </template>
 
 <script>
-export default {  
-  data:function(){
+export default {
+  props: ['pics'],
+  data: function(){
     //chuli
     return {
       isactive: 0
@@ -21,6 +20,7 @@ export default {
   }  
 }
 </script>
+
 <style lang="less" scoped>
   .banner{position: relative;margin-bottom: 6px;}
   .banner .inner{position: absolute;height: 100%;width: 100%;left: 0;top: 0;}
