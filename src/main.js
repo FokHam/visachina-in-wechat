@@ -12,6 +12,7 @@ import VisaList from './views/visa/VisaList'
 import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
 import InsuranceDetail from './views/insurance/InsuranceDetail'
+import InsuranceSpecific from './views/insurance/InsuranceSpecific'
 import WifiList from './views/wifi/WifiList'
 import HotelList from './views/hotel/HotelList'
 
@@ -37,6 +38,9 @@ const routes = [{
 },{
   path: "/insuranceDetail/:id",
   component: InsuranceDetail
+},{
+  path: "/insuranceSpecific/:id",
+  component: InsuranceSpecific
 },{
   path: "/wifi",
   component: WifiList

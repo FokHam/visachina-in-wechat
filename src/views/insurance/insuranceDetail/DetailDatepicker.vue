@@ -1,31 +1,32 @@
 <template>
   <div class="datepicker">
+    <calendar></calendar>
     <div class="tabbar">
-      <span class="tabbar-btn" :class="{ active:singleTime == 1 }" @click="singleTime = 1">单次</span>
-      <span class="tabbar-btn" :class="{ active:singleTime == 0 }" @click="singleTime = 0">一年多次</span>
+      <span class="tabbar-btn" :class="{ active:singleTime == 0 }" @click="singleTime = 0">单次</span>
+      <span class="tabbar-btn" :class="{ active:singleTime == 1 }" @click="singleTime = 1">一年多次</span>
     </div>
-    <div class="single-time" v-if="singleTime == 1">
+    <div class="single-time" v-if="singleTime === 0">
       <div class="date-show">
         <i class="icon-calendar"></i>
-        <p>12月01日 <i class="icon-leave"></i></p>
-        <p>2016年 星期三</p>
+        <p>{{ dateFormat1.month + "月" + dateFormat1.date + "日" }} <i class="icon-leave"></i></p>
+        <p>{{ dateFormat1.year + "年 星期" + dateFormat1.day }}</p>
         <i class="icon-arrow-right"></i>
       </div>
       <div class="date-show">
         <i class="icon-calendar"></i>
-        <p>12月01日 <i class="icon-back"></i></p>
-        <p>2016年 星期三</p>
+        <p>{{ dateFormat2.month + "月" + dateFormat2.date + "日" }} <i class="icon-back"></i></p>
+        <p>{{ dateFormat2.year + "年 星期" + dateFormat1.day }}</p>
         <i class="icon-arrow-right"></i>
       </div>
       <div class="date-total">
-        <span>6天</span>
+        <span>{{ totalDay + "天" }}</span>
       </div>
     </div>
-    <div class="multiple-time" v-if="singleTime == 0">
+    <div class="multiple-time" v-if="singleTime === 1">
       <div class="date-show">
         <i class="icon-calendar"></i>
-        <p class="date-leave">2016年12月01日 星期三</p>
-        <p class="date-back">2017年12月01日 星期三<i class="icon-back"></i></p>
+        <p class="date-leave">{{ dateFormat1.year + "年" + dateFormat1.month + "月" + dateFormat1.date + "日 星期" + dateFormat1.day }}</p>
+        <p class="date-back">{{ dateFormat2.year + "年" + dateFormat2.month + "月" + dateFormat2.date + "日 星期" + dateFormat2.day }}<i class="icon-back"></i></p>
         <i class="icon-arrow-right"></i>
       </div>
     </div>
@@ -33,11 +34,56 @@
 </template>
 
 <script>
+  const weekDay = ["日", "一", "二", "三", "四", "五", "六"];
+  const dateFormatter = function (d) {
+    if (d) {
+      return {
+        date: d.getDate(),
+        month: d.getMonth() > 8 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1),
+        year: d.getFullYear(),
+        day: weekDay[d.getDay()]
+      }
+    }
+  }
+
+  import Calendar from "../../../components/Calendar.vue";
+
   export default {
+    props: [
+      "type",  // 0单次，1一年多次，2一年一次
+      "date1",
+      "date2",
+      "minDay"
+    ],
     data: function () {
       return {
-        singleTime: 0
+        singleTime: this.type,
+        startDate: this.date1,
+        endDate: this.date2
       }
+    },
+    computed: {
+      totalDay: function () {
+        return (this.endDate.getTime() - this.startDate.getTime())/1000/60/60/24 + 1;
+      },
+      dateFormat1: function () {
+        return dateFormatter(this.startDate);
+      },
+      dateFormat2: function () {
+        return dateFormatter(this.endDate);
+      }
+    },
+    watch: {
+      singleTime: function () {
+        if (this.singleTime === 0) {
+          this.endDate = new Date(this.startDate.getTime() + 24*60*60*1000*this.minDay);
+        } else if (this.singleTime === 1 || this.singleTime === 2) {
+          this.endDate = new Date(this.startDate.getTime() + 24*60*60*1000*364);
+        }
+      }
+    },
+    components: {
+      Calendar
     }
   }
 </script>
@@ -84,7 +130,7 @@
       width: 50%;
       line-height: 2rem;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #999;
       &.active {
         border-bottom: 0.1rem solid #008BE4;

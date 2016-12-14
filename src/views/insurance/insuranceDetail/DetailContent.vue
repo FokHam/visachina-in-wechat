@@ -2,7 +2,9 @@
   <div class="content">
     <div class="content-title">
       <span class="title">保障权益及产品详情</span>
-      <span class="enter">查看更多 <i class="icon-arrow-right"></i></span>
+      <router-link :to="'/insuranceSpecific/' + $route.params.id">
+        <span class="enter">查看更多 <i class="icon-arrow-right"></i></span>
+      </router-link>
     </div>
     <ul class="right-list">
       <li class="right clearfix">
@@ -27,6 +29,7 @@
 
 <script>
   export default {
+
   }
 </script>
 

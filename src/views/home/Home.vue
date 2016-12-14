@@ -83,7 +83,6 @@
 import { DatetimePicker } from 'mint-ui';
 import { Indicator } from 'mint-ui'
 import Banner from '../../components/Banner'
-import DatePicker from '../../components/DatePicker'
 
 export default {
   name:'home',
@@ -95,7 +94,7 @@ export default {
     Indicator.close();
 
   },
-  data:function(){    
+  data:function(){
     return {
       isActive: 0,
       startDate: '',
@@ -115,18 +114,17 @@ export default {
     },
     startConfirm: function (t){
       var m = t.getMonth()+1
-      this.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()      
+      this.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
     endConfirm: function (t){
       var m = t.getMonth()+1
-      this.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate() 
+      this.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     }
-    
-  },  
+
+  },
   components: {
-    Banner,
-    DatePicker
-  }  
+    Banner
+  }
 }
 </script>
 
@@ -185,13 +183,13 @@ export default {
             border: none;width: 100%;
             background-size: auto 17px;
             background-repeat: no-repeat;
-            background-position: right center; 
-          }                 
+            background-position: right center;
+          }
         }
         &.country input{background-image:url('/static/images/home/icon-flag.png');}
         &.position input{background-image:url('/static/images/home/icon-location.png');}
-        &.visatype input{background-image:url('/static/images/home/icon-tag.png');}  
-        &.calendar input{background-image:url('/static/images/home/icon-calendar.png');}       
+        &.visatype input{background-image:url('/static/images/home/icon-tag.png');}
+        &.calendar input{background-image:url('/static/images/home/icon-calendar.png');}
       }
       .ipt.lastchild{border-bottom: none;}
       .s_btn{
@@ -217,7 +215,7 @@ export default {
         float: left;
         display: inline-block;width: 3rem;
         height: 3rem;background-color: #fff;
-        border-radius: 2px;      
+        border-radius: 2px;
         background-repeat: no-repeat;
         background-size: 1.5rem;background-position: center 0.3rem;
         &.insurance{background-image: url('/static/images/home/icon-insurance.png');}
@@ -229,7 +227,7 @@ export default {
           color: #333333;
           text-align: center;
           padding-top: 2rem;
-          display: block;          
+          display: block;
         }
       }
     }
@@ -238,7 +236,7 @@ export default {
     position: relative;
     a{
       position: absolute;top: 0;
-      width: 50%;height: 100%;display: block;   
+      width: 50%;height: 100%;display: block;
     }
     .check{
       left: 0;
