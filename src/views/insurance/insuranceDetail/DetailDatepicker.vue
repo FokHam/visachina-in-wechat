@@ -6,16 +6,8 @@
       type1="起保"
       type2="终保"
       :minDay="minDay"
-      :day1="{
-        year: dateFormat1.year,
-        month: dateFormat1.month,
-        date: dateFormat1.date
-      }"
-      :day2="{
-        year: dateFormat2.year,
-        month: dateFormat2.month,
-        date: dateFormat2.date
-      }"
+      :day1="startDate"
+      :day2="endDate"
       ></calendar>
     <div class="tabbar">
       <span class="tabbar-btn" :class="{ active:singleTime == 0 }" @click="singleTime = 0">单次</span>
@@ -82,7 +74,7 @@
     },
     methods: {
       setDate: function () {
-        
+
       }
     },
     computed: {

@@ -17,10 +17,10 @@ import InsuranceSpecific from './views/insurance/InsuranceSpecific'
 import WifiList from './views/wifi/WifiList'
 import HotelList from './views/hotel/HotelList'
 
+import store from './store/index.js'
 
 Vue.use(VueRouter);
 Vue.use(VueResource);
-Vue.use(Vuex)
 Vue.use(MintUI);
 
 const routes = [{
@@ -53,24 +53,12 @@ const routes = [{
 }];
 
 const resource = "/src/assets";
-
 const router = new VueRouter({
   routes
 });
 
-const store = new Vuex.Store({
-  state: {
-    count: 0
-  },
-  mutations: {
-    increment (state) {
-      state.count++
-    }
-  }
-})
-
 /* eslint-disable no-new */
-new Vue({
+const app = new Vue({
   el: '#app',
   router,
   store,

@@ -20,11 +20,15 @@
 
   export default {
     data: function () {
-      var d = new Date(),
+      let d = new Date(),
           minDay = 3,
           startDate = new Date(),
-          endDate = new Date(startDate.getTime() + 24*60*60*1000*(minDay - 1)),
           type = 0;
+      startDate.setHours(0);
+      startDate.setMinutes(0);
+      startDate.setSeconds(0);
+      startDate.setMilliseconds(0);
+      let endDate = new Date(startDate.getTime() + 24*60*60*1000*(minDay - 1));
 
       return {
         type: type, // 0单次，1一年多次，2一年一次
