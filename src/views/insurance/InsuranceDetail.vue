@@ -21,7 +21,7 @@
   export default {
     data: function () {
       var d = new Date(),
-          minDay = 5,
+          minDay = 3,
           startDate = new Date(),
           endDate = new Date(startDate.getTime() + 24*60*60*1000*(minDay - 1)),
           type = 0;
