@@ -1,6 +1,8 @@
 import App from './App'
 import Home from './views/home/Home'
-import VisaList from './views/visa/VisaList'
+import VisaIndex from './views/visa/VisaIndex'
+import VisaDetail from './views/visa/VisaDetail'
+import VisaInformation from './views/visa/VisaInformation'
 import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
 import InsuranceDetail from './views/insurance/InsuranceDetail'
@@ -17,7 +19,13 @@ var routes = [{
   component: Home
 },{
   path: "/visa",
-  component: VisaList
+  component: VisaIndex
+},{
+  path: "/visaDetail/:id",
+  component: VisaDetail
+},{
+  path: "/VisaInformation/:id",
+  component: VisaInformation
 },{
   path: "/insurance",
   component: InsuranceIndex

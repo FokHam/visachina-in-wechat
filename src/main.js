@@ -8,20 +8,7 @@ import $ from 'jquery'
 import 'mint-ui/lib/style.css'
 
 import App from './App'
-import Home from './views/home/Home'
-import VisaList from './views/visa/VisaList'
-import InsuranceIndex from './views/insurance/InsuranceIndex'
-import InsuranceList from './views/insurance/InsuranceList'
-import InsuranceDetail from './views/insurance/InsuranceDetail'
-import InsuranceSpecific from './views/insurance/InsuranceSpecific'
-import InsuranceCreateOrder from './views/insurance/InsuranceCreateOrder'
-import WifiList from './views/wifi/WifiList'
-import HotelList from './views/hotel/HotelList'
-
-import SelectPerson from './views/insurance/InsuranceCreateOrder/SelectPerson'
-
 import routes from './routes.js'
-
 import store from './store/index.js'
 
 Vue.use(VueRouter);

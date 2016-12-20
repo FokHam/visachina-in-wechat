@@ -11,11 +11,11 @@
           <div class="search-input visa-search" v-if="isActive == 0">
             <div class="ipt country">
               <div class="tit">国家</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
+              <div class="txt" @click="openSearch"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
             </div>
             <div class="ipt position">
               <div class="tit">常住地</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你居住在哪里？"></div>
+              <div class="txt" @click="openProvice"><input readonly="readonly" type="text" placeholder="你居住在哪里？"></div>
             </div>
             <div class="ipt visatype lastchild">
               <div class="tit">类型</div>
@@ -60,9 +60,12 @@
         <span>定制行程 ></span>
       </router-link>
     </div>
+    <countrys :isShow="searchdis" v-on:choseCountry="changeCountry" v-on:closePage="closeComp"></countrys>
+    <provice :isShow="provicedis" v-on:chosepvc="choseProvice" v-on:closePage="closeComp" ></provice>
     <mt-datetime-picker
       ref="startpicker"
       type="date"
+      v-model="nowDate"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
@@ -71,19 +74,22 @@
     <mt-datetime-picker
       ref="endpicker"
       type="date"
+      v-model="selectDate"
       year-format="{value} 年"
       month-format="{value} 月"
       date-format="{value} 日"
       @confirm="endConfirm">
     </mt-datetime-picker>
   </div>
+
 </template>
 
 <script>
 import { DatetimePicker } from 'mint-ui';
 import { Indicator } from 'mint-ui'
 import Banner from '../../components/Banner'
-
+import Countrys from '../../components/SearchCountry'
+import Provice from '../../components/ProviceList'
 export default {
   name:'home',
   beforeCreate(){
@@ -97,8 +103,12 @@ export default {
   data:function(){
     return {
       isActive: 0,
+      searchdis:false,
+      provicedis:false,
       startDate: '',
       endDate: '',
+      nowDate: new Date(),
+      selectDate: '',
       pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}]
     }
   },
@@ -115,15 +125,37 @@ export default {
     startConfirm: function (t){
       var m = t.getMonth()+1
       this.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+      var t = t.getTime() + 86400000
+      this.selectDate = new Date(t)
     },
     endConfirm: function (t){
       var m = t.getMonth()+1
       this.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+    },
+    openSearch:function(){
+      this.searchdis = true
+    },
+    changeCountry:function(name){
+      this.searchdis = false
+      alert(name);
+    },
+    openProvice:function(){
+      this.provicedis = true
+    },
+    choseProvice:function(name){
+      this.provicedis = false
+      alert(name);
+    },
+    closeComp:function(){
+      this.provicedis = false
+      this.searchdis = false
     }
 
   },
   components: {
-    Banner
+    Banner,
+    Countrys,
+    Provice
   }
 }
 </script>
