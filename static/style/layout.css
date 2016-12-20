@@ -2,3 +2,20 @@
   overflow: auto;
   zoom: 1;
 }
+.wave-btm-bg {
+  background-color: #fff;
+  background-image: url(/static/images/insurance/underbg.png);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 0.6rem 0.3rem;
+}
+.confirm-btn {
+  margin: 0 0.5rem;
+  display: block;
+  font-size: 0.85rem;
+  line-height: 2rem;
+  color: #fff;
+  background-color: #008be4;
+  text-align: center;
+  border-radius: 0.3rem;
+}

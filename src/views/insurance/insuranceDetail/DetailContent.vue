@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" @click="showAge = 0">
     <div class="content-title">
       <span class="title">保障权益及产品详情</span>
       <router-link :to="'/insuranceSpecific/' + $route.params.id">
@@ -20,16 +20,31 @@
         <span class="amount">300,000元</span>
       </li>
     </ul>
-    <div class="age">
+    <div v-if="withAge" class="age">
       <span class="title">承保年龄</span>
-      <span class="value">18 - 85岁 <i class="icon-arrow-down"></i></span>
+      <span class="value"
+        @click.stop="showAge = 1">18 - 85岁 <i class="icon-arrow-down"></i></span>
+      <ul v-if="showAge === 1" class="age-list">
+        <li class="active">0 - 17周岁</li>
+        <li>18 - 85周岁</li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
   export default {
-
+    props: {
+      withAge: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data: function () {
+      return {
+        showAge: 0
+      };
+    }
   }
 </script>
 
@@ -66,7 +81,6 @@
     }
     .right-list {
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #eee;
       .right {
         span {
           color: #666;
@@ -85,6 +99,7 @@
       }
     }
     .age {
+      border-top: 1px solid #eee;
       .title {
         font-size: 0.8rem;
         line-height: 2rem;
@@ -93,6 +108,23 @@
         float: right;
         line-height: 2rem;
         color: #666;
+      }
+      .age-list {
+        position: absolute;
+        z-index: 10;
+        right: 0;
+        font-size: 0.7rem;
+        background: #fff;
+        border: 0.05rem solid #eee;
+        border-radius: 0.2rem;
+        li {
+          padding: 0.4rem 1.5rem;
+          text-align: center;
+          &.active {
+            color: #008ce4;
+            border-left: 0.2rem solid #008ce4;
+          }
+        }
       }
     }
   }

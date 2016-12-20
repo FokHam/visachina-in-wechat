@@ -1,12 +1,12 @@
 <template>
   <div class="calendar-wrapper">
-    <div @click="confirm" class="confirm-btn">{{ "确定按钮" + count }}</div>
+    <div @click="confirm" class="confirm-btn">确定按钮</div>
     <div class="type-selecter">
-      <div @click="selectType = 1" :class="{ active: selectType ===1 }" class="type-box">
+      <div @click="selectType = 1" :class="{ active: selectType === 1 }" class="type-box">
         <p class="title">{{ type1 + "日期" }}</p>
         <p class="selected-date">{{ dateFormat[0] }}</p>
       </div>
-      <div @click="selectType = 2" :class="{ active: selectType ===2 }" class="type-box">
+      <div v-if="multipleDate" @click="selectType = 2" :class="{ active: selectType === 2 }" class="type-box">
         <p class="title">{{ type2 + "日期" }}</p>
         <p class="selected-date">{{ dateFormat[1] }}</p>
       </div>
@@ -31,7 +31,7 @@
           v-for="n in item.days"
           :class="[
             { expired: isExpiredDay(item.year, item.month, n, true) },
-            { first: (item.year === selected[0].getFullYear() && item.month === selected[0].getMonth() && n === selected[0].getDate()) },
+            { first: isSelectedDay(item.year, item.month, n) },
             { active: isActiveDay(item.year, item.month, n) },
             { last: isLastDay(item.year, item.month, n) }]"
           @click="changeDate(item.year, item.month, n)"
@@ -47,127 +47,142 @@
 </template>
 
 <script>
-const weekDay = ["日", "一", "二", "三", "四", "五", "六"];
-const now = new Date();
+  const weekDay = ["日", "一", "二", "三", "四", "五", "六"];
+  const now = new Date();
 
-import { mapState } from 'vuex'
+  import Vue from 'vue'
+  import { mapState } from 'vuex'
 
-export default {
-  props: {
-    multiple: Boolean,
-    minDay: Number,
-    day1: {
-      type: Date,
-      default: function () {
-        return now;
+  export default {
+    props: {
+      multipleDate: Boolean,
+      minDay: Number,
+      maxDay: Number,
+      day1: {
+        type: Date,
+        default: function () {
+          return now;
+        }
+      },
+      day2: Date,
+      type1: {
+        type: String,
+        default: "第一个"
+      },
+      type2: {
+        type: String,
+        default: "第二个"
+      },
+      pickType: Number
+    },
+    data: function(){
+      let now = new Date(),
+          month = now.getMonth(),
+          year = now.getFullYear(),
+          monthList = [],
+          i;
+      for (i = 0; i < 15; i += 1) {
+        let m = {
+          year: year,
+          month: month,
+          firstDay: (new Date(year, month, 1)).getDay(),
+          days: (new Date(year, month + 1, 0)).getDate()
+        }
+        monthList.push(m);
+        if (month === 11) {
+          month = 0;
+          year += 1;
+        } else {
+          month += 1;
+        }
+      }
+      return {
+        selectType: this.pickType,
+        monthList: monthList,
+        selected: [ this.day1, this.day2 ]
       }
     },
-    day2: Date,
-    type1: {
-      type: String,
-      default: "第一个"
-    },
-    type2: {
-      type: String,
-      default: "第二个"
-    }
-  },
-  data: function(){
-    let now = new Date(),
-        month = now.getMonth(),
-        year = now.getFullYear(),
-        monthList = [],
-        i;
-    for (i = 0; i < 3; i += 1) {
-      let m = {
-        year: year,
-        month: month,
-        firstDay: (new Date(year, month, 1)).getDay(),
-        days: (new Date(year, month + 1, 0)).getDate()
-      }
-      monthList.push(m);
-      if (month === 11) {
-        month = 0;
-        year += 1;
-      } else {
-        month += 1;
-      }
-    }
-    return {
-      selectType: 1,
-      monthList: monthList,
-      selected: [ this.day1, this.day2 ]
-    }
-  },
-  methods:{
-    isSelectedDay: function (year, month, date) {
-      var theDate = new Date(year, month, date);
-      if (theDate.getTime() === this.startDate.getTime()) {
-        return true;
-      }
-    },
-    isLastDay: function (year, month, date) {
-      var theDate = new Date(year, month, date);
-      if (theDate.getTime() === this.endDate.getTime()) {
-        return true;
-      }
-    },
-    isActiveDay: function (year, month, date) {
-      if (this.selected.length !== 2) { return false }
-      var theDate = new Date(year, month, date);
-      if ((theDate.getTime() >= this.startDate.getTime()) && (theDate.getTime() <= this.endDate.getTime())) {
-        return true;
-      }
-    },
-    isExpiredDay: function (year, month, date, calCalendar) {
-      var today = new Date(),
-          theDay = new Date(year, month, (this.selectType === 1) || calCalendar ? date : date - (this.minDay - 1), 23, 59, 59, 999);
-      if (today.getTime() > theDay.getTime()) {
-        return true;
+    methods:{
+      isSelectedDay: function (year, month, date) {
+        var theDate = new Date(year, month, date);
+        if (theDate.getTime() === this.startDate.getTime()) {
+          return true;
+        }
+      },
+      isLastDay: function (year, month, date) {
+        var theDate = new Date(year, month, date);
+        if (theDate.getTime() === this.endDate.getTime()) {
+          return true;
+        }
+      },
+      isActiveDay: function (year, month, date) {
+        if (this.selected.length !== 2) { return false }
+        var theDate = new Date(year, month, date);
+        if ((theDate.getTime() >= this.startDate.getTime()) && (theDate.getTime() <= this.endDate.getTime())) {
+          return true;
+        }
+      },
+      isExpiredDay: function (year, month, date, calCalendar) {
+        var today = new Date(),
+            theDay = new Date(year, month, (this.selectType === 1) || calCalendar ? date : date - (this.minDay - 1), 23, 59, 59, 999);
+        if (today.getTime() > theDay.getTime()) {
+          return true;
+        }
+      },
+      changeDate: function (year, month, date) {
+        if (this.isExpiredDay(year, month, date)) { return false; }
+        if (this.selectType === 2 ) {
+          Vue.set(this.selected, 1, new Date(year, month, date));
+        } else {
+          Vue.set(this.selected, 0, new Date(year, month, date));
+        }
+        if ((this.selected[0].getTime() > (this.selected[1].getTime() - 24*60*60*1000*(this.minDay - 1)))) {
+          if (this.selectType === 1) {
+            var day = new Date(this.selected[0].getFullYear(), this.selected[0].getMonth(), this.selected[0].getDate() + (this.minDay - 1));
+            this.selected[1] = day;
+          } else if (this.selectType === 2) {
+            var day = new Date(this.selected[1].getFullYear(), this.selected[1].getMonth(), this.selected[1].getDate() - (this.minDay - 1));
+            this.selected[0] = day;
+          }
+        } else if (this.maxDay && (this.selected[1].getTime() > (this.selected[0].getTime() + 24*60*60*1000*(this.maxDay - 1)))) {
+          if (this.selectType === 1) {
+            var day = new Date(this.selected[0].getFullYear(), this.selected[0].getMonth(), this.selected[0].getDate() + (this.maxDay - 1));
+            this.selected[1] = day;
+          } else if (this.selectType === 2) {
+            var day = new Date(this.selected[1].getFullYear(), this.selected[1].getMonth(), this.selected[1].getDate() - (this.maxDay - 1));
+            this.selected[0] = day;
+          }
+        }
+      },
+      confirm: function () {
+        this.$emit("confirm", this.selected[0], this.selected[1]);
       }
     },
-    changeDate: function (year, month, date) {
-      if (this.isExpiredDay(year, month, date)) { return false; }
-      console.log(year + "" + month + date)
-      if (this.selectType === 2 ) {
-        this.selected[1] = new Date(year, month, date);
-      } else {
-        this.selected[0] = new Date(year, month, date);
+    computed: {
+      dateFormat () {
+        var d1 = this.selected[0],
+            d2 = this.selected[1],
+            dateFormatter = function (d) {
+              if (d) {
+                return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日 星期" + weekDay[d.getDay()];
+              }
+            };
+        return [
+          dateFormatter(d1),
+          dateFormatter(d2)
+        ];
+      },
+      count () {
+        return this.$store.state.insurance.count;
+      },
+      startDate () {
+        return this.selected[0];
+      },
+      endDate () {
+        return this.selected[1];
       }
-      // if ((this.selectType === 1) && (this.selected[0].getTime() > (this.selected[1].getTime() - 24*60*60*1000*(this.minDay - 1)))) {
-      //   var day = new Date(this.selected[0].year, this.selected[0].month, this.selected[0].date + (this.minDay - 1));
-      //   this.selected[1] = day;
-      // } else if ((this.selectType === 2) && (this.selected[0].getTime() > (this.selected[1].getTime() - 24*60*60*1000*(this.minDay - 1)))) {
-      //   var day = new Date(this.selected[1].year, this.selected[1].month, this.selected[1].date - (this.minDay - 1));
-      //   this.selected[0] = day;
-      // }
-    },
-    confirm: function () {
-      this.$store.dispatch("increment", {
-        amount: this.$store.state.insurance.count
-      });
-    }
-  },
-  computed: {
-    dateFormat () {
-      var d1 = this.selected[0],
-          d2 = this.selected[1];
-      return [
-        d1.getFullYear() + "年" + (d1.getMonth() + 1) + "月" + d1.getDate() + "日 星期" + weekDay[d1.getDay()],
-        d2.getFullYear() + "年" + (d2.getMonth() + 1) + "月" + d2.getDate() + "日 星期" + weekDay[d2.getDay()]
-      ]
-    },
-    count () {
-      return this.$store.state.insurance.count;
-    },
-    startDate () {
-      return this.selected[0];
-    },
-    endDate () {
-      return this.selected[1];
     }
   }
-}
 </script>
 
 <style lang="less" scoped>

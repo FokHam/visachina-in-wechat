@@ -5,23 +5,27 @@
       v-on:confirm="setDate"
       type1="起保"
       type2="终保"
-      :minDay="minDay"
+      :multipleDate="multipleDate"
+      :pickType ="pickingType"
+      :minDay="minimunDay"
+      :maxDay="maximunDay"
       :day1="startDate"
       :day2="endDate"
       ></calendar>
     <div class="tabbar">
-      <span class="tabbar-btn" :class="{ active:singleTime == 0 }" @click="singleTime = 0">单次</span>
-      <span class="tabbar-btn" :class="{ active:singleTime == 1 }" @click="singleTime = 1">一年多次</span>
+      <span class="tabbar-btn" :class="{ active:singleTime == 0 }" @click="singleTime = 0; minimunDay = minDay">单次</span>
+      <span class="tabbar-btn" :class="{ active:singleTime == 1 }" @click="singleTime = 1; minimunDay = 365">一年多次</span>
     </div>
     <div class="single-time" v-if="singleTime === 0">
       <div class="date-show"
-        @click="pickingDate = 1">
+        @click="pickingDate = 1; pickingType = 1">
         <i class="icon-calendar"></i>
         <p>{{ ((dateFormat1.month > 8) ? (dateFormat1.month + 1) : ("0" + (dateFormat1.month + 1))) + "月" + dateFormat1.date + "日" }} <i class="icon-leave"></i></p>
         <p>{{ dateFormat1.year + "年 星期" + dateFormat1.day }}</p>
         <i class="icon-arrow-right"></i>
       </div>
-      <div class="date-show">
+      <div class="date-show"
+        @click="pickingDate = 1; pickingType = 2">
         <i class="icon-calendar"></i>
         <p>{{ ((dateFormat2.month > 8) ? (dateFormat2.month + 1) : ("0" + (dateFormat2.month + 1))) + "月" + dateFormat2.date + "日" }} <i class="icon-back"></i></p>
         <p>{{ dateFormat2.year + "年 星期" + dateFormat1.day }}</p>
@@ -32,7 +36,8 @@
       </div>
     </div>
     <div class="multiple-time" v-if="singleTime === 1">
-      <div class="date-show">
+      <div class="date-show"
+        @click="pickingDate = 1; pickingType = 1">
         <i class="icon-calendar"></i>
         <p class="date-leave">{{ dateFormat1.year + "年" + ((dateFormat1.month > 8) ? (dateFormat1.month + 1) : ("0" + (dateFormat1.month + 1))) + "月" + dateFormat1.date + "日 星期" + dateFormat1.day }}</p>
         <p class="date-back">{{ dateFormat2.year + "年" + ((dateFormat2.month > 8) ? (dateFormat2.month + 1) : ("0" + (dateFormat2.month + 1))) + "月" + dateFormat2.date + "日 星期" + dateFormat2.day }}<i class="icon-back"></i></p>
@@ -69,12 +74,16 @@
         singleTime: this.type,
         startDate: this.date1,
         endDate: this.date2,
-        pickingDate: false
+        pickingDate: false,
+        minimunDay: this.minDay,
+        maximunDay: 365
       }
     },
     methods: {
-      setDate: function () {
-
+      setDate: function (a, b) {
+          this.pickingDate = false;
+          if (a) { this.startDate = a; }
+          if (b) { this.endDate = b; }
       }
     },
     computed: {
@@ -86,6 +95,9 @@
       },
       dateFormat2: function () {
         return dateFormatter(this.endDate);
+      },
+      multipleDate: function () {
+        return this.singleTime === 0;
       }
     },
     watch: {

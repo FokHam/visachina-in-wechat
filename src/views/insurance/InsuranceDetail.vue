@@ -1,7 +1,9 @@
 <template>
   <div class="isr-d-page">
     <detail-header></detail-header>
-    <detail-content></detail-content>
+    <detail-content
+      :withAge="true"
+    ></detail-content>
     <detail-datepicker
       :type="type"
       :date1="startDate"

@@ -1,7 +1,7 @@
 <template>
   <div class="create-order">
     <p class="total">保费：<span class="price">¥222</span></p>
-    <span class="button">立即投保</span>
+    <router-link class="button" :to="'/insuranceCreateOrder/' + $route.params.id">立即投保</router-link>
   </div>
 </template>
 
