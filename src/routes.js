@@ -3,6 +3,7 @@ import Home from './views/home/Home'
 import VisaIndex from './views/visa/VisaIndex'
 import VisaDetail from './views/visa/VisaDetail'
 import VisaInformation from './views/visa/VisaInformation'
+import VisaOrder from './views/visa/VisaOrder'
 import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
 import InsuranceDetail from './views/insurance/InsuranceDetail'
@@ -24,8 +25,11 @@ var routes = [{
   path: "/visaDetail/:id",
   component: VisaDetail
 },{
-  path: "/VisaInformation/:id",
+  path: "/visaInformation/:id",
   component: VisaInformation
+},{
+  path: "/visaOrder/:id",
+  component: VisaOrder
 },{
   path: "/insurance",
   component: InsuranceIndex

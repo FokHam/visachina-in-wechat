@@ -61,7 +61,7 @@
       <div class="tit">所需资料</div>
       <div class="con">
         <ul>
-          <li>在职人员</li>
+          <li><router-link :to="'/visaInformation/'+$route.params.id">在职人员</router-link></li>
           <li>自由职业者</li>
           <li>在校学生</li>
           <li>退休人员</li>
@@ -85,7 +85,7 @@
     </div>
     <div class="booking">
       <div class="addfev">收藏</div>
-      <div class="bookbtn">立即预定</div>
+      <div class="bookbtn"><router-link :to="'/visaOrder/'+$route.params.id">立即预定</div>
     </div>
     <email :isshow="emailDis" :onum="onum" @closePage="closeSend"></email>
   </div>
@@ -119,8 +119,8 @@ export default{
   data:function(){
     return{
       tabStatus:0,
-      emailDis:false,
-      onum:212121
+      emailDis:false
+      
     }
   },
   methods:{    
@@ -278,6 +278,7 @@ export default{
           background-image: url('/static/images/visa/icon-right.png');
           background-repeat: no-repeat;background-size: 17px;
           background-position: right center;
+          a{display: block;}
         }
       }
       .sendemail{
@@ -293,7 +294,9 @@ export default{
     .bookbtn{
       height: 50px;line-height: 50px;margin-left: 55px;
       background-color: #008CE4;text-align: center;font-size: 0.8rem;color: #fff;
-
+      a{
+        display: block;font-size: 0.8rem;color: #fff;
+      }
     }
     .addfev{
       position: absolute;
