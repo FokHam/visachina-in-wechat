@@ -2,6 +2,9 @@ import { Toast } from 'mint-ui';
 
 const state = {
   productId: 0,
+  type: "",
+  startDate: "",
+  endDate: "",
   selectedInsuredPersonIds: [],
   selectedPolicyHolderId: "",
   insuredPerson: [],
@@ -10,13 +13,15 @@ const state = {
 };
 
 const mutations = {
-  increment (state, payload) {
-    if (payload && payload.amount) {
-      state.count += payload.amount;
-      console.log(payload)
-    } else {
-      state.count += 1;
-    }
+  resetInsuranceState (state) {
+    state = {
+      productId: 0,
+      selectedInsuredPersonIds: [],
+      selectedPolicyHolderId: "",
+      insuredPerson: [],
+      policyHolder: {},
+      destinaiton: []
+    };
   },
   toggleInsuredPerson (state, id) {
     let index = state.selectedInsuredPersonIds.indexOf(id);
@@ -34,14 +39,16 @@ const mutations = {
     state.selectedPolicyHolderId = id;
   },
   confirmInsuredPerson (state, persons) {
-    if (persons.length) {
-      state.insuredPerson = persons;
-    }
+    state.insuredPerson = persons;
   },
   confirmPolicyHolder (state, person) {
     if (person) {
       state.policyHolder = person;
     }
+  },
+  setInsuranceDate (state, payload) {
+    state.startDate = payload.day1;
+    state.endDate = payload.day2;
   }
 };
 

@@ -63,6 +63,9 @@
   import Calendar from "../../../components/Calendar.vue";
 
   export default {
+    mounted () {
+      this.setDate(this.startDate, this.endDate);
+    },
     props: [
       "type",  // 0单次，1一年多次，2一年一次
       "date1",
@@ -80,10 +83,14 @@
       }
     },
     methods: {
-      setDate: function (a, b) {
-          this.pickingDate = false;
-          if (a) { this.startDate = a; }
-          if (b) { this.endDate = b; }
+      setDate: function (day1, day2) {
+        this.pickingDate = false;
+        this.startDate = day1;
+        this.endDate = day2;
+        this.$store.commit("setInsuranceDate", {
+          day1: day1.getFullYear() + "-" + (day1.getMonth() > 9 ? (day1.getMonth() + 1) : "0" + day1.getMonth()) + "-" + (day1.getDate() > 9 ? day1.getDate() : "0" + day1.getDate()),
+          day2: day2.getFullYear() + "-" + (day2.getMonth() > 9 ? (day2.getMonth() + 1) : "0" + day2.getMonth()) + "-" + (day2.getDate() > 9 ? day2.getDate() : "0" + day2.getDate())
+        });
       }
     },
     computed: {
@@ -107,6 +114,7 @@
         } else if (this.singleTime === 1 || this.singleTime === 2) {
           this.endDate = new Date(this.startDate.getTime() + 24*60*60*1000*364);
         }
+        this.setDate(this.startDate, this.endDate);
       }
     },
     components: {

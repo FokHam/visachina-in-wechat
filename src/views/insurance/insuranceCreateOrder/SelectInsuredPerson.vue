@@ -33,7 +33,6 @@
 </template>
 
 <script>
-
   import EditInsuredPerson from './EditInsuredPerson'
 
   export default {

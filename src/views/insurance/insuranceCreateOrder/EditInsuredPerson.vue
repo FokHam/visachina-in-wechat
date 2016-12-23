@@ -25,7 +25,7 @@
       </li>
     </ul>
     <div class="confirm-btn"
-      @click="confirmPerson">
+      @click="confirm">
       保存
     </div>
     <mt-datetime-picker
@@ -75,7 +75,7 @@
             d = day.getDate() > 9 ? day.getDate() : "0" + day.getDate();
         this.birthday = day.getFullYear() + "-" + m + "-" + d;
       },
-      confirmPerson () {
+      confirm () {
         //保存信息
         this.$emit("confirm");
       },
