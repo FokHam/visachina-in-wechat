@@ -4,6 +4,8 @@ import VisaIndex from './views/visa/VisaIndex'
 import VisaDetail from './views/visa/VisaDetail'
 import VisaInformation from './views/visa/VisaInformation'
 import VisaOrder from './views/visa/VisaOrder'
+import VisaApplyList from './views/visa/VisaApplyList'
+import VisaApplyAdd from './views/visa/VisaApplyAdd'
 import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
 import InsuranceDetail from './views/insurance/InsuranceDetail'
@@ -30,6 +32,12 @@ var routes = [{
 },{
   path: "/visaOrder/:id",
   component: VisaOrder
+},{
+  path: "/VisaApplyList",
+  component: VisaApplyList
+},{
+  path: "/VisaApplyAdd/:id",
+  component: VisaApplyAdd
 },{
   path: "/insurance",
   component: InsuranceIndex

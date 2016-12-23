@@ -54,6 +54,7 @@ p,a,span {
   color: #333;
   text-decoration: none;
 }
+.mint-toast-text{color: #fff !important;}
 a{text-decoration: none !important;color: #333333;}
 html {
   font-size:17.12px;
