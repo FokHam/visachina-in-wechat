@@ -9,14 +9,20 @@
     <div class="order-info">
       <div class="person">
         <span class="label">被保人<i class="icon-question"></i></span>
+        <div class="person-list">
+          <span class="person-name" v-for="person in insuredPerson">{{ person.cName }}</span>
+        </div>
         <i class="icon-addperson"
-          @click="selecting=true"
+          @click="selectingIp=true"
         ></i>
       </div>
       <div class="person">
         <span class="label">投保人<i class="icon-question"></i></span>
+        <div class="person-list">
+          <span class="person-name">{{ policyHolder.cName }}</span>
+        </div>
         <i class="icon-addperson"
-          @click="selecting=true"
+          @click="selectingPh=true"
         ></i>
       </div>
       <div class="person">
@@ -35,27 +41,51 @@
       </p>
       <span class="button">提交订单</span>
     </div>
-    <select-person
-      v-if="selecting"
-      :type="type">
-      </select-person>
+    <select-insured-person
+      v-if="selectingIp"
+      @confirm="selectIpConfirm">
+    </select-insured-person>
+    <select-policy-holder
+      v-if="selectingPh"
+      @confirm="selectPhConfirm">
+    </select-policy-holder>
   </div>
 </template>
 
 <script>
   import DetailContent from "./InsuranceDetail/DetailContent"
-  import SelectPerson from "./InsuranceCreateOrder/SelectPerson"
+  import SelectInsuredPerson from "./InsuranceCreateOrder/SelectInsuredPerson"
+  import SelectPolicyHolder from "./InsuranceCreateOrder/SelectPolicyHolder"
+  import AddressPicker from "../../components/AddressPicker"
 
   export default {
     data: function () {
       return {
-        selecting: false,
-        type: 1
+        selectingIp: false,
+        selectingPh: false
       }
     },
     components: {
       DetailContent,
-      SelectPerson
+      SelectInsuredPerson,
+      SelectPolicyHolder,
+      AddressPicker
+    },
+    methods: {
+      selectIpConfirm () {
+        this.selectingIp = false;
+      },
+      selectPhConfirm () {
+        this.selectingPh = false;
+      }
+    },
+    computed: {
+      insuredPerson () {
+        return this.$store.state.insurance.insuredPerson;
+      },
+      policyHolder () {
+        return this.$store.state.insurance.policyHolder;
+      }
     }
   }
 </script>
@@ -87,17 +117,34 @@
     background-repeat: repeat-x;
     background-position: left bottom;
     .person {
+      display: flex;
+      align-items: center;
       position: relative;
-      line-height: 2.5rem;
+      height: 2.7rem;
       border-bottom: 0.05rem solid #eee;
+      .person-list {
+        flex: 50%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding-right: 1.5rem;
+        .person-name {
+          margin-right: 0.5rem;
+          border: 0.05rem solid #c0c0c0;
+          padding: 0.1rem 0.2rem;
+          border-radius: 0.15rem;
+        }
+      }
       .read-only {
         font-size: 0.7rem;
         color: #999;
       }
       .label {
         position: relative;
+        flex: 1;
         margin-left: 0.5rem;
         font-size: 0.7rem;
+        display: inline-block;
       }
       .icon-question {
         display: inline-block;
