@@ -1,7 +1,9 @@
 const state = {
   insCheck:false,  
-  apllyMenber:[{"check":false,"name":"张三","birthday":"2016-1-1","type":"自由职业","idnum":"202525198703225658"},{"check":false,"name":"李四","birthday":"2016-1-1","type":"退休人员","idnum":"420525198703225688"},{"check":false,"name":"王五","birthday":"2016-1-1","type":"在职","idnum":"352525198703227775"}],
+  apllyMenber:[{"check":false,"icheck":false,"name":"张三","birthday":"2016-1-1","type":"自由职业","idnum":"202525198703225658"},{"check":false,"icheck":false,"name":"李四","birthday":"2016-1-1","type":"退休人员","idnum":"420525198703225688"},{"check":false,"icheck":false,"name":"王五","birthday":"2016-1-1","type":"在职","idnum":"352525198703227775"}],
   insMenber:[],
+  insChooseMenber:[],
+  insApplyPerson:{"name":"","ename":"","idnum":"","birthday":"","phone":"","email":""},
   orderInfo:{
     "estimated_date":"",
     "contact_info":{"name":"","phone":"","email":""},
@@ -22,7 +24,17 @@ const mutations = {
   visaOrder_apllyMenber_edit (state, payload) {
     state.apllyMenber[payload.id].name = payload.name
     state.apllyMenber[payload.id].type = payload.type
+  },
+  visaOrder_insMenber_set (state, payload) {    
+    state.insMenber = payload
+  },
+  visaOrder_insMenber_edit (state, payload) {    
+    state.apllyMenber[payload.id].ename = payload.ename
+    state.apllyMenber[payload.id].idnum = payload.idnum
     state.apllyMenber[payload.id].birthday = payload.birth
+  },
+  visaOrder_applyer_save (state, payload) {    
+    state.insApplyPerson = payload
   }
 
 };

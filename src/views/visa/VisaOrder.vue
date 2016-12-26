@@ -5,7 +5,7 @@
     <div class="desc">加急办理2个工作日出签，受理全国护照除新
 疆、西藏外、广州送签</div>
     <div class="estimated">
-      <div class="inner">
+      <div class="inner" @click="openDatepicker">
         <span v-if="pageInfo.estimated_date != ''">{{pageInfo.estimated_date}}<i>出行</i></span>
         <span v-else>预计什么时候出发？</span>
       </div>
@@ -72,17 +72,16 @@
       <div class="ins_client" v-if="insCheck">
         <div class="item-hd">
           <div class="i_tit">被保人<i class="help">help</i></div>
-          <div class="addbtn" v-if="insList.length == 0"></div>
-          <div class="editbtn" v-else></div>
+          <router-link class="addbtn" :class="{editbtn:insMenber.length != 0}" to="/InsApplyList"></router-link>          
         </div>
-        <div class="list" v-if="insList.length != 0">
+        <div class="list" v-if="insMenber.length != 0">
           <ul>
-            <li v-for="item in insList">
+            <li v-for="item in insMenber">
                 <div class="info">
                   <div class="name">{{item.name}}<span>{{item.e_name}}</span></div>
                   <div class="idnum">身份证：{{item.idnum}}</div>
                 </div>
-                <div class="price">￥{{item.price}}</div>              
+                <div class="price">￥69</div>              
             </li>
             
           </ul>
@@ -91,12 +90,11 @@
       <div class="ins_creater" v-if="insCheck">
         <div class="item-hd">
           <div class="i_tit">投保人<i class="help">help</i></div>
-          <div class="addbtn" v-if="creater.length == 0"></div>
-          <div class="editbtn" v-else></div>
+          <router-link class="addbtn" :class="{editbtn:insAppInfo.name  != ''}" to="/InsApplyPerson"></router-link>
         </div>
-        <div class="info" v-if="creater.length != 0">
-          <div class="name">{{creater.name}}<span class="phone">{{creater.phone}}</span></div>
-          <div class="email">{{creater.email}}</div>
+        <div class="info" v-if="insAppInfo.name != ''">
+          <div class="name">{{insAppInfo.name}}<span class="phone">{{insAppInfo.phone}}</span></div>
+          <div class="email">{{insAppInfo.email}}</div>
         </div>
       </div>
       <div class="ins_benefit" v-if="insCheck">
@@ -118,11 +116,22 @@
     <div class="price">订单金额：<span>￥1250</span></div>
     <div class="creatBtn">提交订单</div>
   </div>
+  <mt-datetime-picker
+    ref="datepicker"
+    type="date"
+    :startDate="startDate"
+    v-model="initialDate"
+    year-format="{value} 年"
+    month-format="{value} 月"
+    date-format="{value} 日"
+    @confirm="dateConfirm">
+  </mt-datetime-picker> 
 </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
+import { DatetimePicker } from 'mint-ui'
 export default{
   name: 'visa-order',
   beforeCreate:function(){
@@ -131,29 +140,35 @@ export default{
   },
   created: function () {
     Indicator.close();
-    for (var i=0; i<this.$store.state.visa.apllyMenber.length; i++) {
-      if (this.$store.state.visa.apllyMenber[i].check == true) {
-        this.clientList.push(this.$store.state.visa.apllyMenber[i])
+    for (var i=0; i<this.$store.state.visa.insMenber.length; i++) {
+      if (this.$store.state.visa.insMenber[i].icheck == true) {
+        this.insMenber.push(this.$store.state.visa.insMenber[i])
       }
     }
-    
   },
   data:function(){
     return{
+      startDate:new Date(),
+      initialDate:new Date(),
       insCheck:this.$store.state.visa.insCheck,
-      clientList:[],
+      clientList:this.$store.state.visa.insMenber,
       pageInfo:this.$store.state.visa.orderInfo,
-      
-      
-      insList:[{'name':'王碧池','e_name':'Beach Wang','idnum':'420020185556541213','price':'69'},{'name':'晴明','e_name':'Se Me','idnum':'210555191105041213','price':'69'}],
-      creater:{'name':'夏树','phone':'13566661055','email':'821548453@qq.com'}
+      insMenber:[],
+      insAppInfo:this.$store.state.visa.insApplyPerson
     }
   },
   methods:{    
     insuranceCheck:function(){
       this.insCheck = !this.insCheck
       this.$store.commit('visaOrder_insCheck',this.insCheck)
-    }    
+    },
+    openDatepicker:function(){
+      this.$refs.datepicker.open();
+    },
+    dateConfirm:function(t){
+      var m = t.getMonth()+1
+      this.pageInfo.estimated_date = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+    }
   },
   watch:{
     pageInfo:{

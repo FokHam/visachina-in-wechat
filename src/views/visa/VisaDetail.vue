@@ -105,6 +105,7 @@ export default{
   created: function () {
     Indicator.close();
     window.onscroll = function(){
+      if (document.title != '签证详情') {return false}
       var tabDistans = document.body.scrollTop;
       if (tabDistans >= 400) {
         document.getElementById('contabs').className = 'fixed';

@@ -13,26 +13,9 @@
         <input type="text" v-model="clienttype" readonly placeholder="用于接收签证资料">
       </div>
     </div>
-    <div class="item select">
-      <span>出生日期</span>
-      <div class="ipt" @click="openDatepicker">
-        <input type="text" v-model="birthday" readonly placeholder="与证件保持一致">
-      </div> 
-    </div>
-
   </div>
   <div class="tips">领馆规定：儿童按照成人价收取费用</div>
-  <div class="save" @click="saveClient">保存</div>
-  <mt-datetime-picker
-    ref="datepicker"
-    type="date"
-    :startDate="startDate"
-    v-model="initialDate"
-    year-format="{value} 年"
-    month-format="{value} 月"
-    date-format="{value} 日"
-    @confirm="dateConfirm">
-  </mt-datetime-picker>
+  <div class="save" @click="saveClient">保存</div>  
   <mt-popup
     v-model="popupVisible"
     position="bottom"
@@ -45,7 +28,6 @@
 
 <script>
 import { Popup } from 'mint-ui'
-import { DatetimePicker } from 'mint-ui'
 import { Picker } from 'mint-ui'
 import { Toast } from 'mint-ui'
 export default {
@@ -56,8 +38,6 @@ export default {
   data:function(){
     return{
       editId:this.$route.params.id, 
-      startDate:new Date('1930','0','1'),
-      initialDate:new Date(),
       popupVisible:false,
       typeList:[
         {
@@ -65,27 +45,18 @@ export default {
           textAlign: 'center'
         }],
       clientname:'',
-      clienttype:'',
-      birthday:''
+      clienttype:''
     }
   },
   methods:{
     getEditData:function(){
       if (this.editId != -1) {
         this.clientname = this.$store.state.visa.apllyMenber[this.editId].name
-        this.clienttype = this.$store.state.visa.apllyMenber[this.editId].type
-        this.birthday = this.$store.state.visa.apllyMenber[this.editId].birthday
+        this.clienttype = this.$store.state.visa.apllyMenber[this.editId].type        
         var dt = this.$store.state.visa.apllyMenber[this.editId].birthday
         dt = dt.split('-')
         this.initialDate = new Date(dt[0],dt[1]-1,dt[2])
       }
-    },
-    openDatepicker:function(){
-      this.$refs.datepicker.open();
-    },
-    dateConfirm:function(t){
-      var m = t.getMonth()+1
-      this.birthday = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
     openSelect:function(){
       this.popupVisible = !this.popupVisible
@@ -94,17 +65,16 @@ export default {
       this.clienttype = values.toString()
     },
     saveClient:function(){
-      if (this.clientname != '' && this.clienttype != '' && this.birthday != '') {
+      if (this.clientname != '' && this.clienttype != '') {
         if (this.editId == -1) {
-          var c_data = {'check':true,'name':this.clientname,'birthday':this.birthday,'type':this.clienttype,'idnum':''}
+          var c_data = {'check':true,'name':this.clientname,'birthday':this.birthday,'':this.clienttype,'idnum':''}
           this.$store.commit('visaOrder_apllyMenber_add',c_data)
           history.go(-1)
         }else {
           this.$store.commit('visaOrder_apllyMenber_edit',{
             id:this.editId,
             name:this.clientname,
-            type:this.clienttype,
-            birth:this.birthday
+            type:this.clienttype
           })
           history.go(-1)
         }

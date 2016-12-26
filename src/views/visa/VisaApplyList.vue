@@ -28,7 +28,7 @@ export default {
     Indicator.open('加载中...');
   },
   created: function () {
-    Indicator.close();    
+    Indicator.close();  
   },
   data:function(){
     return{
@@ -38,9 +38,16 @@ export default {
   methods:{
     checkOne:function(n){
       this.contactData[n].check = !this.contactData[n].check
+      var scrData = []
+      for (var i=0; i<this.contactData.length; i++) {
+        if (this.contactData[i].check == true) {
+          scrData.push(this.contactData[i])
+        }
+      }
+      this.$store.commit('visaOrder_insMenber_set',scrData)     
     },
     confirm:function(){
-      this.$store.commit('visaOrder_apllyMenber',this.contactData)
+      this.$store.commit('visaOrder_apllyMenber',this.contactData)      
       history.go(-1)
     }
   }
