@@ -36,6 +36,7 @@ abbr,acronym {
   font-variant:normal;
 }
 sup {
+  font-size: 0.6rem;
   vertical-align:text-top;
 }
 sub {
