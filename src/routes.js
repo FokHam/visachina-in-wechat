@@ -10,6 +10,7 @@ import InsuranceSpecific from './views/insurance/InsuranceSpecific'
 import InsuranceCreateOrder from './views/insurance/InsuranceCreateOrder'
 import WifiList from './views/wifi/WifiList'
 import HotelList from './views/hotel/HotelList'
+import HotelDetail from './views/hotel/HotelDetail'
 
 var routes = [{
   path: "/",
@@ -47,6 +48,9 @@ var routes = [{
 },{
   path: "/hotel",
   component: HotelList
+},{
+  path: "/hotelDetail/:id",
+  component: HotelDetail
 }];
 
 export default routes
