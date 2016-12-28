@@ -14,7 +14,12 @@ import InsuranceList from './views/insurance/InsuranceList'
 import InsuranceDetail from './views/insurance/InsuranceDetail'
 import InsuranceSpecific from './views/insurance/InsuranceSpecific'
 import InsuranceCreateOrder from './views/insurance/InsuranceCreateOrder'
+import WifiIndex from './views/wifi/WifiIndex'
+import WifiHelp from './views/wifi/WifiHelp'
 import WifiList from './views/wifi/WifiList'
+import WifiDetail from './views/wifi/WifiDetail'
+import WifiCounter from './views/wifi/WifiCounter'
+import WifiOrder from './views/wifi/WifiOrder'
 import HotelList from './views/hotel/HotelList'
 
 var routes = [{
@@ -67,7 +72,22 @@ var routes = [{
   component: InsuranceCreateOrder
 },{
   path: "/wifi",
+  component: WifiIndex
+},{
+  path: "/wifiHelp",
+  component: WifiHelp
+},{
+  path: "/wifiList/:country",
   component: WifiList
+},{
+  path: "/wifiDetail/:id",
+  component: WifiDetail
+},{
+  path: "/wifiCounter/:id",
+  component: WifiCounter
+},{
+  path: "/wifiOrder/:id",
+  component: WifiOrder
 },{
   path: "/hotel",
   component: HotelList

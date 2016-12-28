@@ -59,6 +59,7 @@ a{text-decoration: none !important;color: #333333;}
 html {
   font-size:17.12px;
 }
+img{display: -webkit-box;}
 @media only screen and (min-width:321px) {html{font-size: 17.12px!important;}}
 @media only screen and (min-width:341px) {html{font-size: 18.19px!important;}}
 @media only screen and (min-width:361px) {html{font-size: 19.25px!important;}}

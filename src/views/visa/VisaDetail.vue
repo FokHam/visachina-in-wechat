@@ -85,7 +85,7 @@
     </div>
     <div class="booking">
       <div class="addfev">收藏</div>
-      <div class="bookbtn"><router-link :to="'/visaOrder/'+$route.params.id">立即预定</div>
+      <div class="bookbtn"><router-link :to="'/visaOrder/'+$route.params.id">立即预定</router-link></div>
     </div>
     <email :isshow="emailDis" @closePage="closeSend"></email>
   </div>
