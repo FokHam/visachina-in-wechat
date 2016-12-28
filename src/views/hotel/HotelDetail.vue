@@ -37,7 +37,7 @@
       </div>
       <div class="choice-item">
         <i class="icon icon-people"></i>
-        <p class="choice-detail">共2间，适合2人</p>
+        <router-link to="/hotelRoomSelect" class="choice-detail">共2间，适合2人</router-link>
         <i class="icon-more"></i>
       </div>
     </div>

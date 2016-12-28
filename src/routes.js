@@ -13,6 +13,7 @@ import HotelList from './views/hotel/HotelList'
 import HotelDetail from './views/hotel/HotelDetail'
 import HotelIntro from './views/hotel/HotelIntro'
 import HotelForm from './views/hotel/HotelForm'
+import HotelRoomSelect from './views/hotel/HotelRoomSelect'
 
 var routes = [{
   path: "/",
@@ -59,6 +60,9 @@ var routes = [{
 },{
   path: "/hotelForm/:id",
   component: HotelForm
+},{
+  path: "/hotelRoomSelect",
+  component: HotelRoomSelect
 }];
 
 export default routes
