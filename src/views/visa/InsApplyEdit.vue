@@ -9,8 +9,11 @@
     </div>
     <div class="item">
       <span>身份证号</span>
-      <div class="ipt">
-        <input type="text" v-model="clientid" placeholder="与证件保持一致">
+      <div class="ipt" @click="openSelect">
+        <input type="text" v-model="idType" readonly placeholder="选择证件类型">
+      </div> 
+      <div class="idipt">
+        <input type="text" v-model="clientid" placeholder="输入证件号码">
       </div>      
     </div>    
     <div class="item select">
@@ -32,7 +35,14 @@
     month-format="{value} 月"
     date-format="{value} 日"
     @confirm="dateConfirm">
-  </mt-datetime-picker> 
+  </mt-datetime-picker>
+  <mt-popup
+    v-model="popupVisible"
+    position="bottom"
+    pop-transition="popup-fade">
+    <div class="closepop" @click="openSelect">完成</div>
+    <mt-picker :slots="typeList" @change="onTypeChange"></mt-picker>
+  </mt-popup>
 </div>
 </template>
 
@@ -50,8 +60,15 @@ export default {
       startDate:new Date('1930','0','1'),
       initialDate:new Date(),      
       clientename:'',
+      idType:'',
       clientid:'',
-      birthday:''
+      birthday:'',
+      popupVisible:false,
+      typeList:[
+        {
+          values: ['','身份证','军人证','护照号'],
+          textAlign: 'center'
+        }],
     }
   },
   methods:{
@@ -72,13 +89,20 @@ export default {
       var m = t.getMonth()+1
       this.birthday = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
+    openSelect:function(){
+      this.popupVisible = !this.popupVisible
+    },
+    onTypeChange:function(picker, values){
+      this.idType = values.toString()
+    },
     saveClient:function(){
-      if (this.clientename != '' && this.clientid != '' && this.birthday != '') {
+      if (this.clientename != '' && this.clientid != '' && this.birthday != '' && this.idType != '') {
         this.$store.commit('visaOrder_insMenber_edit',{
           id:this.editId,
           ename:this.clientename,
           idnum:this.clientid,
-          birth:this.birthday
+          birth:this.birthday,
+          idType:this.idType
         })
         history.go(-1)
         
@@ -111,6 +135,15 @@ export default {
         input{
           height: 60px;border: none;background: #fff;width: 100%;
           font-size: 0.7rem;color: #666666;text-align: right;
+        }
+      }
+      .idipt{
+        position: absolute;
+        bottom: 0;
+        height: 20px;width: 200px;
+        input{
+          height: 20px;display: block;width: 200px;
+          border: none;font-size: 12px;
         }
       }
       span{

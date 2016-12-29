@@ -15,10 +15,13 @@
     </div>
     <div class="item">
       <span>身份证号</span>
-      <div class="ipt">
-        <input type="text" v-model="pageInfo.idnum" maxlength="18" placeholder="与证件保持一致">
+      <div class="ipt" @click="openSelect">
+        <input type="text" v-model="pageInfo.idType" readonly placeholder="选择证件类型">
+      </div> 
+      <div class="idipt">
+        <input type="text" v-model="pageInfo.idnum" placeholder="输入证件号码">
       </div>      
-    </div>    
+    </div>     
     <div class="item select">
       <span>出生日期</span>
       <div class="ipt">
@@ -40,7 +43,13 @@
 
   </div>
   <div class="save" @click="saveClient">保存</div>
-  
+  <mt-popup
+    v-model="popupVisible"
+    position="bottom"
+    pop-transition="popup-fade">
+    <div class="closepop" @click="openSelect">完成</div>
+    <mt-picker :slots="typeList" @change="onTypeChange"></mt-picker>
+  </mt-popup>
 </div>
 </template>
 
@@ -58,6 +67,12 @@ export default {
   },
   data:function(){
     return{
+      popupVisible:false,
+      typeList:[
+        {
+          values: ['','身份证','军人证','护照号'],
+          textAlign: 'center'
+        }],
       pageInfo:[]
     }
   },
@@ -76,7 +91,13 @@ export default {
 　　　deep:true
     }
   },
-  methods:{    
+  methods:{
+    openSelect:function(){
+      this.popupVisible = !this.popupVisible
+    },
+    onTypeChange:function(picker, values){
+      this.pageInfo.idType = values.toString()
+    }, 
     saveClient:function(){
       var idreg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,emailreg = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,4}){1,3})$/g,phonereg=/^1\d{10}$/g;
       if (this.pageInfo.name != '' && this.pageInfo.ename != '' && this.pageInfo.idnum != '' && this.pageInfo.phone != '' && this.pageInfo.email != '' ) {
@@ -125,6 +146,15 @@ export default {
           font-size: 0.7rem;color: #666666;text-align: right;
         }
       }
+      .idipt{
+        position: absolute;
+        bottom: 0;
+        height: 20px;width: 200px;
+        input{
+          height: 20px;display: block;width: 200px;
+          border: none;font-size: 12px;
+        }
+      }
       span{
         font-size: 0.7rem;
         height: 60px;line-height: 60px;
@@ -140,6 +170,10 @@ export default {
     text-align: center;background-color: #008be4;
     border-radius: 4px;
   }
-  
+  .mint-popup-bottom{width: 100%;}
+  .closepop{
+    font-size: 0.7rem;line-height: 30px;border-bottom: 1px solid #ccc;
+    padding: 0 10px;color: #008BE4;text-align: right;
+  }
 }
 </style>
