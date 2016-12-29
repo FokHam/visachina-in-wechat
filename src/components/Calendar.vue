@@ -1,6 +1,6 @@
 <template>
   <div class="calendar-wrapper">
-    <div @click="confirm" class="confirm-btn">确定按钮</div>
+    <div @click="confirm" class="qdan">确定按钮</div>
     <div class="type-selecter">
       <div @click="selectType = 1" :class="{ active: selectType === 1 }" class="type-box">
         <p class="title">{{ type1 + "日期" }}</p>
@@ -186,7 +186,7 @@
 </script>
 
 <style lang="less" scoped>
-  .confirm-btn {
+  .qdan {
     position: fixed;
     background: #fff;
     top: 0;

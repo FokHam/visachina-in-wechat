@@ -1,12 +1,21 @@
 <template>
   <div class="create-order">
     <p class="total">保费：<span class="price">¥222</span></p>
-    <router-link class="button" :to="'/insuranceCreateOrder/' + $route.params.id">立即投保</router-link>
+    <router-link
+      @click="goCreateOrder"
+      class="button"
+      :to="'/insuranceCreateOrder/' + $route.params.id">
+    立即投保</router-link>
   </div>
 </template>
 
 <script>
   export default {
+    methods: {
+      goCreateOrder () {
+        this.$emit("goCreateOrder");
+      }
+    }
   }
 </script>
 
