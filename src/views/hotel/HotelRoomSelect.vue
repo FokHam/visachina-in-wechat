@@ -1,7 +1,7 @@
 <template>
   <div class="room-select">
     <div class="item room-num"
-      @click="selecting = true; selectingType = 'room'">
+      @click="doSelect('room')">
       <div class="label">
         <p>房间数量</p>
         <p class="most">最多可选8间</p>
@@ -13,7 +13,7 @@
       <span class="label">每间人数</span>
     </div>
     <div class="item"
-      @click="selecting = true; selectingType = 'adult'">
+      @click="doSelect('adult')">
       <span class="label">成人数</span>
       <span class="detail">{{ "每间" + adultNum + "人" }}<i class="icon-pull-right"></i></span>
     </div>
@@ -22,10 +22,17 @@
       <span class="label">儿童数</span>
       <span class="detail">{{ "每间" + childNum + "人" }}<i class="icon-pull-right"></i></span>
     </div>
+    <div class="item"
+      v-for="(age, index) in childAge"
+      @click="doSelect('childAge', index)">
+      <span class="label">{{ "儿童" + index }}</span>
+      <span class="detail">{{ (age === 0 ? ("小于1") : age) + "岁" }}<i class="icon-pull-right"></i></span>
+    </div>
     <p class="people-desc">最多可入住总人数为<span>{{ adultNum + "成人" + childNum + "儿童" }}</span></p>
-    <p class="button">确定</p>
+    <router-link :to="'/hotelDetail/' + productId" class="button">确定</router-link>
     <select-pop v-if="selecting"
       :type="selectingType"
+      :index="selectingIndex"
       @hide="selecting = false"
     ></select-pop>
   </div>
@@ -38,7 +45,8 @@
     data () {
       return {
         selecting: false,
-        selectingType: ""
+        selectingType: "",
+        selectingIndex: 0
       }
     },
     components: {
@@ -53,6 +61,19 @@
       },
       roomNum () {
         return this.$store.state.hotel.roomNum;
+      },
+      childAge () {
+        return this.$store.state.hotel.childAge;
+      },
+      productId () {
+        return this.$store.state.hotel.productId;
+      }
+    },
+    methods: {
+      doSelect (type, index) {
+        this.selecting = true;
+        this.selectingType = type;
+        this.selectingIndex = index;
       }
     }
   };
@@ -115,6 +136,7 @@
     }
   }
   .button {
+    display: block;
     margin: 1rem 0.5rem;
     padding: 0.5rem;
     font-size: 0.9rem;

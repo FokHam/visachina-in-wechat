@@ -19,7 +19,7 @@
       <div class="item">
         <span>{{ hDetail.address }}</span>
         <span class="location">{{ hDetail.city }}</span>
-        <span class="more">地图 <i class="icon-more"></i></span>
+        <span class="more">地图<i class="icon-more"></i></span>
       </div>
       <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
         <span>酒店简介</span>
@@ -37,7 +37,7 @@
       </div>
       <div class="choice-item">
         <i class="icon icon-people"></i>
-        <router-link to="/hotelRoomSelect" class="choice-detail">共2间，适合2人</router-link>
+        <router-link to="/hotelRoomSelect" class="choice-detail">共{{ roomNum }}间 每间<br>{{ adultNum }}成人 {{ childNum }}儿童</router-link>
         <i class="icon-more"></i>
       </div>
     </div>
@@ -86,6 +86,7 @@
     data () {
       return {
         hDetail: {
+          id: 11,
           cname: "清迈皇家沛纳海酒店",
           ename: "Royal Panerai Hotel Chiangmai",
           star: 5,
@@ -127,13 +128,6 @@
             price: 1299
           }
         ],
-        orderInfo: {
-          startDate: "",
-          endDate: "",
-          roomNum: 1,
-          adults: 1,
-          children: 2
-        },
         viewingRoomTypeNum: 0,
         viewing: false
       }
@@ -146,10 +140,24 @@
           obj = this.roomType[num];
         }
         return obj;
+      },
+      adultNum () {
+        return this.$store.state.hotel.adultNum;
+      },
+      childNum () {
+        return this.$store.state.hotel.childNum;
+      },
+      roomNum () {
+        return this.$store.state.hotel.roomNum;
       }
     },
     components: {
       roomDetail
+    },
+    mounted () {
+      this.$store.commit("setPid", {
+        id: this.hDetail.id
+      });
     }
   }
 </script>
