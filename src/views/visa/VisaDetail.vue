@@ -85,9 +85,9 @@
     </div>
     <div class="booking">
       <div class="addfev">收藏</div>
-      <div class="bookbtn"><router-link :to="'/visaOrder/'+$route.params.id">立即预定</div>
+      <div class="bookbtn"><router-link :to="'/visaOrder/'+$route.params.id">立即预定</router-link></div>
     </div>
-    <email :isshow="emailDis" :onum="onum" @closePage="closeSend"></email>
+    <email :isshow="emailDis" @closePage="closeSend"></email>
   </div>
   
 </template>
@@ -105,6 +105,7 @@ export default{
   created: function () {
     Indicator.close();
     window.onscroll = function(){
+      if (document.title != '签证详情') {return false}
       var tabDistans = document.body.scrollTop;
       if (tabDistans >= 400) {
         document.getElementById('contabs').className = 'fixed';

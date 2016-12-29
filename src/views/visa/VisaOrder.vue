@@ -5,8 +5,8 @@
     <div class="desc">加急办理2个工作日出签，受理全国护照除新
 疆、西藏外、广州送签</div>
     <div class="estimated">
-      <div class="inner">
-        <span v-if="estimatedDate != ''">{{estimatedDate}}<i>出行</i></span>
+      <div class="inner" @click="openDatepicker">
+        <span v-if="pageInfo.estimated_date != ''">{{pageInfo.estimated_date}}<i>出行</i></span>
         <span v-else>预计什么时候出发？</span>
       </div>
     </div>
@@ -14,44 +14,44 @@
   <div class="clientname">
     <div class="item-hd">
       <div class="tit">申请人<i class="help">help</i></div>
-      <div class="addbtn">添加申请人</div>
+      <router-link class="addbtn" to="/VisaApplyList">添加申请人</router-link>
     </div>
     <div class="namelist" v-if="clientList.length != 0">
       <ul>
-        <li v-for="(item, index) in clientList" :class="{left:index % 2 == 0}"><span class="name">{{item.name}}</span><span class="type">{{item.status}}</span></li> 
+        <li v-for="(item, index) in clientList" :class="{left:index % 2 == 0}"><span class="name">{{item.name}}</span><span class="type">{{item.type}}</span></li> 
       </ul>
     </div>
   </div>
   <div class="contactinfo">
     <div class="name item">
       <span class="txt">联系人</span>
-      <span class="ipt"><input type="text" placeholder="请填写联系人姓名"></span>
+      <span class="ipt"><input v-model="pageInfo.contact_info.name" type="text" placeholder="请填写联系人姓名"></span>
     </div>
     <div class="phone item">
       <span class="txt">手机号</span>
-      <span class="ipt"><input type="text" placeholder="接收订单确认信息"></span>
+      <span class="ipt"><input v-model="pageInfo.contact_info.phone" type="text" placeholder="接收订单确认信息"></span>
     </div>
     <div class="email item">
       <span class="txt">邮&#12288;箱</span>
-      <span class="ipt"><input type="text" placeholder="请填写联系人邮箱"></span>
+      <span class="ipt"><input v-model="pageInfo.contact_info.email" type="text" placeholder="请填写联系人邮箱"></span>
     </div>
     <div class="icon"></div>
   </div>
   <div class="express">
     <div class="item-hd">
       <div class="tit">配送方式</div>
-      <div class="addbtn" v-if="adrInfo.length==0">添加配送方式</div>
-      <div class="delitype" v-else>快递（顺丰）</div>
+      <div class="addbtn" v-if="pageInfo.delevery_info.length==0">添加配送方式</div>
+      <div class="delitype" v-else>{{pageInfo.delevery_info.type}}（{{pageInfo.delevery_info.express}}）</div>
     </div>
-    <div class="addressinfo" v-if="adrInfo.length!=0">
+    <div class="addressinfo" v-if="pageInfo.delevery_info.length!=0">
       <div class="item">
         <span class="txt">收&#8194;货&#8194;人：</span>
-        <span class="name">{{adrInfo.name}}</span>
-        <span class="phone">{{adrInfo.phone}}</span>
+        <span class="name">{{pageInfo.delevery_info.name}}</span>
+        <span class="phone">{{pageInfo.delevery_info.phone}}</span>
       </div>
       <div class="item">
         <span class="txt">收货地址：</span>
-        <span class="adrs">{{adrInfo.address}}</span>
+        <span class="adrs">{{pageInfo.delevery_info.province + pageInfo.delevery_info.city + pageInfo.delevery_info.area + pageInfo.delevery_info.address}}</span>
       </div>
     </div>
   </div>
@@ -69,53 +69,69 @@
           <i class="type">[一年多次]</i>
         </div>
       </div>
-      <div class="ins_client">
+      <div class="ins_client" v-if="insCheck">
         <div class="item-hd">
           <div class="i_tit">被保人<i class="help">help</i></div>
-          <div class="addbtn" v-if="insList.length == 0"></div>
-          <div class="editbtn" v-else></div>
+          <router-link class="addbtn" :class="{editbtn:insMenber.length != 0}" to="/InsApplyList"></router-link>          
         </div>
-        <div class="list" v-if="insList.length != 0">
+        <div class="list" v-if="insMenber.length != 0">
           <ul>
-            <li v-for="item in insList">
+            <li v-for="item in insMenber">
                 <div class="info">
                   <div class="name">{{item.name}}<span>{{item.e_name}}</span></div>
                   <div class="idnum">身份证：{{item.idnum}}</div>
                 </div>
-                <div class="price">￥{{item.price}}</div>              
+                <div class="price">￥69</div>              
             </li>
             
           </ul>
         </div>
       </div>
-      <div class="ins_creater">
+      <div class="ins_creater" v-if="insCheck">
         <div class="item-hd">
           <div class="i_tit">投保人<i class="help">help</i></div>
-          <div class="addbtn" v-if="creater.length == 0"></div>
-          <div class="editbtn" v-else></div>
+          <router-link class="addbtn" :class="{editbtn:insAppInfo.name  != ''}" to="/InsApplyPerson"></router-link>
         </div>
-        <div class="info" v-if="creater.length != 0">
-          <div class="name">{{creater.name}}<span class="phone">{{creater.phone}}</span></div>
-          <div class="email">{{creater.email}}</div>
+        <div class="info" v-if="insAppInfo.name != ''">
+          <div class="name">{{insAppInfo.name}}<span class="phone">{{insAppInfo.phone}}</span></div>
+          <div class="email">{{insAppInfo.email}}</div>
         </div>
       </div>
-      <div class="ins_benefit">
+      <div class="ins_benefit" v-if="insCheck">
         <div class="item-hd">
           <div class="i_tit">受益人<i class="help">help</i></div>
           <div class="txt">法定继承人</div>
         </div>
       </div>
-
-
+      <div class="ins_destination" v-if="insCheck">
+        <div class="item-hd">
+          <div class="i_tit">目的地</div>
+          <div class="dest">冰岛</div>
+          <div class="editbtn_p"></div>
+        </div>
+      </div>
     </div>
-
-
   </div>
+  <div class="creatorder">
+    <div class="price">订单金额：<span>￥1250</span></div>
+    <div class="creatBtn">提交订单</div>
+  </div>
+  <mt-datetime-picker
+    ref="datepicker"
+    type="date"
+    :startDate="startDate"
+    v-model="initialDate"
+    year-format="{value} 年"
+    month-format="{value} 月"
+    date-format="{value} 日"
+    @confirm="dateConfirm">
+  </mt-datetime-picker> 
 </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
+import { DatetimePicker } from 'mint-ui'
 export default{
   name: 'visa-order',
   beforeCreate:function(){
@@ -124,24 +140,43 @@ export default{
   },
   created: function () {
     Indicator.close();
-    
+    for (var i=0; i<this.$store.state.visa.insMenber.length; i++) {
+      if (this.$store.state.visa.insMenber[i].icheck == true) {
+        this.insMenber.push(this.$store.state.visa.insMenber[i])
+      }
+    }
   },
   data:function(){
     return{
-      insCheck:false,
-
-      estimatedDate:'',
-      clientList:[{'name':'山口百惠','status':'退休人员'},{'name':'织田信长','status':'自由职业'},{'name':'王二麻子','status':'在职'}],
-      adrInfo:{'express':'顺丰','name':'七七','phone':'13800138000','address':'广东省深圳市罗湖区海外联谊大厦广东省深圳市罗湖区海外联谊大厦'},
-      insList:[{'name':'王碧池','e_name':'Beach Wang','idnum':'420020185556541213','price':'69'},{'name':'晴明','e_name':'Se Me','idnum':'210555191105041213','price':'69'}],
-      creater:{'name':'夏树','phone':'13566661055','email':'821548453@qq.com'}
+      startDate:new Date(),
+      initialDate:new Date(),
+      insCheck:this.$store.state.visa.insCheck,
+      clientList:this.$store.state.visa.insMenber,
+      pageInfo:this.$store.state.visa.orderInfo,
+      insMenber:[],
+      insAppInfo:this.$store.state.visa.insApplyPerson
     }
   },
   methods:{    
     insuranceCheck:function(){
       this.insCheck = !this.insCheck
+      this.$store.commit('visaOrder_insCheck',this.insCheck)
+    },
+    openDatepicker:function(){
+      this.$refs.datepicker.open();
+    },
+    dateConfirm:function(t){
+      var m = t.getMonth()+1
+      this.pageInfo.estimated_date = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     }
-    
+  },
+  watch:{
+    pageInfo:{
+　　　handler(){
+        console.log(JSON.stringify(this.$store.state.visa.orderInfo))
+　　　},
+　　　deep:true
+　　}
   }
 }
 </script>
@@ -200,7 +235,7 @@ export default{
     .item-hd{
       overflow: hidden;
       .tit{float: left;font-size: 0.8rem;}
-      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;}
+      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
     }
     .namelist{ 
     padding-top: 10px; 
@@ -258,7 +293,7 @@ export default{
     .item-hd{
       overflow: hidden;
       .tit{float: left;font-size: 0.7rem;}
-      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;}
+      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
       .delitype{float: right;font-size: 0.7rem;color: #999999;}
     }
     .addressinfo{
@@ -275,7 +310,10 @@ export default{
     }
   }
   .recommend{
-    background: #fff;padding-left: 10px;
+    background: #fff;padding-left: 10px;padding-bottom: 30px;
+    background-image: url('/static/images/visa/borderbg.png');
+    background-repeat:repeat-x ;background-position:bottom;
+    background-size: 10px;
     .title{
       line-height: 40px;font-size: 0.8rem;
       border-bottom: 1px solid #CCCCCC;
@@ -344,7 +382,7 @@ export default{
           background-image: url('/static/images/visa/icon-add.png');
           background-size: 17px;
           background-repeat: no-repeat;
-          background-position:right center;
+          background-position:right center;display: block;
         }
         .editbtn{
           float: right;
@@ -354,8 +392,17 @@ export default{
           background-repeat: no-repeat;
           background-position:right center;
         }
+        .editbtn_p{
+          float: right;
+          height: 30px;width: 30px;
+          background-image: url('/static/images/visa/icon-edit-p.png');
+          background-size: 17px;
+          background-repeat: no-repeat;
+          background-position:right center;
+        }
         .txt{color: #999999;font-size: 0.7rem;line-height: 30px;
-        padding-left: 10px;}
+        padding-left: 10px; float: left;}
+        .dest{font-size: 0.7rem;float: left;line-height: 30px;padding-left: 10px;}
       }
       .ins_client{
         padding-bottom: 10px;
@@ -389,6 +436,7 @@ export default{
         }
       }
       .ins_creater{
+        padding-bottom: 10px;
         .info{
           margin-left: 5px;
           padding: 10px 0px;
@@ -405,10 +453,27 @@ export default{
           .email{font-size: 0.7rem;color: #666666;line-height: 20px;}
         }
       }
-
-
+      .ins_benefit,.ins_destination{padding-bottom: 10px;}
     }
   }
-  
+  .creatorder{
+    padding:10px;height: 30px;
+    background-color: #fff;
+    overflow: hidden;
+    margin-top: 20px;
+    .price{
+      float: left;
+      line-height: 30px;
+      font-size: 0.7rem;
+      span{
+        color: #F55301;font-size: 0.8rem;
+      }
+    }
+    .creatBtn{
+      background-color: #008BE4;padding: 0 20px;
+      line-height: 30px;text-align: center;border-radius: 4px;
+      font-size: 0.7rem;color: #fff;display: inline-block;float: right;
+    }
+  }
 }
 </style>

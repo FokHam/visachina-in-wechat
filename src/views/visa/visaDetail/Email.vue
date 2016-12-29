@@ -25,7 +25,7 @@
 import { Toast } from 'mint-ui'
 
 export default {
-  props: ['isshow','onum'],
+  props: ['isshow'],
   data:function(){
     return{
       sendType:0,
