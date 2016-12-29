@@ -3,7 +3,7 @@ const state = {
   apllyMenber:[{"check":false,"icheck":false,"name":"张三","birthday":"2016-1-1","type":"自由职业","idnum":"202525198703225658"},{"check":false,"icheck":false,"name":"李四","birthday":"2016-1-1","type":"退休人员","idnum":"420525198703225688"},{"check":false,"icheck":false,"name":"王五","birthday":"2016-1-1","type":"在职","idnum":"352525198703227775"}],
   insMenber:[],
   insChooseMenber:[],
-  insApplyPerson:{"name":"","ename":"","idnum":"","birthday":"","phone":"","email":""},
+  insApplyPerson:{"name":"","ename":"","idType":"","idnum":"","birthday":"","phone":"","email":""},
   orderInfo:{
     "estimated_date":"",
     "contact_info":{"name":"","phone":"","email":""},
@@ -32,6 +32,7 @@ const mutations = {
     state.apllyMenber[payload.id].ename = payload.ename
     state.apllyMenber[payload.id].idnum = payload.idnum
     state.apllyMenber[payload.id].birthday = payload.birth
+    state.apllyMenber[payload.id].idType = payload.idType
   },
   visaOrder_applyer_save (state, payload) {    
     state.insApplyPerson = payload
