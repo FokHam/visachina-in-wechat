@@ -97,8 +97,7 @@ export default {
     Indicator.open('加载中...');
   },
   created: function () {
-    Indicator.close();
-
+    Indicator.close()    
   },
   data:function(){
     return {
@@ -295,4 +294,5 @@ export default {
       }
     }
   }
+  
 </style>

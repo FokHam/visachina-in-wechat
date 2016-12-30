@@ -7,17 +7,19 @@
       <router-link to="/wifi">wifi</router-link>
       <router-link to="/hotel">酒店</router-link>
     </nav>
+    <suspend-ball></suspend-ball>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import Home from './views/home/Home'
-
+import SuspendBall from './components/SuspendBall'
 export default {
   name: 'app',
   components: {
-    Home
+    Home,
+    SuspendBall
   }
 }
 </script>

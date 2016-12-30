@@ -25,6 +25,7 @@ import HotelDetail from './views/hotel/HotelDetail'
 import HotelIntro from './views/hotel/HotelIntro'
 import HotelForm from './views/hotel/HotelForm'
 import HotelRoomSelect from './views/hotel/HotelRoomSelect'
+import UserCenter from './views/usercenter/UserCenter'
 
 var routes = [{
   path: "/",
@@ -107,6 +108,9 @@ var routes = [{
 },{
   path: "/hotelRoomSelect",
   component: HotelRoomSelect
+},{
+  path: "/userCenter",
+  component: UserCenter
 }];
 
 export default routes
