@@ -1,5 +1,7 @@
 <template>
-  <div class="user-center" id="user-center">aaa</div>
+<div class="user-center" id="user-center">
+个人中心
+</div>
 </template>
 
 <script>
