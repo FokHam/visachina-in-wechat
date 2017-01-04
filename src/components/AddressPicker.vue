@@ -1,5 +1,11 @@
 <template>
+<div class="addresscom">
+  <div class="backshadow" @click="close"></div>
+  <div class="addresspicker">
+    <div class="confirm" @click="confirm">完成</div>
     <mt-picker ref="picker" :slots="addressSlots" :className="'address-slot'" @change="addressSlotReset"></mt-picker>
+  </div>
+</div>   
 </template>
 
 <script>
@@ -12,7 +18,7 @@
     },
     methods: {
       addressSlotReset(picker, v) {
-        console.log(v);
+        this.selectedAddress = v;
         let that = this;
         let getAreaId = function (i) {
           let index = picker.getSlotValues(i).indexOf(v[i]);
@@ -36,10 +42,16 @@
               }
             }
             picker.setSlotValues(i, that.addressList[i].map(function (obj) {
-              return obj.name;
+              return obj.name;              
             }));
           }
         }
+      },
+      confirm:function(){
+        this.$emit('confirm',this.selectedAddress)
+      },
+      close:function(){
+        this.$emit('close')
       }
     },
     data() {
@@ -73,19 +85,43 @@
             flex: 1,
             className: "address-slot"
           }
-        ]
+        ],
+        selectedAddress:[]
       };
     }
   }
 </script>
 
 <style lang="less" scoped>
-  .picker {
+  .addresscom{
     position: fixed;
-    bottom: 0;
-    left: 0;
+    height: 100%;
     width: 100%;
+    top: 0;
+  }
+  .backshadow{
+    background:rgba(0,0,0,0.5);
+    position: absolute;
+    top: 0;
+    width: 100%;height: 100%;
+
+  }
+  .addresspicker{
+    position: absolute;
+    bottom: 0;
+    left: 0;width: 100%;
     background: #fff;
+    .confirm{
+      padding: 0 20px;
+      line-height: 40px;
+      text-align: right;
+      color: #008BE4;
+      font-size: 0.7rem;
+      border-bottom: 1px solid #eeeeee;
+    }
+  }
+  .picker {    
+    width: 100%;    
   }
   .address-slot {
     font-size: 0.5rem!important;

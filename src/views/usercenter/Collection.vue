@@ -198,9 +198,9 @@ export default{
               }
             }
             .funcbtn{
-              position: absolute;top: 12px;right: 10px;width: 18px;height: 15px;
-              background-image: url('/static/images/usercenter/icon-more.png');
-              background-size: 18px;background-repeat: no-repeat;
+              position: absolute;top: 12px;right: 10px;width: 18px;height: 18px;
+              background-image: url('/static/images/usercenter/icon-unfav.png');
+              background-size: 15px;background-repeat: no-repeat;
               background-position: center;
             }
             .price{

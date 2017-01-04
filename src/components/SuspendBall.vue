@@ -14,17 +14,15 @@
 <script>
 export default{
   created: function () {
-    this.screenHeight = window.screen.height
-    this.screenWidth = window.screen.width
   },
   data:function(){
     return{
       whichSide:'left',
       moveAni:false,
-      logoPositionX:0,
-      logoPositionY:500,
-      screenHeight:0,
-      screenWidth:0,
+      logoPositionX:window.screen.width-54,
+      logoPositionY:window.screen.height*0.6,
+      screenHeight:window.screen.height,
+      screenWidth:window.screen.width,
       navDis:false
     }
   },
@@ -34,7 +32,7 @@ export default{
       e.preventDefault()      
       var touchX = e.changedTouches[0].clientX
       var touchY = e.changedTouches[0].clientY
-      if (touchX>0) {
+      if (touchX >= 0) {
         if (touchX < this.screenWidth) {
           this.logoPositionX = touchX-27
         }else {
@@ -43,7 +41,7 @@ export default{
       }else {
         this.logoPositionX = 0
       }
-      if (touchY>0) {        
+      if (touchY >= 0) {        
         if (touchY < this.screenHeight) {
           this.logoPositionY = touchY-27
         }else {
