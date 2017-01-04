@@ -27,11 +27,12 @@
       </router-link>
     </div>
     <div class="hotel-choice">
-      <div class="choice-item">
+      <div class="choice-item"
+        @click="datePickOpen">
         <i class="icon icon-calendar"></i>
         <div class="choice-detail">
-          <p>12-02 <span>周五 入住</span></p>
-          <p>12-04 <span>周日 离店</span></p>
+          <p>{{ (this.startDate.getMonth() + 1) + "月" + this.startDate.getDate() + "日 " }}<span>周五 入住</span></p>
+          <p>{{ (this.endDate.getMonth() + 1) + "月" + this.endDate.getDate() + "日 " }}<span>周五 入住</span></p>
         </div>
         <i class="icon-more"></i>
       </div>
@@ -76,14 +77,28 @@
       v-if="viewing"
       @hide="viewing = false"
     ></room-detail>
+    <calendar
+      v-if="pickingDate"
+      :multipleDate="true"
+      :minDay="2"
+      :maxDay="30"
+      type1="入住"
+      type2="离店"
+      :day1="hotelState.startDate"
+      :day2="hotelState.endDate"
+      v-on:confirm="setDate"
+      ></calendar>
   </div>
 </template>
 
 <script>
   import roomDetail from "./HotelDetail/RoomDetail.vue"
+  import calendar from "../../components/Calendar.vue"
 
   export default {
     data () {
+      var today = new Date();
+
       return {
         hDetail: {
           id: 11,
@@ -129,7 +144,20 @@
           }
         ],
         viewingRoomTypeNum: 0,
-        viewing: false
+        viewing: false,
+        pickingDate: false
+      }
+    },
+    methods: {
+      datePickOpen () {
+        this.pickingDate = true;
+      },
+      setDate (day1, day2) {
+        this.pickingDate = false;
+        this.$store.commit("setHotelDate", {
+          day1: day1,
+          day2: day2
+        });
       }
     },
     computed: {
@@ -149,15 +177,23 @@
       },
       roomNum () {
         return this.$store.state.hotel.roomNum;
+      },
+      hotelState () {
+        return this.$store.state.hotel;
+      },
+      startDate () {
+        return this.$store.state.hotel.startDate || new Date();
+      },
+      endDate () {
+        return this.$store.state.hotel.endDate || new Date();
       }
     },
     components: {
-      roomDetail
+      roomDetail,
+      calendar
     },
     mounted () {
-      this.$store.commit("setPid", {
-        id: this.hDetail.id
-      });
+      
     }
   }
 </script>

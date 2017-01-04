@@ -56,7 +56,7 @@
   export default {
     props: {
       multipleDate: Boolean,
-      minDay: Number,
+      minDay: Number, //不得小于2
       maxDay: Number,
       day1: {
         type: Date,
@@ -73,7 +73,10 @@
         type: String,
         default: "第二个"
       },
-      pickType: Number
+      pickType: {
+        type: Number,
+        default: 1
+      }
     },
     data: function(){
       let now = new Date(),
@@ -176,10 +179,12 @@
         return this.$store.state.insurance.count;
       },
       startDate () {
-        return this.selected[0];
+        let d = this.selected[0];
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
       },
       endDate () {
-        return this.selected[1];
+        let d = this.selected[1];
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
       }
     }
   }
