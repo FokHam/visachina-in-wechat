@@ -12,13 +12,13 @@
   <div class="nav_order">
     <div class="tit">我的订单</div>
     <div class="list">
-      <a class="n1" href="">全部订单</a>
-      <a class="n2" href="">待付款</a>
-      <a class="n3" href="">退款/售后</a>
-      <a class="n4" href="">失效</a>
+      <router-link to="/orderList/1" class="n1">全部订单</router-link>
+      <router-link to="/orderList/2" class="n2">待付款</router-link>
+      <router-link to="/orderList/3" class="n3">退款/售后</router-link>
+      <router-link to="/orderList/4" class="n4">失效</router-link>
     </div>
   </div>
-  <div class="m_nav">    
+  <div class="m_nav">
     <router-link to="/commonInformation" class="l1">
       常用信息
       <span>旅客／地址／联系人</span>
@@ -44,19 +44,19 @@ export default{
     Indicator.open('加载中...')
   },
   created: function () {
-    Indicator.close()    
+    Indicator.close()
   },
   components: {
-    
+
   },
   data:function(){
     return{
-      
-      
+
+
     }
   },
   methods:{
-    
+
   }
 
 }
