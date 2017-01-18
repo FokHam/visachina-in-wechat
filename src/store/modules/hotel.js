@@ -6,7 +6,8 @@ const state = {
   adultNum: 2,
   childNum: 0,
   childAge: [],
-  roomNum: 1
+  roomNum: 1,
+  hotelDetail: {}
 };
 
 const mutations = {
@@ -23,7 +24,8 @@ const mutations = {
       adultNum: 2,
       childNum: 0,
       childAge: [],
-      roomNum: 1
+      roomNum: 1,
+      hotelDetail: {}
     };
   },
   setNum (state, payload) {
@@ -46,6 +48,9 @@ const mutations = {
   },
   setPid (state, payload) {
     state.productId = payload.id;
+  },
+  setHotelDetail (state, payload) {
+    state.hotelDetail = payload.hotelDetail;
   }
 };
 
