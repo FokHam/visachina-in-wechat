@@ -1,19 +1,19 @@
 <template>
   <div class="insurance-list">
-    <router-link v-for="item in list" :to="'/insuranceDetail/' + item.id">
+    <router-link v-for="(item, index) in list" :to="'/insuranceDetail/' + item.id">
       <div class="insurance-item">
         <div class="img-wrapper">
-          <img :src="item.imgPath" alt="保险产品图片">
-          <p>{{ item.name }}</p>
+          <img :src="imgPath[index]" alt="保险产品图片">
+          <p>{{ item.name }}{{ item.planName ? " - " + item.planName : "" }}</p>
           <div class="label-list">
             <span v-for="labelItem in item.label">{{ labelItem }}</span>
           </div>
         </div>
         <div class="info-wrapper clearfix">
           <div class="indemnity-list">
-            <div v-for="indemnityItem in item.indemnity" class="indemnity clearfix">
-              <span class="title">{{ indemnityItem.name }}</span>
-              <span class="amount">{{ indemnityItem.amount + "元" }}</span>
+            <div v-for="plan in item.plans" class="indemnity clearfix">
+              <span class="title">{{ plan.name }}</span>
+              <span class="amount">{{ plan.texts }}</span>
             </div>
           </div>
           <div class="price-box">
@@ -28,8 +28,37 @@
 
 <script>
 export default {
+  created () {
+    let url = "/api/insurance/list";
+    let send = { type: this.$route.params.type };
+    this.$http.get(url, { params: send }).then((response) => {
+      let body = JSON.parse(response.body);
+      console.log(JSON.parse(response.body));
+      if (body.status === 1) {
+        this.list = body.data.rows;
+      } else {
+        console.log("服务器错误");
+      }
+    },(response) => {
+
+    })
+  },
   data: function () {
     return {
+      imgPath: [
+        "/static/images/insurance/pic1.png",
+        "/static/images/insurance/pic2.png",
+        "/static/images/insurance/pic3.png",
+        "/static/images/insurance/pic1.png",
+        "/static/images/insurance/pic2.png",
+        "/static/images/insurance/pic3.png",
+        "/static/images/insurance/pic1.png",
+        "/static/images/insurance/pic2.png",
+        "/static/images/insurance/pic3.png",
+        "/static/images/insurance/pic1.png",
+        "/static/images/insurance/pic2.png",
+        "/static/images/insurance/pic3.png"
+      ],
       list: [
         {
           name: "“乐游全球”境外旅行保障计划 黄金计划",
@@ -112,6 +141,7 @@ export default {
       }
       p {
         top: 0.5rem;
+        left: 0.5rem;
         color: #fff;
       }
       .label-list {
