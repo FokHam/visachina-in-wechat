@@ -36,8 +36,7 @@
         type: type, // 0单次，1一年多次，2一年一次
         minDay: minDay,
         startDate: startDate,
-        endDate: endDate,
-        totalDay: ""
+        endDate: endDate
       }
     },
     components: {

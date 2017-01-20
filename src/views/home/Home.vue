@@ -92,14 +92,13 @@ import Countrys from '../../components/SearchCountry'
 import Provice from '../../components/ProviceList'
 export default {
   name:'home',
-  beforeCreate(){
-    document.title = "途经旅游"
-    Indicator.open('加载中...');
-  },
-  created: function () {
-    Indicator.close();
-
-  },
+  // beforeCreate(){
+  //   document.title = "途经旅游"
+  //   Indicator.open('加载中...');
+  // },
+  // created: function () {
+  //   Indicator.close()
+  // },
   data:function(){
     return {
       isActive: 0,
@@ -295,4 +294,5 @@ export default {
       }
     }
   }
+
 </style>
