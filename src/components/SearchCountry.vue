@@ -11,7 +11,7 @@
   </div>
   <div class="searchresult" v-show="searchdata.length != 0">
     <ul>
-      <li v-for="item in searchdata">{{item.name}}</li>      
+      <li v-for="item in searchdata">{{item.name}}</li>
     </ul>
     <div class="backshadow" @click="clearinput"></div>
   </div>
@@ -107,10 +107,10 @@
         </ul>
       </div>
     </div>
-    
+
   </div>
 
-  
+
 
 
 </div>
@@ -118,19 +118,13 @@
 
 <script>
 import { Indicator } from 'mint-ui'
-export default {  
+export default {
   props:['isShow'],
-  beforeCreate(){
-    Indicator.open('加载中...');
-  },
-  created: function () {
-    Indicator.close();
-  },
   data:function(){
     return{
       keyword:'',
       searchdata:[]
-      
+
 
     }
   },
@@ -141,7 +135,7 @@ export default {
         this.searchdata = [{"name":"中国"},{"name":"美国"},{"name":"德国"},{"name":"澳大利亚"},{"name":"西班牙"},{"name":"巴基斯坦"},{"name":"泰国"}]
       }else {
         this.searchdata = []
-      }      
+      }
     },
     clearinput:function(){
       this.keyword = ''
@@ -187,7 +181,7 @@ export default {
         }
         .clearinput{
           height: 20px;
-          width: 20px;          
+          width: 20px;
           position: absolute;
           right: 5px;
           top: 5px;
@@ -212,7 +206,7 @@ export default {
       padding-bottom: 15px;
       .tit{color: #999999;font-size: 0.7rem;padding: 0 5px;padding-bottom: 8px;}
       .namelist{
-        overflow: hidden;        
+        overflow: hidden;
         li{
           float: left;
           width: 25%;
@@ -235,7 +229,7 @@ export default {
     }
   }
   .searchresult {
-    position: absolute;    
+    position: absolute;
     width: 100%;
     height: 100%;
     top: 0;

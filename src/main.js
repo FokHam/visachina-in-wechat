@@ -7,6 +7,7 @@ import Mock from 'mockjs'
 import $ from 'jquery'
 import 'mint-ui/lib/style.css'
 
+import './widget.js'
 import App from './App'
 import routes from './routes.js'
 import store from './store/index.js'

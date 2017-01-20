@@ -33,8 +33,8 @@
         @click="pickingDate=true">
         <i class="icon icon-calendar"></i>
         <div class="choice-detail">
-          <p>12-02 <span>周五 入住</span></p>
-          <p>12-04 <span>周日 离店</span></p>
+          <p>{{ startDate.format("MM-dd") }} <span>周五 入住</span></p>
+          <p>{{ endDate.format("MM-dd") }} <span>周日 离店</span></p>
         </div>
         <i class="icon-more"></i>
       </div>
@@ -47,20 +47,22 @@
     <div class="hotel-roomtype">
       <div class="item"
         v-for="(item, index) in roomType"
-        @click="viewing = true; viewingRoomTypeNum = index">
+        @click="viewing = true;
+        viewingRoomTypeNum = index">
         <div class="item-left">
           <p class="name">{{ item.name }}</p>
           <p class="detail">
-            <span v-if="item.area">{{ item.area + "m" }}<sup>2</sup></span>
-            {{ item.detail }}
+            <!-- <span v-if="item.area">{{ item.area + "m" }}<sup>2</sup></span> -->
+            {{ item.bed + " " + item.breakfast }}
           </p>
           <span class="cancel"
-            v-if="!item.cancel">不可取消</span>
+            :class="item.cancel_flag ? 'cancelable' : '' "
+            v-if="!item.cancel">{{ item.cancel_flag ? "可以取消" : "不可取消" }}</span>
           <i class="icon-more"></i>
         </div>
         <div class="item-right">
           <p class="price">
-            <span class="yuan">¥</span>{{ item.price }}
+            <span class="yuan">¥</span>{{ item.total_price }}
           </p>
           <router-link :to="'/hotelForm/' + $route.params.id " class="order-btn">预订</router-link>
         </div>
@@ -81,8 +83,8 @@
     ></room-detail>
     <calendar v-if="pickingDate"
       v-on:confirm="setDate"
-      type1="起保"
-      type2="终保"
+      type1="入住"
+      type2="离店"
       :multipleDate="true"
       :pickType ="1"
       :minDay="minimunDay"
@@ -101,8 +103,9 @@
   export default {
     data () {
       let today = new Date();
-
       return {
+        maximunDay: 28,
+        minimunDay: 2,
         hDetail: {
           id: 11,
           cname: "清迈皇家沛纳海酒店",
@@ -122,8 +125,8 @@
             }
           ]
         },
-        hotelDetail: {},
-        roomType: [
+        roomType: [],
+        roomTypeOld: [
           {
             name: "Junior Triple Room, 1 Bedroom",
             area: 12,
@@ -153,6 +156,9 @@
       }
     },
     computed: {
+      hotelDetail () {
+        return this.$store.state.hotel.hotelDetail;
+      },
       viewingRoomType () {
         let obj = {};
         let num = this.viewingRoomTypeNum;
@@ -169,56 +175,97 @@
       },
       roomNum () {
         return this.$store.state.hotel.roomNum;
+      },
+      checkInDate () {
+        return this.$store.state.hotel.checkInDate;
+      },
+      checkOutDate () {
+        return this.$store.state.hotel.checkOutDate;
+      },
+      startDate () {
+        return this.$store.state.hotel.startDate;
+      },
+      endDate () {
+        return this.$store.state.hotel.endDate;
+      },
+      productId () {
+        return this.$store.state.hotel.productId;
+      }
+    },
+    methods: {
+      getDetail () {
+        let url = "/api/hotel/info";
+        let id = this.$route.params.id;
+        let send = {"id": id};
+        this.$http.get(url, {params: send}).then((response) => {
+          // console.log(JSON.parse(response.body));
+          let responseBody = JSON.parse(response.body);
+          if (responseBody.status === 1) {
+            let data = responseBody.data;
+            this.$store.commit("setHotelDetail", {
+              hotelDetail: data
+            });
+          } else {
+            console.log("请求失败！");
+          }
+        }, (response) => {
+          // error callback
+        });
+      },
+      getRoom () {
+        Indicator.open('拼命读取房型数据中...');
+        let url = '/api/hotel/room';
+        let id = this.$route.params.id;
+        let send = {
+          id: id,
+          qty: this.roomNum,
+          checkIn: this.startDate.format("yyyy-MM-dd"),
+          checkOut: this.endDate.format("yyyy-MM-dd"),
+          nationality: "cn",
+          adult: this.adultNum,
+          children: this.childNum,
+          childrenAge: this.childrenAge
+        };
+        this.$http.get(url, {params: send}).then((response) => {
+          // success callback
+          console.log(JSON.parse(response.body));
+          let data = JSON.parse(response.body).data;
+          this.roomType = data.rows;
+          Indicator.close();
+        }, (response) => {
+          // error callback
+          Indicator.close();
+        });
+      },
+      setDate (day1, day2) {
+        this.$store.commit("setHotelDate", {
+          day1: day1,
+          day2: day2
+        });
+        this.pickingDate = false;
+      }
+    },
+    watch: {
+      startDate: "getRoom",
+      endDate: "getRoom",
+      qty: "getRoom",
+      adultNum: "getRoom",
+      childNum: "getRoom"
+    },
+    created () {
+      let newProductId = this.$route.params.id;
+      if (newProductId !== this.productId) {
+        this.$store.commit("resetHotelState");
+        this.$store.commit("setHotelProductId", {
+          id: this.$route.params.id
+        });
+        this.getDetail();
+        this.getRoom();
       }
     },
     components: {
       roomDetail,
       calendar
-    },
-    mounted () {
-      this.$store.commit("setPid", {
-        id: this.hDetail.id
-      });
-    },
-    created () {
-      this.getDetail();
-      this.getRoom();
-    },
-    methods: {
-      getDetail () {
-        let id = this.$route.params.id;
-        let url = "/api/hotel/info";
-        let send = {"id": id};
-        this.$http.get(url, {params: send}).then((response) => {
-          console.log(JSON.parse(response.body));
-          let data = JSON.parse(response.body).data;
-          this.hotelDetail = data;
-          this.$store.commit("setHotelDetail", {
-            hotelDetail: data
-          });
-          Indicator.close();
-        }, (response) => {
-          // error callback
-          Indicator.close();
-        });
-      },
-      getRoom () {
-        let url = '/api/hotel/room';
-        this.$http.get(url).then((response) => {
-          // success callback
-          console.log(JSON.parse(response.body));
-          let data = JSON.parse(response.body).data;
-          Indicator.close();
-        }, (response) => {
-          // error callback
-          Indicator.close();
-        });
-      },
-      computed: {
-        hotelDetail: function () {
-          return this.$store.state.hotel.hotelDetail;
-        }
-      }
     }
   }
 </script>
@@ -230,7 +277,7 @@
     height: 0.6rem;
     width: 0.6rem;
     background-size: contain;
-    margin-right: 0.2rem;
+    margin: 0 0.1rem;
   }
   .icon-heart {
     display: inline-block;
@@ -280,8 +327,11 @@
     .diamond-level {
       position: absolute;
       left: 0.5rem;
-      bottom: 0.5rem;
+      bottom: 0.4rem;
       font-size: 0;
+      padding: 0.1rem;
+      border-radius: 0.1rem;
+      background-color: rgba(0, 0, 0, 0.6);
     }
     .collect {
       display: flex;
@@ -391,6 +441,10 @@
           padding: 0.1rem 0.2rem;
           border-radius: 0.2rem;
           border: 0.05rem solid #ff738d;
+          &.cancelable {
+            color: green;
+            border-color: green;
+          }
         }
         .icon-more {
           right: 0.2rem;
