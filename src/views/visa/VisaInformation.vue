@@ -1,51 +1,17 @@
 <template>  
 <div class="visa-information" id="visa-information">
-  <div class="column">
-    <div class="title">个人基本资料</div>
+  <div class="column" v-for="item in materialsData.list">
+    <div class="title">{{item.name_ca}}</div>
     <ul class="list">
-      <li>
-        <div class="tit">签证申请表</div>
+      <li v-for="cate in item.cate">
+        <div class="tit">{{cate.name}}</div>
         <div class="con">
-          <p>1.真实完整填写（出行时间真实，填写的联系电话需保持畅通）
-并由本人中文签字 。</p>
+          <p>{{cate.description}}</p>
         </div>
-        <div class="example"><span @click="checkPic">法国-签证申请表.doc</span><span @click="checkPic">签证申请表.doc</span></div>
-      </li>
-      <li>
-        <div class="tit">因私护照原件</div>
-        <div class="con">
-          <p>1.护照完整无破损、无水渍 ；</p>
-          <p>2.有效期离出发日期应至少还有6个月 ;</p>
-          <p>3.至少有两页完整连续的空白页，不包含备注页 ;</p>
-          <p>4.护照号码是G开头的，请在尾页签名 ;</p>
-          <p>5.有旧护照请提供 。</p>
+        <div class="example">
+          <span v-for="files in cate.files" @click="checkPic">{{files}}</span>
         </div>
-        <div class="example"><span @click="checkPic">护照原件复印.doc</span></div>
-      </li>
-    </ul>
-  </div>
-  <div class="column">
-    <div class="title">公司资料</div>
-    <ul class="list">
-      <li>
-        <div class="tit">签证申请表</div>
-        <div class="con">
-          <p>1.真实完整填写（出行时间真实，填写的联系电话需保持畅通）
-并由本人中文签字 。</p>
-        </div>
-        <div class="example"></div>
-      </li>
-      <li>
-        <div class="tit">因私护照原件</div>
-        <div class="con">
-          <p>1.护照完整无破损、无水渍 ；</p>
-          <p>2.有效期离出发日期应至少还有6个月 ;</p>
-          <p>3.至少有两页完整连续的空白页，不包含备注页 ;</p>
-          <p>4.护照号码是G开头的，请在尾页签名 ;</p>
-          <p>5.有旧护照请提供 。</p>
-        </div>
-        <div class="example"><span @click="checkPic">护照原件复印.doc</span></div>
-      </li>
+      </li>      
     </ul>
   </div>
   <div class="example-dialog" v-show="exampleDis">
@@ -59,19 +25,15 @@
 </template>
 
 <script>
-import { Indicator } from 'mint-ui'
 export default{
   name: 'visa-information',
-  beforeCreate:function(){
-    document.title = "签证资料"
-    Indicator.open('加载中...');
-  },
   created: function () {
-    Indicator.close();
-    
+    document.body.scrollTop = 0
+    document.title = this.materialsData.guest_class_name    
   },
   data:function(){
     return{
+      materialsData:this.materialsData,
       exampleDis:false,
       picTxt:'法国签证申请表样本',
       picUrl:'/static/images/visa/a1.png'
@@ -85,6 +47,11 @@ export default{
       this.exampleDis = false
     }
     
+  },
+  computed: {
+    materialsData () {
+      return this.$store.state.visa.materialsData;
+    }    
   }
 }
 </script>

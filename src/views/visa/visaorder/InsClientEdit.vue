@@ -4,28 +4,26 @@
     <div class="item">
       <span>英文名字</span>
       <div class="ipt">
-        <input type="text" v-model="clientename" placeholder="例如：Zhangsan">
+        <input type="text" v-model="passengerInfo.ename" placeholder="例如：Zhangsan">
       </div>      
     </div>
     <div class="item">
       <span>身份证号</span>
-      <div class="ipt" @click="openSelect">
-        <input type="text" v-model="idType" readonly placeholder="选择证件类型">
+      <div class="ipt" @click="typedis=true">
+        <input type="text" v-model="passengerInfo.idType" readonly placeholder="选择证件类型">
       </div> 
       <div class="idipt">
-        <input type="text" v-model="clientid" placeholder="输入证件号码">
+        <input type="text" v-model="passengerInfo.idnum" placeholder="输入证件号码">
       </div>      
     </div>    
     <div class="item select">
       <span>出生日期</span>
       <div class="ipt" @click="openDatepicker">
-        <input type="text" v-model="birthday" readonly placeholder="与证件保持一致">
+        <input type="text" v-model="passengerInfo.birthday" readonly placeholder="与证件保持一致">
       </div> 
     </div>
-
   </div>
-  <div class="tips">领馆规定：儿童按照成人价收取费用</div>
-  <div class="save" @click="saveClient">保存</div>
+  <div class="save" @click="confirm">保存</div>
   <mt-datetime-picker
     ref="datepicker"
     type="date"
@@ -36,51 +34,40 @@
     date-format="{value} 日"
     @confirm="dateConfirm">
   </mt-datetime-picker>
-  <mt-popup
-    v-model="popupVisible"
-    position="bottom"
-    pop-transition="popup-fade">
-    <div class="closepop" @click="openSelect">完成</div>
-    <mt-picker :slots="typeList" @change="onTypeChange"></mt-picker>
-  </mt-popup>
+  <picker 
+  v-if="typedis"
+  :listdata="typeList"
+  @confirm="typeSet"
+  @close="closeComp">
+  </picker>
 </div>
 </template>
 
 <script>
+import Picker from '../../../components/Picker'
 import { DatetimePicker } from 'mint-ui'
 import { Toast } from 'mint-ui'
 export default {
-  name:'apply-add',
+  props:['passenger'],
   created:function(){
-    this.getEditData()
   },
   data:function(){
     return{
-      editId:this.$route.params.id, 
       startDate:new Date('1930','0','1'),
-      initialDate:new Date(),      
-      clientename:'',
-      idType:'',
-      clientid:'',
-      birthday:'',
-      popupVisible:false,
-      typeList:[
-        {
-          values: ['','身份证','军人证','护照号'],
-          textAlign: 'center'
-        }],
+      initialDate:new Date(),
+      passengerInfo:this.passenger,
+      typedis:false,  
+      typeList:['身份证','军人证','护照号'],
     }
   },
   methods:{
-    getEditData:function(){
-      
-      this.clientename = this.$store.state.visa.apllyMenber[this.editId].name
-      this.clientid = this.$store.state.visa.apllyMenber[this.editId].idnum
-      this.birthday = this.$store.state.visa.apllyMenber[this.editId].birthday
-      var dt = this.$store.state.visa.apllyMenber[this.editId].birthday
-      dt = dt.split('-')
-      this.initialDate = new Date(dt[0],dt[1]-1,dt[2])
-      
+    typeSet:function(v){
+      if (v=='') {v='身份证'}
+      this.passengerInfo.idtype = v
+      this.typedis = false      
+    },
+    closeComp:function(){
+      this.typedis = false
     },
     openDatepicker:function(){
       this.$refs.datepicker.open();
@@ -89,33 +76,32 @@ export default {
       var m = t.getMonth()+1
       this.birthday = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
-    openSelect:function(){
-      this.popupVisible = !this.popupVisible
-    },
-    onTypeChange:function(picker, values){
-      this.idType = values.toString()
-    },
-    saveClient:function(){
+    confirm:function(){
       if (this.clientename != '' && this.clientid != '' && this.birthday != '' && this.idType != '') {
-        this.$store.commit('visaOrder_insMenber_edit',{
-          id:this.editId,
-          ename:this.clientename,
-          idnum:this.clientid,
-          birth:this.birthday,
-          idType:this.idType
-        })
-        history.go(-1)
+
+
         
+        
+        this.$emit('confirm')
       }else{
         Toast('不可以留空哦~')
       }
     }
+  },
+  components:{
+    Picker
   }
 }
 </script>
 
 <style lang="less" scoped>
 .apply-add{
+  background-color: #F6F6F6;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1002;
   .field{
     margin: 0 10px;
     background-color: #fff;

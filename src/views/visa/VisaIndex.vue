@@ -3,121 +3,127 @@
     <div class="part-top">
       <img src="/static/images/visa/banner.png">
       <div class="flag">
-        <img src="/static/images/visa/flag.png">
+        <div class="inner">
+          <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'.png'">
+        </div>        
       </div>
       <div class="location">
-        <span class="c_name">芬兰</span>
-        <span class="m_name" @click="openProvice">湖北省</span>
+        <span class="c_name">{{visaCondition.ctname}}</span>
+        <span class="m_name" @click="provicedis=true,tabcount=0">{{visaCondition.dqname}}</span>
       </div>
-      <div class="search_btn" @click="openSearch"><span>搜索国家</span></div>
+      <div class="search_btn" @click="searchdis=true,tabcount=0"><span>搜索国家</span></div>
     </div>
     <div class="screening">
       <div class="tabs">
         <span :class="{on:tabcount == 1}" @click="tapDrop(1)">签证类别</span>
         <span :class="{on:tabcount == 2}" @click="tapDrop(2)">入境期限</span>
         <span :class="{on:tabcount == 3}" @click="tapDrop(3)">加急</span>
-        <div class="openscren" @click="openScreen">筛选</div>
+        <div class="openscren" @click="screendis=true,tabcount=0">筛选</div>
       </div>
       <div class="tabselecter" v-show="tabcount != 0">
         <div class="options" :class="{on1:tabcount == 1}">
           <ul>
-            <li>全部</li>
-            <li>旅游签证</li>
-            <li>商务签证</li>
-            <li>留学签证</li>
-            <li>探亲签证</li>
-            <li>工作签证</li>
-            <li>其他签证</li>
+            <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>            
           </ul>
         </div>
         <div class="options" :class="{on2:tabcount == 2}">
           <ul>
-            <li>全部</li>
-            <li>单次入境</li>
-            <li>多次入境</li>
-            <li>领馆定</li>
+            <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>            
           </ul>
         </div>
         <div class="options" :class="{on3:tabcount == 3}">
           <ul>
-            <li>全部</li>
-            <li>加急</li>
+            <li v-for="item in screenStr.fw" :class="{on:item.data==visaCondition.fw}" @click="visaCondition.fw=item.data">{{item.text}}</li>
           </ul>
         </div>
       </div>
-      <div class="shadow" v-show="tabcount != 0"></div>
+      <div class="shadow" v-show="tabcount != 0" @click="tabcount=0"></div>
     </div>
-    <countrys :isShow="searchdis" v-on:choseCountry="changeCountry" v-on:closePage="closeComp"></countrys>
-    <provice :isShow="provicedis" v-on:closePage="closeComp" v-on:chosepvc="choseProvice"></provice>
-    <screen :isShow="screendis" v-on:closePage="closeComp" v-on:chosescr="screenConfirm"></screen>
     <div class="visalist">
-      <list v-bind:listdata="listdata"></list>      
+      <ul v-infinite-scroll="loadMore"
+      infinite-scroll-disabled="loading"
+      infinite-scroll-distance="40">
+        <li v-for="item in listdata"><router-link :to="'/visaDetail/'+item.id">
+          <div class="visapic">
+            <img :src="'/static/images/visa/type'+item.visatype+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
+          </div>
+          <div class="visainfo">
+            <div class="tit">{{item.name}}</div>
+            <div class="type">
+              <span class="p" v-show="item.lx == 0">贴纸签</span>
+              <span class="e" v-show="item.lx == 1">电子签</span>
+              <span class="op" v-show="item.lx == 2">另纸签</span>
+            </div>
+            <div class="day-price">
+              <span class="day">受理天数：{{item.acceptancedays}}天</span>
+              <span class="price"><i>￥</i>{{item.lower_price}}</span>
+            </div>
+          </div>
+        </router-link></li>
+      </ul>
+      <p class="page-infinite-loading">{{loadingtxt}}</p>      
     </div>
+    <countrys 
+    v-if="searchdis" 
+    @choseCountry="changeCountry"
+    @closePage="closeComp">      
+    </countrys>
+    <provice
+    v-if="provicedis" 
+    @closePage="closeComp" 
+    @chosepvc="choseProvice">      
+    </provice>
+    <screen     
+    v-if="screendis" 
+    :condition="visaCondition" 
+    :typeStr="screenStr"
+    @closePage="closeComp" 
+    @chosescr="screenConfirm">      
+    </screen>     
+    
   </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
-import { InfiniteScroll } from 'mint-ui';
-import { Spinner } from 'mint-ui';
-import List from './visaindex/List'
+import { InfiniteScroll } from 'mint-ui'
+import { Spinner } from 'mint-ui'
 import Screen from './visaindex/Screening'
 import Countrys from '../../components/SearchCountry'
 import Provice from '../../components/ProviceList'
 
 export default {
   name:"visa",
-  beforeCreate(){
-    document.title = "签证列表"
-    Indicator.open('加载中...');
+  beforeCreate(){    
+    document.title = "签证列表"    
   },
-  created: function () {
+  created: function () {  
     Indicator.close();
+    if (this.visaCondition.ct=='') {
+      this.$router.push('/home')
+    }else{
+      this.getListData()
+    }
   },
   components: {
-    List,
     Countrys,
     Provice,
     Screen
   },
   data:function(){
     return{
+      visaCondition:this.visaCondition,
+      screenStr:{
+        "type":["全部","旅游签证","商务签证","探亲访友签证","工作签证","留学签证","其他签证"],
+        "rj":[{"text":"全部","data":0},{"text":"单次入境","data":"单"},{"text":"多次入境","data":"多"},{"text":"领馆定","data":"领馆定"}],
+        "fw":[{"text":"全部","data":0},{"text":"加急","data":2}]
+      },
       searchdis:false,
       provicedis:false,
       screendis:false,
       tabcount:0,
-      listdata:[
-        {
-          'pic':'/static/images/visa/defaultpic.png',
-          'name':'芬兰旅游签证',
-          'staydays':'按申请',
-          'effective':'使馆定',
-          'interview':'无需面试',
-          'visatype':0,
-          'processdays':'7-15个工作日',
-          'price':'299'
-        },
-        {
-          'pic':'/static/images/visa/defaultpic.png',
-          'name':'美国旅游签证',
-          'staydays':'按申请',
-          'effective':'使馆定',
-          'interview':'需要面试',
-          'visatype':1,
-          'processdays':'7-15个工作日',
-          'price':'1299'
-        },
-        {
-          'pic':'/static/images/visa/defaultpic.png',
-          'name':'朝鲜旅游签证',
-          'staydays':'按申请',
-          'effective':'使馆定',
-          'interview':'无需面试',
-          'visatype':2,
-          'processdays':'4-7个工作日',
-          'price':'500'
-        }
-      ]
+      loadingtxt:"加载列表中...",
+      listdata:[]
     }
   },
   methods:{
@@ -128,31 +134,68 @@ export default {
         this.tabcount = v
       }
     },
-    openSearch:function(){
-      this.searchdis = true
+    changeCountry:function(name,id){
+      this.closeComp()
+      this.visaCondition.ctname = name
+      this.visaCondition.ct = id
     },
-    changeCountry:function(name){
-      this.searchdis = false
-      alert(name);
+    choseProvice:function(name,id){
+      this.closeComp()
+      this.visaCondition.dqname = name
+      this.visaCondition.dq = id
     },
-    openProvice:function(){
-      this.provicedis = true
-    },
-    choseProvice:function(name){
-      this.provicedis = false
-      alert(name);
-    },
-    openScreen:function(){
-      this.screendis = true
-    },
-    screenConfirm:function(fast,type,date){
-      console.log(fast+'--'+type+'--'+date)
-      
+    screenConfirm:function(obj){
+      this.visaCondition = obj
     },
     closeComp:function(){
       this.provicedis = false
       this.searchdis = false
       this.screendis = false
+    },
+    loadMore:function(){
+      if (this.listdata.length != 0) {
+        this.getListData()
+      }      
+    },
+    getListData:function(t){
+      Indicator.open('加载中...');
+      if (t=="reload") {
+        this.listdata = []
+      }
+      var url = '/api/visa/index',send=this.visaCondition
+      this.$http.get(url,{params:send}).then(function(result){
+        console.log(result)
+        Indicator.close()
+        var rst = JSON.parse(result.body)
+        
+        if (rst.status == 1) {
+          if (rst.data.list.length > 0) {
+            for (var i=0; i<rst.data.list.length; i++) {
+              this.listdata.push(rst.data.list[i])
+            }            
+            //this.visaCondition.page += 1
+            this.loadingtxt = '加载列表中...'
+          }else {
+            console.log('没有更多数据')
+            this.loadingtxt = '没有更多内容了哦~'
+          }
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    }
+  },
+  computed: {
+    visaCondition () {
+      return this.$store.state.visa.visaCondition;
+    }    
+  },
+  watch:{
+    visaCondition:{
+      handler: function (obj) {
+        this.getListData('reload')
+      },
+      deep: true
     }
   }
 }
@@ -169,7 +212,16 @@ export default {
     padding: 2px;
     position: absolute;
     top: 10%;left: 50%;margin-left: -31px;
-    img{height: 60px;width: 60px;border-radius: 60px;}
+    .inner{
+      height: 60px;width: 60px;border-radius: 60px;overflow: hidden;
+    }
+    img{
+      height: 75px;
+      border-radius: 60px;
+      margin-left: -6px;
+      margin-top: -3px;
+      width: 113px;
+    }
   }
   .location{
     position: absolute;
@@ -264,6 +316,7 @@ export default {
         padding: 0 10px;
         border-bottom: 1px solid #f4f4f4;
         font-size: 0.6rem;text-indent: 15px;
+        &.on{color: #D44D00;}
         &:last-child{border-bottom: none;}
       }
       &.on1{height: 216px;}
@@ -278,5 +331,63 @@ export default {
     z-index: 10;
   }
 
+
 }
+.visalist{
+    ul{  
+      li{
+        position: relative;
+        padding:10px;
+        background-color: #fff;
+        margin-bottom: 10px;
+        .visapic{
+          width: 4rem;
+          position: absolute;
+          left: 10px;top: 10px;
+        }
+        .visainfo{
+          padding-left: 4.5rem;
+          .tit{
+            font-size: 0.7rem;
+            text-align: justify;
+          }
+          .type{
+            padding: 5px 0 15px;
+            span{
+              font-size: 0.6rem;
+              border: 1px solid;
+              padding:1px 5px;
+              border-radius: 2px;
+              &.p{color: #008BE4;border-color: #008BE4;}
+              &.e{color: #D44D00;border-color: #D44D00;}
+              &.op{color: #8e00d5;border-color: #8e00d5;}
+            }
+          }
+          .day-price{
+            overflow: hidden;
+            .day{font-size: 0.6rem;color: #333333;float: left;}
+            .price{
+              float: right;
+              font-size: 0.8rem;color: #F55600;
+              i{font-size: 0.6rem;font-style: normal;}
+            }
+          }
+        }
+        &:last-child{
+          margin-bottom: 0;
+        }
+      }
+    }
+    .empty{
+      line-height: 100px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+    .page-infinite-loading {
+        line-height: 40px;
+        text-align: center;
+        font-size: 0.7rem;
+    }
+  }
 </style>

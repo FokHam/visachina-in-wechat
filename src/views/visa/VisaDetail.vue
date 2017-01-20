@@ -1,7 +1,9 @@
 <template>
-  <div class="visa-detail" id="visa-detail">
+  <div class="visa-detail" id="visa-detail" v-if="pageData!=''">
     <div class="visaname">
-      <div class="name"><span>【电子签】</span>法国旅游签证<停留天数按申请，有效期限使馆定，无需面试></div>
+      <div class="name">
+      <span>【{{pageData.typename}}】</span>
+      {{pageData.name}}<停留天数{{pageData.info.staydays}}，有效期限{{pageData.info.expirydate}}，{{pageData.info.interview==0?'无需面试':'需要面试'}}></div>
       <div class="day-price">
         <span class="day">受理天数：7-15天</span>
         <span class="price"><i>￥</i>299</span>
@@ -12,27 +14,25 @@
         <div class="tit">签证信息</div>
         <div class="con">
           <ul>
-            <li>停留天数：按申请</li>
-            <li>入境次数：领馆定</li>
-            <li>是否面试：抽查</li>
-            <li>有效期限：领馆定</li>
+            <li>停留天数：{{pageData.info.staydays}}</li>
+            <li>入境次数：{{pageData.info.entrynumber}}</li>
+            <li>是否面试：{{pageData.info.interview==0?'无需面试':'需要面试'}}</li>
+            <li>有效期限：{{pageData.info.expirydate}}</li>
           </ul>
         </div>
       </div>
       <div class="item">
         <div class="tit">服务内容</div>
-        <div class="con">
-        <p>上门收送+加急+陪签培训+代取护照+代填表格+制作机酒材料+材
-料审核+公证认证+预约面试+身份证寄回+预约面试+一对一咨询+
-资料模板+个性化方案提供</p>
+        <div class="con service">
+        <i v-if="pageData.visit==1">上门收送{{pageData.info.service_name.length>0?'+':''}}</i>
+        <i v-for="(item,index) in pageData.info.service_name">{{item.name}}{{pageData.info.service_name.length!=index+1?'+':''}}</i>
+        
         </div>
       </div>
       <div class="item">
         <div class="tit">受理地区</div>
         <div class="con">
-          <span>安徽省</span><span>广东省</span><span>湖北省</span>
-          <span>江西省</span><span>云南省</span><span>辽宁省</span>
-          <span>黑龙江省</span><span>北京</span><span>广西省</span>
+          <span v-for="item in pageData.info.dq">{{item.name}}</span>
         </div>
       </div>
     </div>
@@ -61,12 +61,8 @@
       <div class="tit">所需资料</div>
       <div class="con">
         <ul>
-          <li><router-link :to="'/visaInformation/'+$route.params.id">在职人员</router-link></li>
-          <li>自由职业者</li>
-          <li>在校学生</li>
-          <li>退休人员</li>
-          <li>学龄前儿童</li>
-          <li>家庭主妇</li>
+          <li v-for="(item,index) in pageData.materials" @click="checkMaterials(index)">{{item.guest_class_name}}</li>
+          
         </ul>
         <div class="sendemail" @click="showSend">发送到邮箱></div>        
       </div>
@@ -100,10 +96,10 @@ export default{
   name: 'visa-detail',
   beforeCreate:function(){
     document.title = "签证详情"
-    Indicator.open('加载中...');
+    Indicator.open('加载中...');    
   },
   created: function () {
-    Indicator.close();
+    this.getVisaData();    
     window.onscroll = function(){
       if (document.title != '签证详情') {return false}
       var tabDistans = document.body.scrollTop;
@@ -119,9 +115,9 @@ export default{
   },
   data:function(){
     return{
+      pageData:'',
       tabStatus:0,
-      emailDis:false
-      
+      emailDis:false      
     }
   },
   methods:{    
@@ -130,11 +126,27 @@ export default{
       this.tabStatus = v
       document.body.scrollTop = _h - 40
     },
+    checkMaterials:function(i){      
+      this.$store.commit('materialsDataSave', this.pageData.materials[i])
+      this.$router.push('/visaInformation')
+    },
     showSend:function(){
       this.emailDis = true
     },
     closeSend:function(){
       this.emailDis = false
+    },
+    getVisaData:function(){      
+      var url = '/api/visa/info?id='+this.$route.params.id
+      this.$http.get(url).then(function(result){
+        Indicator.close();
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.pageData = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
     }
     
   }
@@ -182,9 +194,16 @@ export default{
           padding-left: 7px;
           li{float: left;width: 40%;}
         }
-        p{
-          padding-left: 7px;font-size: 0.6rem;color: #999999;
-        }       
+        &.service{
+          padding-left: 7px;
+          overflow: hidden;
+          i{
+            font-size: 0.6rem;
+            font-style: normal;            
+            color: #999999;
+            float: left;
+          }
+        }             
         span{
           background: #f4eaf8;font-size: 0.6rem;color: #999999;
           display: inline-block;padding: 0 7px;margin-right: 10px;

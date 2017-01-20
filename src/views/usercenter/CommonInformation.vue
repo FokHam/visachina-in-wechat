@@ -15,14 +15,14 @@
         <ul>
           <li v-for="(item,index) in listData.passenger">
             <div class="top">
-              <div class="name">{{item.name}}<span>{{item.ename}}</span></div>
-              <div class="idnum">{{item.idtype}} {{item.idnum}}</div>
+              <div class="name">{{item.name}}<span>{{item.spell}}</span></div>
+              <div class="idnum">{{idTypeStr[item.id_type]}} {{item.id_number}}</div>
             </div>
             <div class="bottom">
-              <div class="left on" v-if="item.default == 1">默认旅客</div>
-              <div class="left" v-else>设为默认</div>
+              <div class="left on" v-if="item.status == 2">默认旅客</div>
+              <div class="left" v-else @click="setDefalt('passenger',item.id)">设为默认</div>
               <div class="right">
-                <span class="delete">删除</span>
+                <span class="delete" @click="deleteItem('passenger',item.id)">删除</span>
                 <span class="edit" @click="addData.passenger.display=true,addData.passenger.data=item">编辑</span>
               </div>
             </div>
@@ -40,13 +40,13 @@
                 <span class="name">{{item.name}}</span>
                 <span class="phone">{{item.phone}}</span>
               </div>
-              <div class="ads">{{item.address}}</div>
+              <div class="ads">{{item.province+item.city+item.zone+item.address}}</div>
             </div>
             <div class="bottom">
-              <div class="left on" v-if="item.default==1">默认地址</div>
-              <div class="left" v-else>设为默认</div>
+              <div class="left on" v-if="item.status == 2">默认地址</div>
+              <div class="left" v-else @click="setDefalt('address',item.id)">设为默认</div>
               <div class="right">
-                <span class="delete">删除</span>
+                <span class="delete" @click="deleteItem('address',item.id)">删除</span>
                 <span class="edit" @click="addData.address.display=true,addData.address.data=item">编辑</span>
               </div>
             </div>
@@ -62,15 +62,15 @@
             <div class="top">
               <div class="contact">
                 <span class="name">{{item.name}}</span>
-                <span class="phone">{{item.phone}}</span>
+                <span class="phone">{{item.tel}}</span>
               </div>
               <div class="ads">{{item.email}}</div>
             </div>
             <div class="bottom">
-              <div class="left on" v-if="item.default==1">默认联系人</div>
-              <div class="left" v-else>设为默认</div>
+              <div class="left on" v-if="item.status == 2">默认联系人</div>
+              <div class="left" v-else @click="setDefalt('contact',item.id)">设为默认</div>
               <div class="right">
-                <span class="delete">删除</span>
+                <span class="delete" @click="deleteItem('contact',item.id)">删除</span>
                 <span class="edit" @click="addData.contacter.display=true,addData.contacter.data=item">编辑</span>
               </div>
             </div>
@@ -83,7 +83,7 @@
       <div class="list">
         <ul>
           <li v-for="(item,index) in listData.credential">          
-            <div class="txt" @click="addData.credential.display=true,addData.credential.data=item">{{item.name+item.company}}</div>
+            <div class="txt" @click="addData.credential.display=true,addData.credential.data=item">{{item.name}}</div>
           </li>          
         </ul>
       </div>
@@ -114,6 +114,7 @@
 
 <script>
 import { Indicator } from 'mint-ui'
+import { MessageBox } from 'mint-ui'
 import AddPassenger from './commoninformation/AddPassenger'
 import AddAddress from './commoninformation/AddAddress'
 import AddContacter from './commoninformation/AddContacter'
@@ -122,10 +123,9 @@ export default{
   name:'common-infomation',
   beforeCreate(){
     document.title = '常用信息'
-    Indicator.open('加载中...')
   },
-  created: function () {
-    Indicator.close()    
+  created: function () {  
+    this.freshData('all')
   },
   components: {
     AddPassenger,
@@ -143,15 +143,122 @@ export default{
         "credential":{"display":false,"data":""}
       },
       listData:{
-        "passenger":[{"default":1,"name":"周方晗","ename":"Zhou Fanghan","idtype":"身份证","idnum":"420222199205065658","birthday":"","sex":"","nationality":"","phone":""},{"default":0,"name":"李大海","ename":"Li Dahai","idtype":"护照","idnum":"E65687555","birthday":"","sex":"","nationality":"","phone":""}],
-        "address_list":[{"name":"周方晗","phone":"15692452666","province":"广东省","city":"深圳市","area":"罗湖区","address":"海外联谊大厦2919","default":0},{"name":"李大海","phone":"18566666666","province":"广东省","city":"深圳市","area":"罗湖区","address":"海外联谊大厦2913","default":1}],
-        "contacter":[{"name":"周方晗","phone":"15692452666","email":"zhoufanghan@live.com","default":1},{"name":"李大海","phone":"18566666666","email":"821350894@qq.com","default":0}],
-        "credential":[{"type":1,"name":"周方晗","company":"","code":""},{"type":0,"name":"","company":"深圳市途经网络科技有限公司","code":"2458777258"}]
-      }
+        "passenger":[],
+        "address_list":[],
+        "contacter":[],
+        "credential":[]
+      },
+      idTypeStr:['','身份证','护照','出生证','驾照','港澳通行证','军官证','台胞证','警官证']
     }
   },
   methods:{
-    closeComponents:function(){
+    freshData:function(type){
+      if (type == 'all') {
+        this.getPassenger()
+        this.getAddress()
+        this.getContacter()
+        this.getCredential()
+      }else if (type == 'passenger') {
+        this.getPassenger()
+      }else if (type == 'address') {
+        this.getAddress()
+      }else if (type == 'contact') {
+        this.getContacter()
+      }else if (type == 'credential') {
+        this.getCredential()
+      }
+      
+    },
+    getPassenger:function(){
+      var url = '/api/member/passenger'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.listData.passenger = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    getAddress:function(){
+      var url = '/api/member/address'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.listData.address_list = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    getContacter:function(){
+      var url = '/api/member/contact'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.listData.contacter = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    getCredential:function(){
+      var url = '/api/member/invoice'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.listData.credential = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    setDefalt:function(type,id){
+      var url = '';
+      switch (type) {
+        case 'passenger':
+        url = '/api/member/passenger-set?id='+id
+        break;
+        case 'address':
+        url = '/api/member/address-set?id='+id
+        break;
+        case 'contact':
+        url = '/api/member/contact-set?id='+id
+        break;
+      }
+      this.$http.get(url).then(function(result){
+        this.freshData(type)
+        var rst = result.body
+        if (rst.status == 0) {
+          console.log(rst.msg)
+        }
+      });
+    },
+    deleteItem:function(type,id){
+      MessageBox.confirm('确定删除?').then(action => {
+        var url = '';
+        switch (type) {
+          case 'passenger':
+          url = '/api/member/passenger-delete?id='+id
+          break;
+          case 'address':
+          url = '/api/member/address-delete?id='+id
+          break;
+          case 'contact':
+          url = '/api/member/contact-delete?id='+id
+          break;
+        }
+        this.$http.get(url).then(function(result){
+          this.freshData(type)
+          var rst = result.body
+          if (rst.status == 0) {
+            console.log(rst.msg)
+          }
+        });
+      });      
+    },
+    closeComponents:function(v){
+      this.freshData(v)
       this.addData = {
         "passenger":{"display":false,"data":""},
         "address":{"display":false,"data":""},
