@@ -16,7 +16,9 @@ Vue.use(VueResource);
 Vue.use(MintUI);
 
 const resource = "/src/assets";
-const router = new VueRouter({routes});
+const router = new VueRouter({
+  routes
+});
 
 /* eslint-disable no-new */
 const app = new Vue({

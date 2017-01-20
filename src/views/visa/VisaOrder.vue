@@ -4,54 +4,57 @@
     <div class="tit">韩国旅游签证</div>
     <div class="desc">加急办理2个工作日出签，受理全国护照除新
 疆、西藏外、广州送签</div>
-    <div class="estimated">
+    <!--<div class="estimated">
       <div class="inner" @click="openDatepicker">
-        <span v-if="pageInfo.estimated_date != ''">{{pageInfo.estimated_date}}<i>出行</i></span>
+        <span v-if="estimated_date != ''">{{estimated_date}}<i>出行</i></span>
         <span v-else>预计什么时候出发？</span>
       </div>
-    </div>
+    </div>-->
   </div>
   <div class="clientname">
     <div class="item-hd">
       <div class="tit">申请人<i class="help">help</i></div>
-      <router-link class="addbtn" to="/VisaApplyList">添加申请人</router-link>
+      <div class="addbtn" @click="passengerList.passenger=true">添加申请人</div>
     </div>
-    <div class="namelist" v-if="clientList.length != 0">
+    <div class="namelist" v-if="passengerList.list.length != 0">
       <ul>
-        <li v-for="(item, index) in clientList" :class="{left:index % 2 == 0}"><span class="name">{{item.name}}</span><span class="type">{{item.type}}</span></li> 
+        <li v-for="(item, index) in passengerList.list" :class="{left:index % 2 == 0}"><span class="name">{{item.name}}</span><span class="type">{{typeList[item.type-1]}}</span></li>
       </ul>
     </div>
   </div>
   <div class="contactinfo">
     <div class="name item">
       <span class="txt">联系人</span>
-      <span class="ipt"><input v-model="pageInfo.contact_info.name" type="text" placeholder="请填写联系人姓名"></span>
+      <span class="ipt"><input v-model="contactInfo.info.name" type="text" placeholder="请填写联系人姓名"></span>
     </div>
     <div class="phone item">
       <span class="txt">手机号</span>
-      <span class="ipt"><input v-model="pageInfo.contact_info.phone" type="text" placeholder="接收订单确认信息"></span>
+      <span class="ipt"><input v-model="contactInfo.info.tel" type="text" placeholder="接收订单确认信息"></span>
     </div>
     <div class="email item">
       <span class="txt">邮&#12288;箱</span>
-      <span class="ipt"><input v-model="pageInfo.contact_info.email" type="text" placeholder="请填写联系人邮箱"></span>
+      <span class="ipt"><input v-model="contactInfo.info.email" type="text" placeholder="请填写联系人邮箱"></span>
     </div>
-    <div class="icon"></div>
+    <div class="icon" @click="contactInfo.contact=true"></div>
+  </div>
+  <div class="invoice" @click="invoiceData.invoice=true">
+    <span>发票</span>
   </div>
   <div class="express">
     <div class="item-hd">
-      <div class="tit">配送方式</div>
-      <div class="addbtn" v-if="pageInfo.delevery_info.length==0">添加配送方式</div>
-      <div class="delitype" v-else>{{pageInfo.delevery_info.type}}（{{pageInfo.delevery_info.express}}）</div>
+      <div class="tit">收货地址</div>
+      <div class="addbtn" v-if="deliveryInfo.info.name == ''" @click="deliveryInfo.delivery=true">添加地址</div>
+      <div class="addbtn" v-else @click="deliveryInfo.delivery=true">修改地址</div>
     </div>
-    <div class="addressinfo" v-if="pageInfo.delevery_info.length!=0">
+    <div class="addressinfo" v-if="deliveryInfo.info.name != ''">
       <div class="item">
         <span class="txt">收&#8194;货&#8194;人：</span>
-        <span class="name">{{pageInfo.delevery_info.name}}</span>
-        <span class="phone">{{pageInfo.delevery_info.phone}}</span>
+        <span class="name">{{deliveryInfo.info.name}}</span>
+        <span class="phone">{{deliveryInfo.info.phone}}</span>
       </div>
       <div class="item">
         <span class="txt">收货地址：</span>
-        <span class="adrs">{{pageInfo.delevery_info.province + pageInfo.delevery_info.city + pageInfo.delevery_info.area + pageInfo.delevery_info.address}}</span>
+        <span class="adrs">{{deliveryInfo.info.province + deliveryInfo.info.city + deliveryInfo.info.zone + deliveryInfo.info.address}}</span>
       </div>
     </div>
   </div>
@@ -60,23 +63,23 @@
     <div class="insurance">
       <div class="tit">保险</div>
       <div class="pro_info">
-        <div class="checkbox" :class="{check:insCheck}" @click="insuranceCheck"></div>
+        <div class="checkbox" :class="{check:insuranceCheck}" @click="insuranceCheck=!insuranceCheck"></div>
         <div class="name">“乐游全球”境外旅行保障计划钻石计划</div>
         <div class="price"><span>￥69</span>/起</div>
-        <div class="ins_term" v-if="insCheck">
+        <div class="ins_term" v-if="insuranceCheck">
           <span class="start">起保日期 2016-12-22</span>
           <span class="end">终保日期 2017-12-22</span>
           <i class="type">[一年多次]</i>
         </div>
       </div>
-      <div class="ins_client" v-if="insCheck">
+      <div class="ins_client" v-if="insuranceCheck">
         <div class="item-hd">
           <div class="i_tit">被保人<i class="help">help</i></div>
-          <router-link class="addbtn" :class="{editbtn:insMenber.length != 0}" to="/InsApplyList"></router-link>          
+          <span class="addbtn" @click="insuranceList.insurance=true" :class="{editbtn:insuranceList.list.length != 0}"></span>          
         </div>
-        <div class="list" v-if="insMenber.length != 0">
+        <div class="list" v-if="insuranceList.list.length != 0">
           <ul>
-            <li v-for="item in insMenber">
+            <li v-for="item in insuranceList.list">
                 <div class="info">
                   <div class="name">{{item.name}}<span>{{item.e_name}}</span></div>
                   <div class="idnum">身份证：{{item.idnum}}</div>
@@ -87,23 +90,23 @@
           </ul>
         </div>
       </div>
-      <div class="ins_creater" v-if="insCheck">
+      <div class="ins_creater" v-if="insuranceCheck">
         <div class="item-hd">
           <div class="i_tit">投保人<i class="help">help</i></div>
-          <router-link class="addbtn" :class="{editbtn:insAppInfo.name  != ''}" to="/InsApplyPerson"></router-link>
+          <span class="addbtn" :class="{editbtn:proposerInfo.info.name  != ''}" @click="proposerInfo.proposer=true"></span>
         </div>
-        <div class="info" v-if="insAppInfo.name != ''">
-          <div class="name">{{insAppInfo.name}}<span class="phone">{{insAppInfo.phone}}</span></div>
-          <div class="email">{{insAppInfo.email}}</div>
+        <div class="info" v-if="proposerInfo.info.name != ''">
+          <div class="name">{{proposerInfo.info.name}}<span class="phone">{{proposerInfo.info.phone}}</span></div>
+          <div class="email">{{proposerInfo.info.email}}</div>
         </div>
       </div>
-      <div class="ins_benefit" v-if="insCheck">
+      <div class="ins_benefit" v-if="insuranceCheck">
         <div class="item-hd">
           <div class="i_tit">受益人<i class="help">help</i></div>
           <div class="txt">法定继承人</div>
         </div>
       </div>
-      <div class="ins_destination" v-if="insCheck">
+      <div class="ins_destination" v-if="insuranceCheck">
         <div class="item-hd">
           <div class="i_tit">目的地</div>
           <div class="dest">冰岛</div>
@@ -113,70 +116,191 @@
     </div>
   </div>
   <div class="creatorder">
-    <div class="price">订单金额：<span>￥1250</span></div>
-    <div class="creatBtn">提交订单</div>
+    <div class="price">订单金额：<span>￥{{totalPrice}}</span></div>
+    <div class="creatBtn" @click="verifyData">提交订单</div>
   </div>
+  <invoice
+  v-if="invoiceData.invoice"
+  :data="invoiceData.detail"
+  @confirm="invoiceConfirm"
+  @closeCom="compClose">    
+  </invoice>
+  <visa-passenger-list
+  v-show="passengerList.passenger"
+  @confirm="passengerConfirm">    
+  </visa-passenger-list>
+  <contact-list
+  v-show="contactInfo.contact"
+  @confirm="contactConfirm">    
+  </contact-list>
+  <address-list
+  v-show="deliveryInfo.delivery"
+  @confirm="deliveryConfirm">    
+  </address-list>
+  <insur-client-list
+  v-if="insuranceList.insurance"
+  :passenger="passengerList.list"
+  @confirm="insuranceConfirm">    
+  </insur-client-list>
+  <proposer
+  v-if="proposerInfo.proposer"
+  :proposer="proposerInfo.info"
+  @confirm="setProposer">
+  </proposer>
   <mt-datetime-picker
     ref="datepicker"
     type="date"
-    :startDate="startDate"
+    :startDate="new Date()"
     v-model="initialDate"
     year-format="{value} 年"
     month-format="{value} 月"
     date-format="{value} 日"
     @confirm="dateConfirm">
-  </mt-datetime-picker> 
+  </mt-datetime-picker>
 </div>
 </template>
 
 <script>
+import { Toast } from 'mint-ui'
 import { Indicator } from 'mint-ui'
-import { DatetimePicker } from 'mint-ui'
+import { DatetimePicker } from 'mint-ui' 
+import Invoice from './visaorder/Invoice'
+import VisaPassengerList from './visaorder/VisaPassengerList'
+import insurClientList from './visaorder/InsClientList'
+import ContactList from './visaorder/ContactList'
+import AddressList from './visaorder/AddressList'
+import Proposer from './visaorder/Proposer'
 export default{
   name: 'visa-order',
   beforeCreate:function(){
-    document.title = "填写订单"
-    Indicator.open('加载中...');
+    document.title = "填写订单"    
   },
   created: function () {
-    Indicator.close();
-    for (var i=0; i<this.$store.state.visa.insMenber.length; i++) {
-      if (this.$store.state.visa.insMenber[i].icheck == true) {
-        this.insMenber.push(this.$store.state.visa.insMenber[i])
-      }
-    }
+    this.getVisaDetail()  
   },
   data:function(){
     return{
-      startDate:new Date(),
+      typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
+      visaInfomation:{},
+      totalPrice:0,
       initialDate:new Date(),
-      insCheck:this.$store.state.visa.insCheck,
-      clientList:this.$store.state.visa.insMenber,
-      pageInfo:this.$store.state.visa.orderInfo,
-      insMenber:[],
-      insAppInfo:this.$store.state.visa.insApplyPerson
+      estimated_date:"",
+      invoiceData:{"invoice":false,"detail":{"need":0,"type":1,"memo":"","header":"","shippingId":"","shippingInfo":{"name":"","phone":"","province":"","city":"","zone":"","address":""}}},
+      passengerList:{"passenger":false,"list":[]},
+      contactInfo:{"contact":false,"info":{"name":"","tel":"","email":""}},
+      deliveryInfo:{"delivery":false,"info":{"name":"","phone":"","province":"","city":"","zone":"","address":""}},
+
+
+
+
+
+
+      insuranceCheck:false,
+      insuranceList:{"insurance":false,"list":[]},
+      proposerInfo:{"proposer":false,"info":{"name":"","ename":"","idtype":"","idnum":"","birthday":"","phone":"","email":""}},
+
     }
   },
-  methods:{    
-    insuranceCheck:function(){
-      this.insCheck = !this.insCheck
-      this.$store.commit('visaOrder_insCheck',this.insCheck)
+  methods:{
+    getVisaDetail:function(){
+      Indicator.open('加载中...');
+      var url = '/api/visa/info?id='+this.$route.params.id
+      this.$http.get(url).then(function(result){
+        Indicator.close();
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.visaInfomation = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
     },
+    invoiceConfirm:function(v){
+      this.invoiceData.detail=v
+      this.invoiceData.invoice=false
+    },
+    passengerConfirm:function(v){
+      this.passengerList.list=v      
+      this.passengerList.passenger=false
+    },
+    contactConfirm:function(v){
+      this.contactInfo.info=v      
+      this.contactInfo.contact=false
+    },
+    deliveryConfirm:function(v){
+      this.deliveryInfo.info=v      
+      this.deliveryInfo.delivery=false
+    },
+    insuranceConfirm:function(v){
+      this.insuranceList.list = v
+      this.insuranceList.insurance=false      
+    },
+    setProposer:function(v){
+      this.proposerInfo.info = v
+      this.proposerInfo.proposer = false
+    },
+    compClose:function(){
+      this.invoiceData.invoice=false
+    },    
     openDatepicker:function(){
       this.$refs.datepicker.open();
     },
     dateConfirm:function(t){
       var m = t.getMonth()+1
-      this.pageInfo.estimated_date = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+      this.estimated_date = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+    },
+    verifyData:function(){
+      if (this.passengerList.list.length == 0) {
+        Toast('您还未添加签证申请人')
+        return false
+      }else if (this.contactInfo.info.name == '' || this.contactInfo.info.tel == '' || this.contactInfo.info.email == '') {
+        Toast('请选择或完善联系人资料')
+        return false
+      }else if (this.deliveryInfo.info.name == '') {
+        Toast('请选择收件地址')
+        return false
+      }else{
+        this.creatOrder()
+      }
+    },
+    creatOrder:function(){
+      Indicator.open('加载中');
+      var send = {
+        "id":this.$route.params.id,
+        "customers":this.passengerList.list,
+        "contact":this.contactInfo.info,
+        "shipping":{"method":1,"shippingId":this.deliveryInfo.info.id},
+        "invoice":this.invoiceData.detail
+      };
+      var url = '/api/visa/create-order';
+      console.log('发送数据：'+JSON.stringify(send));
+      this.$http.post(url,send).then(function(result){
+        console.log('返回数据：'+JSON.stringify(result))
+        Indicator.close();
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          console.log(JSON.stringify(rst.data))
+        }else {
+          console.log(rst.msg)
+        }
+      });
     }
   },
   watch:{
-    pageInfo:{
+    passengerList:{
 　　　handler(){
-        console.log(JSON.stringify(this.$store.state.visa.orderInfo))
+        this.totalPrice = this.passengerList.list.length * this.visaInfomation.price
 　　　},
 　　　deep:true
 　　}
+  },
+  components:{
+    Invoice,
+    VisaPassengerList,
+    insurClientList,
+    Proposer,
+    ContactList,
+    AddressList
   }
 }
 </script>
@@ -307,6 +431,16 @@ export default{
         }
         .name{padding-right: 15px;}
       }
+    }
+  }
+  .invoice{
+    background: #fff;margin-bottom: 5px;padding: 10px;
+    span{
+      display: block;font-size: 0.7rem;
+      background-image: url('/static/images/visa/icon-right-gray.png');
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: 0.5rem;
     }
   }
   .recommend{

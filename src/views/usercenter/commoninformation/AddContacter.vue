@@ -10,7 +10,7 @@
     <div class="item">
       <span>手机号</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.phone">
+        <input type="text" v-model="clientinfo.tel">
       </div>      
     </div>  
     <div class="item">
@@ -21,7 +21,7 @@
     </div>    
     
   </div>
-  <div class="save" @click="submit">保存</div>
+  <div class="save" @click="verifyData">保存</div>
 </div>
 </template>
 
@@ -36,12 +36,27 @@ export default {
   },
   data:function(){
     return{
-      clientinfo:{"name":"","phone":"","province":"","city":"","area":"","address":""}
+      clientinfo:{"name":"","tel":"","email":""}
     }
   },
   methods:{
-    submit:function(){
-      this.$emit('submit')    
+    verifyData:function(){      
+      if (this.clientinfo.name != '' && this.clientinfo.tel != '' && this.clientinfo.email != '') {
+        this.submitData()
+      }else{
+        Toast('请完善资料后再保存')
+      }      
+    },
+    submitData:function(){
+      var url = '/api/member/contact-create',send=this.clientinfo;      
+      this.$http.get(url,{params:send}).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.$emit('submit','contact')
+        }else {
+          Toast(rst.msg)
+        }
+      });        
     }
     
   }

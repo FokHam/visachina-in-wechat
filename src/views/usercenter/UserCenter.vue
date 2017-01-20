@@ -2,8 +2,8 @@
 <div class="user-center" id="user-center">
   <div class="toppart">
     <div class="headpath">
-      <div class="pic"><img src="/static/images/usercenter/headpath.png"></div>
-      <div class="name">TRAVELLER</div>
+      <div class="pic"><img :src="userInfo.wx_head_img"></div>
+      <div class="name">{{userInfo.wx_name}}</div>
     </div>
     <a class="message">
       <span class="on"></span>
@@ -45,20 +45,31 @@ export default{
   },
   created: function () {
     Indicator.close()
+    this.getUserInfo();
   },
   components: {
 
   },
   data:function(){
     return{
-
-
+      userInfo:[]
     }
   },
   methods:{
-
+    getUserInfo:function(){
+      var api = "/api/member/index";
+      this.$http.get(api).then(function(result){
+        Indicator.close();
+        console.log(result)
+        var rst = result.body
+        if (rst.status == 1) {
+          this.userInfo = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    }
   }
-
 }
 </script>
 
