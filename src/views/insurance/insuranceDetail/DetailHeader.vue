@@ -3,10 +3,10 @@
     <div class="header-left">
       <img class="avator" src="/static/images/insurance/detail1.png" alt="保险详情产品图">
     </div><div class="header-right">
-      <p class="name">惠择 - 申根国专属保障计划 超级无敌黄金计划</p>
+      <p class="name">{{ isrDetail.companyName + " - " + isrDetail.name}}{{ isrDetail.planName ? (" - " + isrDetail.planName) : ""}}</p>
       <div class="spec-list">
         <div class="spec">
-          <span class="label">承保职业：</span><span>不限</span>
+          <span class="label">承保职业：</span><span>{{ isrDetail.web_position }}</span>
         </div>
         <div class="spec">
           <span class="label">限购份数：</span><span>1份</span>
@@ -21,6 +21,9 @@
 
 <script>
   export default {
+    props: [
+      "isrDetail"
+    ]
   }
 </script>
 

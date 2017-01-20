@@ -55,28 +55,25 @@
 
   export default {
     props: {
-      multipleDate: Boolean,
-      minDay: Number, //不得小于2
-      maxDay: Number,
-      day1: {
+      multipleDate: Boolean, //单个或多个日期
+      minDay: Number,        //最小日期
+      maxDay: Number,        //最大日期
+      day1: {                //第一个已选日期
         type: Date,
         default: function () {
           return now;
         }
       },
-      day2: Date,
-      type1: {
+      day2: Date,             //第二个已选日期
+      type1: {                //第一个日期的类型名
         type: String,
         default: "第一个"
       },
-      type2: {
+      type2: {                //第二个日期的类型名
         type: String,
         default: "第二个"
       },
-      pickType: {
-        type: Number,
-        default: 1
-      }
+      pickType: Number        //选择第几个日期
     },
     data: function(){
       let now = new Date(),
@@ -179,12 +176,10 @@
         return this.$store.state.insurance.count;
       },
       startDate () {
-        let d = this.selected[0];
-        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        return this.selected[0];
       },
       endDate () {
-        let d = this.selected[1];
-        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        return this.selected[1];
       }
     }
   }

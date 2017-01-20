@@ -1,6 +1,6 @@
 <template>
   <div class="create-order">
-    <p class="total">保费：<span class="price">¥222</span></p>
+    <p class="total">保费：<span class="price">¥{{ isrDetail.price }}</span></p>
     <router-link
       @click="goCreateOrder"
       class="button"
@@ -11,6 +11,9 @@
 
 <script>
   export default {
+    props: [
+      "isrDetail"
+    ],
     methods: {
       goCreateOrder () {
         this.$emit("goCreateOrder");

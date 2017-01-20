@@ -2,23 +2,25 @@
   <div class="hotel-detail">
     <div class="hotel-image">
       <div class="image-wrapper">
-        <img class="image" src="/static/images/hotel/jiudian.png" alt="清迈皇家沛纳海酒店">
+        <img class="image"
+          :src="hotelDetail.web_img"
+          :alt="hotelDetail.cname">
       </div>
-      <p class="name">清迈皇家沛纳海酒店（Royal Panerai Hotel Chiangmai）</p>
+      <p class="name">{{ hotelDetail.cname }}( {{ hotelDetail.ename }} )</p>
       <div class="diamond-level">
         <i class="icon-diamond"
-          v-for="n in hDetail.star"></i>
+          v-for="n in hotelDetail.stars"></i>
       </div>
       <div class="collect">
         <i class="icon-heart"
-          :class="{ on: hDetail.collect }"
+          :class="{ on: hotelDetail.collect }"
         ></i>
       </div>
     </div>
     <div class="hotel-more">
       <div class="item">
-        <span>{{ hDetail.address }}</span>
-        <span class="location">{{ hDetail.city }}</span>
+        <span>{{ hotelDetail.address }}</span>
+        <span class="location">{{ hotelDetail.ccity }}, {{ hotelDetail.ccountry }}</span>
         <span class="more">地图<i class="icon-more"></i></span>
       </div>
       <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
@@ -28,11 +30,11 @@
     </div>
     <div class="hotel-choice">
       <div class="choice-item"
-        @click="datePickOpen">
+        @click="pickingDate=true">
         <i class="icon icon-calendar"></i>
         <div class="choice-detail">
-          <p>{{ (this.startDate.getMonth() + 1) + "月" + this.startDate.getDate() + "日 " }}<span>周五 入住</span></p>
-          <p>{{ (this.endDate.getMonth() + 1) + "月" + this.endDate.getDate() + "日 " }}<span>周五 入住</span></p>
+          <p>12-02 <span>周五 入住</span></p>
+          <p>12-04 <span>周日 离店</span></p>
         </div>
         <i class="icon-more"></i>
       </div>
@@ -77,27 +79,28 @@
       v-if="viewing"
       @hide="viewing = false"
     ></room-detail>
-    <calendar
-      v-if="pickingDate"
-      :multipleDate="true"
-      :minDay="2"
-      :maxDay="30"
-      type1="入住"
-      type2="离店"
-      :day1="hotelState.startDate"
-      :day2="hotelState.endDate"
+    <calendar v-if="pickingDate"
       v-on:confirm="setDate"
-      ></calendar>
+      type1="起保"
+      type2="终保"
+      :multipleDate="true"
+      :pickType ="1"
+      :minDay="minimunDay"
+      :maxDay="maximunDay"
+      :day1="startDate"
+      :day2="endDate"
+    ></calendar>
   </div>
 </template>
 
 <script>
   import roomDetail from "./HotelDetail/RoomDetail.vue"
   import calendar from "../../components/Calendar.vue"
+  import { Indicator } from 'mint-ui'
 
   export default {
     data () {
-      var today = new Date();
+      let today = new Date();
 
       return {
         hDetail: {
@@ -119,6 +122,7 @@
             }
           ]
         },
+        hotelDetail: {},
         roomType: [
           {
             name: "Junior Triple Room, 1 Bedroom",
@@ -148,18 +152,6 @@
         pickingDate: false
       }
     },
-    methods: {
-      datePickOpen () {
-        this.pickingDate = true;
-      },
-      setDate (day1, day2) {
-        this.pickingDate = false;
-        this.$store.commit("setHotelDate", {
-          day1: day1,
-          day2: day2
-        });
-      }
-    },
     computed: {
       viewingRoomType () {
         let obj = {};
@@ -177,15 +169,6 @@
       },
       roomNum () {
         return this.$store.state.hotel.roomNum;
-      },
-      hotelState () {
-        return this.$store.state.hotel;
-      },
-      startDate () {
-        return this.$store.state.hotel.startDate || new Date();
-      },
-      endDate () {
-        return this.$store.state.hotel.endDate || new Date();
       }
     },
     components: {
@@ -193,7 +176,49 @@
       calendar
     },
     mounted () {
-      
+      this.$store.commit("setPid", {
+        id: this.hDetail.id
+      });
+    },
+    created () {
+      this.getDetail();
+      this.getRoom();
+    },
+    methods: {
+      getDetail () {
+        let id = this.$route.params.id;
+        let url = "/api/hotel/info";
+        let send = {"id": id};
+        this.$http.get(url, {params: send}).then((response) => {
+          console.log(JSON.parse(response.body));
+          let data = JSON.parse(response.body).data;
+          this.hotelDetail = data;
+          this.$store.commit("setHotelDetail", {
+            hotelDetail: data
+          });
+          Indicator.close();
+        }, (response) => {
+          // error callback
+          Indicator.close();
+        });
+      },
+      getRoom () {
+        let url = '/api/hotel/room';
+        this.$http.get(url).then((response) => {
+          // success callback
+          console.log(JSON.parse(response.body));
+          let data = JSON.parse(response.body).data;
+          Indicator.close();
+        }, (response) => {
+          // error callback
+          Indicator.close();
+        });
+      },
+      computed: {
+        hotelDetail: function () {
+          return this.$store.state.hotel.hotelDetail;
+        }
+      }
     }
   }
 </script>

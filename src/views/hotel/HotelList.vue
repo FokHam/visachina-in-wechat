@@ -34,25 +34,26 @@
       </span>
     </div>
     <div class="item-list">
-      <router-link v-for="item in hList"
+      <router-link v-for="item in hotelList"
         class="hotel-item"
         :to="'/hotelDetail/' + item.id">
         <div class="hotel-pic">
-          <img :src="item.img" :alt="item.cname">
+          <img :src="item.web_img" :alt="item.cname">
         </div>
         <div class="hotel-info">
           <p class="cname text-overflow">{{ item.cname }}</p>
           <p class="ename text-overflow">{{ item.ename}}</p>
           <div class="diamon-level">
-            <i v-for="n in item.star"
+            <i v-for="n in item.stars"
               class="icon-diamond">
             </i>
           </div>
           <div class="service">
-            <i v-for="service in item.service"
-              :class="'icon-' + service"></i>
+            <i v-for="(facility, n) in item.facility"
+              :class="'icon-' + facilityList[n]"
+              v-if="facility"></i>
           </div>
-          <p class="location text-overflow">{{ "位于" + item.location}}</p>
+          <p class="location text-overflow">{{ "位于" + item.cityname}}</p>
         </div>
         <div class="hotel-price">
           <div class="collect">
@@ -71,75 +72,38 @@
 </template>
 
 <script>
-export default {
-  data () {
-    return {
-      hList: [
-        {
-          id: 11,
-          img: "/static/images/hotel/pic01.png",
-          cname: "北京王府井希尔顿酒店",
-          ename: "Hilton Beijing Wangfujing",
-          price: 299,
-          collect: false,
-          star: 3,
-          service: ["wifi", "park", "swim"],
-          location: "普吉岛"
-        },{
-          id: 12,
-          img: "/static/images/hotel/pic02.png",
-          cname: "香港W酒店",
-          ename: "W Hong Kong",
-          price: 2299,
-          collect: true,
-          star: 2,
-          service: ["wifi", "swim"],
-          location: "香港九龙柯士甸道西1号"
-        },{
-          id: 13,
-          img: "/static/images/hotel/pic03.png",
-          cname: "Austria Trend Parkhotel Schönbrunn Wien",
-          ename: "W Hong Kong",
-          price: 299,
-          collect: false,
-          star: 4,
-          service: ["wifi", "park", "swim"],
-          location: "Hietzinger Hauptstraße 10-14"
-        },{
-          id: 14,
-          img: "/static/images/hotel/pic04.png",
-          cname: "北京王府井希尔顿酒店",
-          ename: "Hilton Beijing Wangfujing",
-          price: 299,
-          collect: false,
-          star: 3,
-          service: ["wifi", "park", "swim"],
-          location: "普吉岛"
-        },{
-          id: 15,
-          img: "/static/images/hotel/pic01.png",
-          cname: "北京王府井希尔顿酒店",
-          ename: "Hilton Beijing Wangfujing",
-          price: 299,
-          collect: true,
-          star: 3,
-          service: ["wifi", "park", "swim"],
-          location: "普吉岛"
-        },{
-          id: 16,
-          img: "/static/images/hotel/pic02.png",
-          cname: "北京王府井希尔顿酒店",
-          ename: "Hilton Beijing Wangfujing",
-          price: 299,
-          collect: false,
-          star: 3,
-          service: ["wifi", "park", "swim"],
-          location: "普吉岛"
-        }
-      ]
-    };
+  import { Indicator } from 'mint-ui'
+  export default {
+    data () {
+      return {
+        facilityList: [
+          "wifi", "park", "swim"
+        ],
+        hotelList: []
+      };
+    },
+    created () {
+      {
+        this.getList();
+      }
+    },
+    methods: {
+      getList (obj) {
+        Indicator.open('拼命读取酒店数据中...');
+        let url = '/api/hotel/list';
+        this.$http.get(url).then((response) => {
+          // success callback
+          console.log(JSON.parse(response.body));
+          let data = JSON.parse(response.body).data;
+          this.hotelList = data.rows;
+          Indicator.close();
+        }, (response) => {
+          // error callback
+          Indicator.close();
+        });
+      }
+    }
   }
-}
 </script>
 
 <style lang="less" scoped>
@@ -336,7 +300,7 @@ export default {
       }
     }
     .hotel-price {
-      flex-basis: 15%;
+      flex-basis: 30%;
       text-align: center;
       display: flex;
       flex-direction: column;

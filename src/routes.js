@@ -25,6 +25,11 @@ import HotelDetail from './views/hotel/HotelDetail'
 import HotelIntro from './views/hotel/HotelIntro'
 import HotelForm from './views/hotel/HotelForm'
 import HotelRoomSelect from './views/hotel/HotelRoomSelect'
+import UserCenter from './views/usercenter/UserCenter'
+import Collection from './views/usercenter/Collection'
+import CommonInformation from './views/usercenter/CommonInformation'
+import BindPhone from './views/usercenter/BindPhone'
+import OrderList from './views/usercenter/OrderList'
 
 var routes = [{
   path: "/",
@@ -107,6 +112,25 @@ var routes = [{
 },{
   path: "/hotelRoomSelect",
   component: HotelRoomSelect
+},{
+  path: "/userCenter",
+  component: UserCenter
+},{
+  path: "/collection",
+  component: Collection
+},{
+  path: "/commonInformation",
+  component: CommonInformation
+},{
+  path: "/bindPhone",
+  component: BindPhone
+},{
+  path: "/orderList/:status",
+  component: OrderList
+},
+{
+  path: "/orderList",
+  component: OrderList
 }];
 
 export default routes

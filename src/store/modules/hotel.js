@@ -6,7 +6,8 @@ const state = {
   adultNum: 2,
   childNum: 0,
   childAge: [],
-  roomNum: 1
+  roomNum: 1,
+  hotelDetail: {}
 };
 
 const mutations = {
@@ -14,14 +15,18 @@ const mutations = {
     let d = new Date();
     let startDate = new Date(d.getTime() + 24*60*60*1000);
     let endDate = new Date(d.getTime() + 2*24*60*60*1000);
-    state.productId = 0;
-    state.startDate = startDate;
-    state.endDate = endDate;
-    state.roomType = 0;
-    state.adultNum = 2;
-    state.childNum = 0;
-    state.childAge = [];
-    state.roomNum = 1;
+
+    state = {
+      productId: 0,
+      startDate: startDate,
+      endDate: endDate,
+      roomType: 0,
+      adultNum: 2,
+      childNum: 0,
+      childAge: [],
+      roomNum: 1,
+      hotelDetail: {}
+    };
   },
   setNum (state, payload) {
     state[payload.type] = payload.num;
@@ -44,9 +49,8 @@ const mutations = {
   setPid (state, payload) {
     state.productId = payload.id;
   },
-  setHotelDate (state, payload) {
-    state.startDate = payload.day1;
-    state.endDate = payload.day2;
+  setHotelDetail (state, payload) {
+    state.hotelDetail = payload.hotelDetail;
   }
 };
 
