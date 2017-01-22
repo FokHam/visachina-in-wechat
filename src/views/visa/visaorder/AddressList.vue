@@ -1,76 +1,77 @@
 <template>
-<div class="apply-list" id="apply-list">
-  <div class="tips">最多可选择10个申请人</div>
-  <router-link class="addbtn" to="/VisaApplyAdd/-1">添加申请人</router-link>
+<div class="contact-list" id="apply-list">
   <div class="contactList">
-    <ul v-if="contactData.length != 0">
-      <li v-for="(item,index) in contactData">
+    <ul v-if="contactList.length != 0">
+      <li v-for="(item,index) in contactList">
         <div class="checkbtn" :class="{check:item.check}" @click="checkOne(index)"></div>
         <div class="info">
-          <div class="name">{{item.name}}</div>
-          <div class="txt"><span>{{item.type}}</span></div>
+          <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.phone}}</span></div>
+          <div class="txt"><span>{{item.province+item.city+item.zone+item.address}}</span></div>
         </div>
-        <router-link class="editbtn" :to="'/VisaApplyAdd/'+index"></router-link>
       </li>
     </ul>
-    <div v-else class="empty">暂无常用联系人</div>
+    <div v-else class="empty">暂无常用地址</div>
   </div>
   <div class="confirm" @click="confirm">确定</div>
 </div>
 </template>
-
 <script>
-import { Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
 export default {
-  name:'apply-list',
-  beforeCreate:function(){
-    document.title = "选择申请人"
-    Indicator.open('加载中...');
-  },
   created: function () {
-    Indicator.close();  
+     this.getPassenger()
   },
   data:function(){
     return{
-      contactData:this.$store.state.visa.apllyMenber
+      contactList:[],
+      chooseItem:{"check":false,"name":"","phone":"","province":"","city":"","zone":"","address":""},
     }
   },
   methods:{
-    checkOne:function(n){
-      this.contactData[n].check = !this.contactData[n].check
-      var scrData = []
-      for (var i=0; i<this.contactData.length; i++) {
-        if (this.contactData[i].check == true) {
-          scrData.push(this.contactData[i])
+    getPassenger:function(){
+      var url = '/member/address'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          for (var i=0;i<rst.data.length;i++) {
+            rst.data[i].check = false
+          }
+          this.contactList = rst.data
+        }else {
+          console.log(rst.msg)
         }
-      }
-      this.$store.commit('visaOrder_insMenber_set',scrData)     
+      });
+    },
+    checkOne:function(n){
+      for (var i=0; i<this.contactList.length; i++) {
+        if (i==n) {          
+          if (this.contactList[i].check == false) {
+            this.contactList[i].check = true
+            this.chooseItem = this.contactList[i] 
+          }else {
+            this.contactList[i].check = false
+            this.chooseItem = {"check":false,"name":"","phone":"","province":"","city":"","zone":"","address":""}
+          }          
+        }else{
+          this.contactList[i].check = false
+        }
+      }                          
     },
     confirm:function(){
-      this.$store.commit('visaOrder_apllyMenber',this.contactData)      
-      history.go(-1)
+      this.$emit('confirm',this.chooseItem)
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.apply-list{
-  .tips{
-    background: -webkit-linear-gradient(left, #F057AD, #BF69EF);
-    color: #FFE6EB;text-align: center;
-    line-height: 30px;font-size: 0.6rem;
-  }
-  .addbtn{
-    height: 45px;line-height: 45px;display: block;
-    padding: 0 20px;background-color: #fff;
-    background-image:url('/static/images/visa/icon-add-1.png');
-    background-repeat: no-repeat;
-    background-position: 20px center;
-    background-size: 21px;
-    font-size: 0.7rem;color: #008be4;text-indent: 27px;
-    margin-bottom: 10px;
-  }
+.contact-list{
+  background-color: #F6F6F6;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1001;
   .contactList{
     margin: 0 10px;
     background-color: #fff;
@@ -101,7 +102,10 @@ export default {
         }
         .info{
           padding:0 30px;
-          .name{font-size: 0.7rem;color: #666666;line-height: 30px;}
+          .name{font-size: 0.7rem;color: #666666;line-height: 30px;overflow: hidden;
+            .left{float: left;}
+            .right{float: right;}
+          }
           .txt{
             span{font-size: 0.6rem;color: #666666;display: block;}
           }

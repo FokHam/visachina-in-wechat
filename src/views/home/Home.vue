@@ -11,17 +11,25 @@
           <div class="search-input visa-search" v-if="isActive == 0">
             <div class="ipt country">
               <div class="tit">国家</div>
-              <div class="txt" @click="openSearch"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
+              <div class="txt" @click="openSearch"><input readonly="readonly" v-model="visacondition.ctname" type="text" placeholder="你想去哪里？"></div>
             </div>
             <div class="ipt position">
               <div class="tit">常住地</div>
-              <div class="txt" @click="openProvice"><input readonly="readonly" type="text" placeholder="你居住在哪里？"></div>
+              <div class="txt" @click="openProvice"><input readonly="readonly" type="text" v-model="visacondition.dqname" placeholder="你居住在哪里？"></div>
             </div>
             <div class="ipt visatype lastchild">
-              <div class="tit">类型</div>
-              <div class="txt"><input readonly="readonly" type="text" value="旅游签证"></div>
+              <div class="tit">签证类型</div>
+              <div class="txt" @click="typedis=true">
+                <span v-if="visacondition.lx==0">不限</span>
+                <span v-if="visacondition.lx==1">旅游签证</span>
+                <span v-if="visacondition.lx==2">商务签证</span>
+                <span v-if="visacondition.lx==3">探亲访友签证</span>
+                <span v-if="visacondition.lx==4">工作签证</span>
+                <span v-if="visacondition.lx==5">留学签证</span>
+                <span v-if="visacondition.lx==6">其他签证</span>
+              </div>
             </div>
-            <div class="s_btn">搜索</div>
+            <div class="s_btn" @click="searchVisa">搜索</div>
           </div>
           <div class="search-input hotel-search" v-else>
             <div class="ipt country">
@@ -60,8 +68,22 @@
         <span>定制行程 ></span>
       </router-link>
     </div>
-    <countrys :isShow="searchdis" v-on:choseCountry="changeCountry" v-on:closePage="closeComp"></countrys>
-    <provice :isShow="provicedis" v-on:chosepvc="choseProvice" v-on:closePage="closeComp" ></provice>
+    <countrys
+    v-if="searchdis"
+    @choseCountry="changeCountry"
+    @closePage="closeComp">
+    </countrys>
+    <provice
+    v-if="provicedis"
+    @chosepvc="choseProvice"
+    @closePage="closeComp">
+    </provice>
+    <picker
+    v-if="typedis"
+    :listdata="typelist"
+    @confirm="visatypeSet"
+    @close="closeComp">
+    </picker>
     <mt-datetime-picker
       ref="startpicker"
       type="date"
@@ -85,30 +107,31 @@
 </template>
 
 <script>
-import { DatetimePicker } from 'mint-ui';
+import { DatetimePicker } from 'mint-ui'
 import { Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
 import Banner from '../../components/Banner'
 import Countrys from '../../components/SearchCountry'
 import Provice from '../../components/ProviceList'
+import Picker from '../../components/Picker'
 export default {
   name:'home',
-  // beforeCreate(){
-  //   document.title = "途经旅游"
-  //   Indicator.open('加载中...');
-  // },
-  // created: function () {
-  //   Indicator.close()
-  // },
+  beforeCreate(){
+    document.title = "众意旅游"
+  },
   data:function(){
     return {
       isActive: 0,
       searchdis:false,
       provicedis:false,
+      typedis:false,
+      visacondition:{"ct":"","ctname":"","dq":"","dqname":"","lx":0,"rj":0,"fw":0,"page":1},
       startDate: '',
       endDate: '',
       nowDate: new Date(),
       selectDate: '',
-      pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}]
+      typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
+      pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}],
     }
   },
   methods:{
@@ -134,27 +157,44 @@ export default {
     openSearch:function(){
       this.searchdis = true
     },
-    changeCountry:function(name){
+    changeCountry:function(name,id){
       this.searchdis = false
-      alert(name);
+      this.visacondition.ct = id
+      this.visacondition.ctname = name
     },
     openProvice:function(){
       this.provicedis = true
     },
-    choseProvice:function(name){
+    choseProvice:function(name,id){
       this.provicedis = false
-      alert(name);
+      this.visacondition.dq = id
+      this.visacondition.dqname = name
     },
     closeComp:function(){
       this.provicedis = false
       this.searchdis = false
+      this.typedis = false
+    },
+    visatypeSet:function(v){
+      if (v=='') {v='不限'}
+      this.typedis = false
+      var n = this.typelist.indexOf(v)
+      this.visacondition.lx = n
+    },
+    searchVisa:function(){
+      if (this.visacondition.ct != '' && this.visacondition.dq != '') {
+        this.$store.commit('searchConditionSave', this.visacondition)
+        this.$router.push('/visa')
+      }else {
+        Toast('请选择目的地和常住地');
+      }
     }
-
   },
   components: {
     Banner,
     Countrys,
-    Provice
+    Provice,
+    Picker
   }
 }
 </script>
@@ -216,10 +256,19 @@ export default {
             background-repeat: no-repeat;
             background-position: right center;
           }
+          span{
+            font-size: 0.9rem;
+            color: #333333;
+            height: 30px;display: block;
+            border: none;width: 100%;
+            background-size: auto 17px;
+            background-repeat: no-repeat;
+            background-position: right center;
+          }
         }
         &.country input{background-image:url('/static/images/home/icon-flag.png');}
         &.position input{background-image:url('/static/images/home/icon-location.png');}
-        &.visatype input{background-image:url('/static/images/home/icon-tag.png');}
+        &.visatype span{background-image:url('/static/images/home/icon-tag.png');}
         &.calendar input{background-image:url('/static/images/home/icon-calendar.png');}
       }
       .ipt.lastchild{border-bottom: none;}

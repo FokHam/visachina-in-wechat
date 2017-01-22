@@ -1,8 +1,13 @@
 <template>
   <div class="isr-d-page">
-    <detail-header></detail-header>
+    <detail-header
+      :isrDetail="insuranceDetail"
+    ></detail-header>
     <detail-content
+      :isrDetail="insuranceDetail"
+      :ageSelect="ageSelect"
       :withAge="true"
+      @changeAge="changeAge"
     ></detail-content>
     <detail-datepicker
       :type="type"
@@ -10,7 +15,9 @@
       :date2="endDate"
       :minDay="minDay"
     ></detail-datepicker>
-    <detail-create></detail-create>
+    <detail-create
+      :isrDetail="insuranceDetail"
+    ></detail-create>
   </div>
 </template>
 
@@ -19,6 +26,7 @@
   import DetailContent from "./InsuranceDetail/DetailContent"
   import DetailDatepicker from "./InsuranceDetail/DetailDatepicker"
   import DetailCreate from "./InsuranceDetail/DetailCreate"
+  import { Indicator } from 'mint-ui'
 
   export default {
     data: function () {
@@ -36,7 +44,10 @@
         type: type, // 0单次，1一年多次，2一年一次
         minDay: minDay,
         startDate: startDate,
-        endDate: endDate
+        endDate: endDate,
+        totalDay: "",
+        insuranceDetail: {},
+        ageSelect: 0
       }
     },
     components: {
@@ -48,6 +59,27 @@
     computed: {
       totalDay: function () {
         return (startDate.getTime() - endDate.getTime())/24/60/60/1000;
+      }
+    },
+    created () {
+      let url = "/insurance/info";
+      let send = { id: this.$route.params.id };
+      Indicator.open('拼命读取保险数据中...');
+      this.$http.get(url, { params: send }).then((response) => {
+        console.log(JSON.parse(response.body));
+        let body = JSON.parse(response.body);
+        if (body.status === 1) {
+          this.insuranceDetail = body.data;
+          Indicator.close();
+        } else {
+          console.log("服务器错误");
+          Indicator.close();
+        }
+      })
+    },
+    methods: {
+      changeAge (n) {
+        this.ageSelect = n;
       }
     }
   }

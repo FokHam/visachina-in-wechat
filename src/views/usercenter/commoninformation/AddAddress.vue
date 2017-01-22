@@ -16,7 +16,7 @@
     <div class="item">
       <span>所在地区</span>
       <div class="ipt select" @click="addressDis=true">
-        <div class="txt">{{clientinfo.province +' '+clientinfo.city+' '+clientinfo.area}}</div>
+        <div class="txt">{{clientinfo.province +' '+clientinfo.city+' '+clientinfo.zone}}</div>
       </div> 
     </div>
     <div class="item">
@@ -26,7 +26,7 @@
       </div>      
     </div>
   </div>
-  <div class="save" @click="submit">保存</div>
+  <div class="save" @click="verifyData">保存</div>
   <address-picker
   v-if="addressDis"
   @confirm="confirmAddress"
@@ -47,7 +47,7 @@ export default {
   },
   data:function(){
     return{
-      clientinfo:{"name":"","phone":"","province":"","city":"","area":"","address":""},
+      clientinfo:{"name":"","phone":"","province":"","city":"","zone":"","address":""},
       addressDis:false
     }
   },
@@ -58,14 +58,29 @@ export default {
     confirmAddress:function(v){
       this.clientinfo.province = v[0]
       this.clientinfo.city = v[1]
-      this.clientinfo.area = v[2]
+      this.clientinfo.zone = v[2]
       this.addressDis = false
     },
     closeAddress:function(){
       this.addressDis = false
     },
-    submit:function(){
-      this.$emit('submit')    
+    verifyData:function(){      
+      if (this.clientinfo.name != '' && this.clientinfo.phone != '' && this.clientinfo.province != '' && this.clientinfo.address != '') {
+        this.submitData()
+      }else{
+        Toast('请完善资料后再保存')
+      }      
+    },
+    submitData:function(){
+      var url = '/member/address-create',send=this.clientinfo;      
+      this.$http.get(url,{params:send}).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.$emit('submit','address')
+        }else {
+          Toast(rst.msg)
+        }
+      });        
     }
     
   }

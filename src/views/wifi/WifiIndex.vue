@@ -1,5 +1,5 @@
 <template>
-<div class="wifi" id="wifi">
+<div class="wifi" id="wifi" v-if="pageData != ''">
   <div class="grid_top">
     <div class="search" @click="searchdis=true"><span>你想去哪儿？</span></div>
     <div class="banner">
@@ -27,33 +27,18 @@
   <div class="grid_suggest">
     <div class="tit">爆款推荐</div>
     <div class="list">
-      <router-link class="item" to="/WifiDetail/1001">
-        <div class="left"><img src="/static/images/wifi/hot-item.png"></div>
+      <router-link v-for="item in pageData.hotProducts" class="item" :to="'/WifiDetail/'+item.id">
+        <div class="left" :style="{'background-image':'url('+item.image+')'}"></div>
         <div class="right">
-          <div class="name">日本旅行WIFI租凭（广州取还）</div>
+          <div class="name">{{item.name}}</div>
           <div class="tags"><span>多人畅享</span><span>超低价</span></div>
-          <div class="price"><span>￥9</span>/天起</div>
+          <div class="price"><span>￥{{item.price}}</span>/天起</div>
         </div>
       </router-link>
-      <router-link class="item" to="/WifiDetail/1001">
-        <div class="left"><img src="/static/images/wifi/hot-item.png"></div>
-        <div class="right">
-          <div class="name">日本旅行WIFI租凭（广州取还）</div>
-          <div class="tags"><span>多人畅享</span><span>超低价</span></div>
-          <div class="price"><span>￥9</span>/天起</div>
-        </div>
-      </router-link>
-      <router-link class="item" to="/WifiDetail/1001">
-        <div class="left"><img src="/static/images/wifi/hot-item.png"></div>
-        <div class="right">
-          <div class="name">日本旅行WIFI租凭（广州取还）</div>
-          <div class="tags"><span>多人畅享</span><span>超低价</span></div>
-          <div class="price"><span>￥9</span>/天起</div>
-        </div>
-      </router-link>
+      
     </div>
   </div>
-  <country :isShow="searchdis" v-on:choseCountry="changeCountry" v-on:closePage="closeComp"></country>
+  <country v-if="searchdis" v-on:choseCountry="changeCountry" v-on:closePage="closeComp"></country>
 </div>
 </template>
 
@@ -67,8 +52,8 @@ export default {
     document.title = "全球WIFI"
     Indicator.open('加载中...');
   },
-  created: function () {
-    Indicator.close();
+  created: function () {    
+    this.getWifiIndex()
     this.setWidth()
   },
   components: {
@@ -76,6 +61,7 @@ export default {
   },
   data:function(){
     return{
+      pageData:'',
       hotItemWidth:0,
       searchdis:false
       
@@ -92,6 +78,19 @@ export default {
     },
     closeComp:function(){
       this.searchdis = false
+    },
+    getWifiIndex:function(){
+      var url = '/wifi/index'
+      this.$http.get(url).then(function(result){
+        Indicator.close()
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          console.log(JSON.stringify(rst))
+          this.pageData = rst.data          
+        }else {
+          console.log(rst.msg)
+        }
+      });
     }
   }
 }
@@ -163,8 +162,11 @@ export default {
         padding: 10px 0;position: relative;display: block;
         min-height: 70px;border-bottom: 1px solid #EEEEEE;
         .left{
-          position: absolute;width: 70px;width: 70px;
+          position: absolute;width: 70px;height: 70px;
           left: 0;top: 10px;
+          background-size: auto 70px;
+          background-position: center;
+          background-repeat: no-repeat;
         }
         .right{
           padding-left: 80px;

@@ -1,4 +1,4 @@
-<template>
+`<template>
 <div class="user-function" :class="{ani:moveAni}" @touchmove="logoMove" :style="{transform:'translate('+logoPositionX+'px,'+logoPositionY+'px)'}" @touchend="logoReposition" @touchstart="moveAni=false" @click="navDis=!navDis">
   <div class="logo">logo</div>
   <div class="memu" :class="{active:navDis,left:whichSide=='left',right:whichSide=='right'}">

@@ -72,38 +72,38 @@
 </template>
 
 <script>
-import { Indicator } from 'mint-ui'
-export default {
-  data () {
-    return {
-      facilityList: [
-        "wifi", "park", "swim"
-      ],
-      hotelList: []
-    };
-  },
-  created () {
-    {
-      this.getList();
-    }
-  },
-  methods: {
-    getList (obj) {
-      Indicator.open('拼命读取酒店数据中...');
-      let url = '/hotel/list';
-      this.$http.get(url).then((response) => {
-        // success callback
-        console.log(JSON.parse(response.body));
-        let data = JSON.parse(response.body).data;
-        this.hotelList = data.rows;
-        Indicator.close();
-      }, (response) => {
-        // error callback
-        Indicator.close();
-      });
+  import { Indicator } from 'mint-ui'
+  export default {
+    data () {
+      return {
+        facilityList: [
+          "wifi", "park", "swim"
+        ],
+        hotelList: []
+      };
+    },
+    created () {
+      {
+        this.getList();
+      }
+    },
+    methods: {
+      getList (obj) {
+        Indicator.open('拼命读取酒店数据中...');
+        let url = '/hotel/list';
+        this.$http.get(url).then((response) => {
+          // success callback
+          console.log(JSON.parse(response.body));
+          let data = JSON.parse(response.body).data;
+          this.hotelList = data.rows;
+          Indicator.close();
+        }, (response) => {
+          // error callback
+          Indicator.close();
+        });
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>

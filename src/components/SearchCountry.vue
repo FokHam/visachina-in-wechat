@@ -1,134 +1,82 @@
 <template>
-<div v-if="isShow" class="search-page">
-  <div class="topipt">
-    <div class="layer">
-      <div class="ipt">
-        <input type="text" placeholder="你想去哪儿？" @keyup="keywordsChange()" v-model="keyword">
-        <div class="clearinput" @click="clearinput" v-show="keyword!=''"></div>
+  <div class="search-page">
+    <div class="topipt">
+      <div class="layer">
+        <div class="ipt">
+          <input type="text" placeholder="你想去哪儿？" @keyup="keywordsChange()" v-model="keyword">
+          <div class="clearinput" @click="clearinput" v-show="keyword!=''"></div>
+        </div>
+        <div class="cancel" @click="closePage">取消</div>
       </div>
-      <div class="cancel" @click="closePage">取消</div>
+    </div>
+    <div class="searchresult" v-show="searchdata.length != 0">
+      <ul>
+        <li v-for="item in searchdata">{{item.name}}</li>
+      </ul>
+      <div class="backshadow" @click="clearinput"></div>
+    </div>
+    <div class="wordsrecord">
+      <div class="item history" v-if="historylist.length!=0">
+        <div class="tit">历史搜索</div>
+        <div class="namelist">
+          <ul>
+            <li v-for="item in historylist" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="item hot">
+        <div class="tit">热门搜索</div>
+        <div class="namelist">
+          <ul>
+            <li v-for="item in countryData.hotContries" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="countrylist">
+      <div class="item" v-for="countries in countryData.countries">
+        <div class="tit">{{countries.name}}</div>
+        <div class="namelist">
+          <ul>
+            <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>
+          </ul>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div class="searchresult" v-show="searchdata.length != 0">
-    <ul>
-      <li v-for="item in searchdata">{{item.name}}</li>
-    </ul>
-    <div class="backshadow" @click="clearinput"></div>
-  </div>
-  <div class="wordsrecord">
-    <div class="item history">
-      <div class="tit">历史搜索</div>
-      <div class="namelist">
-        <ul>
-          <li @click="choseCountry('新西兰')"><span>新西兰</span></li>
-          <li @click="choseCountry('希腊')"><span>希腊</span></li>
-          <li @click="choseCountry('意大利')"><span>意大利</span></li>
-          <li @click="choseCountry('土耳其')"><span>土耳其</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="item hot">
-      <div class="tit">热门搜索</div>
-      <div class="namelist">
-        <ul>
-          <li><span>马耳他</span></li>
-          <li><span>美国</span></li>
-          <li><span>加拿大</span></li>
-          <li><span>马来西亚</span></li>
-          <li><span>乌兹别克斯坦</span></li>
-          <li><span>希腊</span></li>
-          <li><span>意大利</span></li>
-          <li><span>埃塞俄比亚</span></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="countrylist">
-    <div class="item">
-      <div class="tit">亚洲</div>
-      <div class="namelist">
-        <ul>
-          <li><span>中国</span></li>
-          <li><span>日本</span></li>
-          <li><span>韩国</span></li>
-          <li><span>朝鲜</span></li>
-          <li><span>泰国</span></li>
-          <li><span>印度</span></li>
-          <li><span>巴基斯坦</span></li>
-          <li><span>新加坡</span></li>
-          <li><span>菲律宾</span></li>
-          <li><span>老挝</span></li>
-          <li><span>哈萨克斯坦</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="item">
-      <div class="tit">欧洲</div>
-      <div class="namelist">
-        <ul>
-          <li><span>英国</span></li>
-          <li><span>德国</span></li>
-          <li><span>意大利</span></li>
-          <li><span>保加利亚</span></li>
-          <li><span>丹麦</span></li>
-          <li><span>葡萄牙</span></li>
-          <li><span>法国</span></li>
-          <li><span>罗马尼亚</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="item">
-      <div class="tit">北美洲</div>
-      <div class="namelist">
-        <ul>
-          <li><span>英国</span></li>
-          <li><span>德国</span></li>
-          <li><span>意大利</span></li>
-          <li><span>保加利亚</span></li>
-          <li><span>丹麦</span></li>
-          <li><span>葡萄牙</span></li>
-          <li><span>法国</span></li>
-          <li><span>罗马尼亚</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="item">
-      <div class="tit">南美洲</div>
-      <div class="namelist">
-        <ul>
-          <li><span>英国</span></li>
-          <li><span>德国</span></li>
-          <li><span>意大利</span></li>
-          <li><span>保加利亚</span></li>
-          <li><span>丹麦</span></li>
-          <li><span>葡萄牙</span></li>
-          <li><span>法国</span></li>
-          <li><span>罗马尼亚</span></li>
-        </ul>
-      </div>
-    </div>
-
-  </div>
-
-
-
-
-</div>
 </template>
 
 <script>
-import { Indicator } from 'mint-ui'
 export default {
-  props:['isShow'],
+  created: function () {
+    if (localStorage.visaHistory) {
+      this.historylist = JSON.parse(localStorage.visaHistory)
+    }
+    this.getCountryList();
+  },
   data:function(){
     return{
       keyword:'',
-      searchdata:[]
-
-
+      searchdata:[],
+      countryData:{},
+      historylist:[]
     }
   },
   methods:{
+    getCountryList:function(){
+      var url = '/visa/countries'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.countryData = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      }, function(result){
+        console.log("请求失败")
+      });
+    },
     keywordsChange:function(){
       if (this.keyword != '') {
         console.log(this.keyword)
@@ -144,8 +92,22 @@ export default {
     closePage:function(){
       this.$emit('closePage')
     },
-    choseCountry:function(name){
-      this.$emit('choseCountry',name)
+    choseCountry:function(n,id){
+      this.setHistory(n,id)
+      this.$emit('choseCountry',n,id)
+    },
+    setHistory:function(c,id){
+      var new_rec = {"name":c,"area_id":id}
+      if (!new RegExp(c).test(localStorage.visaHistory)) {
+        if(localStorage.visaHistory){
+          var hisObj = JSON.parse(localStorage.visaHistory)
+          hisObj.unshift(new_rec)
+          localStorage.visaHistory = JSON.stringify(hisObj.slice(0,4))
+        }else {
+          localStorage.visaHistory = JSON.stringify([new_rec])
+        }
+        this.historylist = JSON.stringify(localStorage.visaHistory)
+      }
     }
   }
 }
@@ -155,7 +117,7 @@ export default {
 .search-page{
   position: fixed;
   height: 100%;width: 100%;top: 0;left: 0;background: #ececec;
-  z-index: 999;
+  z-index: 1001;
   overflow-y:scroll;
   overflow-scrolling: touch;-webkit-overflow-scrolling: touch;
   .topipt{

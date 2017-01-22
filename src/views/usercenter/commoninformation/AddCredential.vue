@@ -2,25 +2,25 @@
 <div class="add-credential">
   <div class="tabs">
     <ul>
-      <li><span :class="{on:c_type==0}" @click="switchTab(0)">公司</span></li>
-      <li><span :class="{on:c_type==1}" @click="switchTab(1)">个人</span></li>
+      <li><span :class="{on:clientinfo.type==1}" @click="switchTab(1)">公司</span></li>
+      <li><span :class="{on:clientinfo.type==2}" @click="switchTab(2)">个人</span></li>
     </ul>
   </div>
-  <div class="field" v-show="c_type==0">
+  <div class="field" v-show="clientinfo.type==1">
     <div class="item">
       <span>抬头</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.company" placeholder="公司名称">
+        <input type="text" v-model="clientinfo.name" placeholder="公司名称">
       </div>      
     </div>
     <div class="item">
       <span>纳税人识别号</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.code" placeholder="仅增值税发票填写">
+        <input type="text" v-model="clientinfo.number" placeholder="仅增值税发票填写">
       </div>      
     </div>
   </div>
-  <div class="field" v-show="c_type==1">
+  <div class="field" v-show="clientinfo.type==2">
     <div class="item">
       <span>抬头</span>
       <div class="ipt">
@@ -28,36 +28,70 @@
       </div>      
     </div>    
   </div>
-  <div class="save" @click="submit">保存</div>
+  <div class="save" @click="verifyData">保存</div>
+  <div class="delete" @click="remove" v-if="clientinfo.id">删除</div>
 </div>
 </template>
 
 <script>
-import { Toast } from 'mint-ui'
+import { Toast } from 'mint-ui';
+import { MessageBox } from 'mint-ui';
 export default {
   props: ['info'],
   created:function(){
     if (this.info != "") {
       this.clientinfo = this.info
-      this.c_type = this.info.type
     }
   },
   data:function(){
     return{
-      clientinfo:{"name":"","company":"","code":"","type":0},
-      c_type:0      
+      clientinfo:{"name":"","number":"","type":1}           
     }
   },
   methods:{
     switchTab:function(v){
       if (this.info == '') {
-        this.c_type = v
+        this.clientinfo.type = v
       }
     },
-    submit:function(){
-      this.$emit('submit')    
-    }
-    
+    verifyData:function(){
+      if (this.clientinfo.type==1) {
+        if (this.clientinfo.name != '' && this.clientinfo.number != '') {
+          this.submitData()
+        }else{
+          Toast('请完善资料后再保存')
+        }
+      }else if (this.clientinfo.type==2) {
+        if (this.clientinfo.name != '') {
+          this.submitData()
+        }else{
+          Toast('请完善资料后再保存')
+        }
+      }
+    },
+    submitData:function(){
+      var url = '/member/invoice-create',send=this.clientinfo;      
+      this.$http.get(url,{params:send}).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.$emit('submit','credential')
+        }else {
+          Toast(rst.msg)
+        }
+      });        
+    },
+    remove:function(){
+      MessageBox.confirm('确定删除?').then(action => {
+        var url = '/member/invoice-delete?id='+this.clientinfo.id        
+        this.$http.get(url).then(function(result){
+          this.$emit('submit','credential')
+          var rst = result.body
+          if (rst.status == 0) {
+            console.log(rst.msg)
+          }
+        });
+      }); 
+    }    
   }
 }
 </script>
@@ -142,8 +176,14 @@ export default {
   }
   .save{
     font-size: 0.8rem;color: #fff;
-    line-height: 35px;margin: 50px 10px 25px;
+    line-height: 35px;margin: 50px 10px 15px;
     text-align: center;background-color: #008be4;
+    border-radius: 4px;
+  }
+  .delete{
+    font-size: 0.8rem;color: #fff;
+    line-height: 35px;margin: 0 10px 25px;
+    text-align: center;background-color: #F95800;
     border-radius: 4px;
   }
  
