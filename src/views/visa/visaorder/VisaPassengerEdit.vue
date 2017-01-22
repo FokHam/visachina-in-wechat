@@ -57,7 +57,7 @@ export default {
     },
     saveClient:function(){
       if (this.passengerInfo.name != '' && this.passengerInfo.type != '') {
-        var url = '/api/member/passenger-create',send=this.passengerInfo;      
+        var url = '/member/passenger-create',send=this.passengerInfo;      
         this.$http.get(url,{params:send}).then(function(result){
           var rst = JSON.parse(result.body)
           if (rst.status == 1) {

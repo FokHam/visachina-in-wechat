@@ -29,7 +29,7 @@ export default {
   },
   methods:{
     getPassenger:function(){
-      var url = '/api/member/address'
+      var url = '/member/address'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {

@@ -137,7 +137,7 @@ export default{
       this.emailDis = false
     },
     getVisaData:function(){      
-      var url = '/api/visa/info?id='+this.$route.params.id
+      var url = '/visa/info?id='+this.$route.params.id
       this.$http.get(url).then(function(result){
         Indicator.close();
         var rst = JSON.parse(result.body)

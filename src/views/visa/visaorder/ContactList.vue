@@ -30,7 +30,7 @@ export default {
   },
   methods:{
     getPassenger:function(){
-      var url = '/api/member/contact'
+      var url = '/member/contact'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {

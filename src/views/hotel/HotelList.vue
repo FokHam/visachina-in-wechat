@@ -90,7 +90,7 @@
     methods: {
       getList (obj) {
         Indicator.open('拼命读取酒店数据中...');
-        let url = '/api/hotel/list';
+        let url = '/hotel/list';
         this.$http.get(url).then((response) => {
           // success callback
           console.log(JSON.parse(response.body));

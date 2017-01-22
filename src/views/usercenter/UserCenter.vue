@@ -57,7 +57,7 @@ export default{
   },
   methods:{
     getUserInfo:function(){
-      var api = "/api/member/index";
+      var api = "/member/index";
       this.$http.get(api).then(function(result){
         Indicator.close();
         console.log(result)

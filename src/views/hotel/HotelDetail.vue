@@ -187,7 +187,7 @@
     methods: {
       getDetail () {
         let id = this.$route.params.id;
-        let url = "/api/hotel/info";
+        let url = "/hotel/info";
         let send = {"id": id};
         this.$http.get(url, {params: send}).then((response) => {
           console.log(JSON.parse(response.body));
@@ -203,7 +203,7 @@
         });
       },
       getRoom () {
-        let url = '/api/hotel/room';
+        let url = '/hotel/room';
         this.$http.get(url).then((response) => {
           // success callback
           console.log(JSON.parse(response.body));

@@ -29,7 +29,7 @@ export default {
   },
   methods:{
     getPassenger:function(){
-      var url = '/api/member/invoice'
+      var url = '/member/invoice'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {

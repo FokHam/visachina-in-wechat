@@ -3,26 +3,26 @@
   <div class="screen-list">
     <div class="item">
       <div class="tit">加急</div>
-      <div class="list fast">        
-        <span v-for="item in screenStr.urgent" :class="{on:item.data==visaCondition.urgent}" @click="visaCondition.urgent=item.data">{{item.text}}</span>
+      <div class="list fast">
+        <span v-for="item in screenStr.fw" :class="{on:item.data==visaCondition.fw}" @click="visaCondition.fw=item.data">{{item.text}}</span>
       </div>
     </div>
     <div class="item">
       <div class="tit">签证类别</div>
       <div class="list type">
         <ul>
-          <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.visatype}" @click="visaCondition.visatype=index">{{item}}</li> 
+          <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>
         </ul>
       </div>
     </div>
-    <div class="item">  
+    <div class="item">
       <div class="tit">入境期限</div>
       <div class="list date">
         <ul>
-          <li v-for="item in screenStr.entrynumber" :class="{on:item.data==visaCondition.entrynumber}" @click="visaCondition.entrynumber=item.data">{{item.text}}</li> 
+          <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>
         </ul>
       </div>
-    </div>    
+    </div>
   </div>
   <div class="backshadow" @click="closePage"></div>
 </div>
@@ -51,7 +51,7 @@
           this.type = v
         }else {
           this.date = v
-        }        
+        }
         this.chosescr()
       }
     },

@@ -162,7 +162,7 @@ export default {
       if (t=="reload") {
         this.listdata = []
       }
-      var url = '/api/visa/index',send=this.visaCondition
+      var url = '/visa/index',send=this.visaCondition
       this.$http.get(url,{params:send}).then(function(result){
         console.log(result)
         Indicator.close()
