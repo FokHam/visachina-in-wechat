@@ -194,7 +194,7 @@
     },
     methods: {
       getDetail () {
-        let url = "/api/hotel/info";
+        let url = "/hotel/info";
         let id = this.$route.params.id;
         let send = {"id": id};
         this.$http.get(url, {params: send}).then((response) => {
@@ -214,7 +214,7 @@
       },
       getRoom () {
         Indicator.open('拼命读取房型数据中...');
-        let url = '/api/hotel/room';
+        let url = '/hotel/room';
         let id = this.$route.params.id;
         let send = {
           id: id,
