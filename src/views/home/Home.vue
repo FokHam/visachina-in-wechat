@@ -1,6 +1,6 @@
 <template>
   <div id="home" class="home">
-    <div class="homePage" v-if="searchdis == false">
+    <div class="homePage" v-if="searchdis == false && citydis == false">
       <banner :pics="pics"></banner>
       <div class="search">
         <div class="tabs">
@@ -33,15 +33,15 @@
               <div class="s_btn" @click="searchVisa">搜索</div>
             </div>
             <div class="search-input hotel-search" v-else>
-              <div class="ipt country">
+              <div class="ipt country" @click="citydis=true">
                 <div class="tit">目的地城市</div>
                 <div class="txt"><input type="text" placeholder="你想去哪里？" v-model="hotelCondition.destination"></div>
               </div>
-              <div class="ipt calendar" v-on:click="openStartPicker()">
+              <div class="ipt calendar"  @click="pickingDate=true,pickingType=1">
                 <div class="tit">入住日期</div>
                 <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="hotelCondition.startDate"></div>
               </div>
-              <div class="ipt calendar lastchild" v-on:click="openEndPicker()">
+              <div class="ipt calendar lastchild" @click="pickingDate=true,pickingType=2">
                 <div class="tit">离店日期</div>
                 <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="hotelCondition.endDate"></div>
               </div>
@@ -75,6 +75,11 @@
     @choseCountry="changeCountry"
     @closePage="closeComp">
     </countrys>
+    <cities
+    v-if="citydis"
+    @choseCity="changeCity"
+    @closePage="closeComp">
+    </cities>
     <provice
     v-if="provicedis"
     @chosepvc="choseProvice"
@@ -86,33 +91,28 @@
     @confirm="visatypeSet"
     @close="closeComp">
     </picker>
-    <mt-datetime-picker
-      ref="startpicker"
-      type="date"
-      v-model="nowDate"
-      year-format="{value} 年"
-      month-format="{value} 月"
-      date-format="{value} 日"
-      @confirm="startConfirm">
-    </mt-datetime-picker>
-    <mt-datetime-picker
-      ref="endpicker"
-      type="date"
-      v-model="selectDate"
-      year-format="{value} 年"
-      month-format="{value} 月"
-      date-format="{value} 日"
-      @confirm="endConfirm">
-    </mt-datetime-picker>
+    <calendar
+    v-if="pickingDate"
+    v-on:confirm="setDate"
+    type1="入住"
+    type2="离店"
+    :multipleDate="multipleDate"
+    :pickType ="pickingType"
+    :minDay="minDay"
+    :maxDay="maxDay"
+    :day1="startDate"
+    :day2="endDate">
+  </calendar>
   </div>
 </template>
 
 <script>
-import { DatetimePicker } from 'mint-ui'
 import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
+import Calendar from "../../components/Calendar.vue";
 import Banner from '../../components/Banner'
 import Countrys from '../../components/SearchCountry'
+import Cities from '../../components/SearchCity'
 import Provice from '../../components/ProviceList'
 import Picker from '../../components/Picker'
 export default {
@@ -121,9 +121,11 @@ export default {
     document.title = "众意旅游"
   },
   data:function(){
+    var sTime = new Date(),eTime = new Date(sTime.getTime() + 24*60*60*1000)
     return {
       isActive: 0,
       searchdis:false,
+      citydis:false,
       provicedis:false,
       typedis:false,
       visacondition:{"ct":"","ctname":"","dq":"","dqname":"","lx":0,"rj":0,"fw":0,"page":1},
@@ -132,31 +134,29 @@ export default {
         endDate: '',
         destination: ''
       },
-      nowDate: new Date(),
-      selectDate: '',
       typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
       pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}],
+      //calendar
+      minDay:2,
+      maxDay:28,
+      singleTime: 0,
+      startDate: new Date(sTime.getFullYear(),sTime.getMonth(),sTime.getDate()),
+      endDate: new Date(eTime.getFullYear(),eTime.getMonth(),eTime.getDate()),
+      multipleDate: true,
+      pickingType: 1,
+      pickingDate: false    
     }
   },
   methods:{
     searchTap: function(v){
       this.isActive = v
     },
-    openStartPicker:function() {
-        this.$refs.startpicker.open();
-    },
-    openEndPicker:function() {
-        this.$refs.endpicker.open();
-    },
-    startConfirm: function (t){
-      var m = t.getMonth()+1
-      this.hotelCondition.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
-      var t = t.getTime() + 86400000
-      this.selectDate = new Date(t)
-    },
-    endConfirm: function (t){
-      var m = t.getMonth()+1
-      this.hotelCondition.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+    setDate:function(s,e){
+      this.pickingDate = false
+      this.startDate = s
+      this.endDate = e
+      this.hotelCondition.startDate = s.getFullYear()+'-'+((s.getMonth()+1).toString().length == 1?'0'+(s.getMonth()+1):(s.getMonth()+1))+'-'+(s.getDate().toString().length == 1?'0'+s.getDate():s.getDate())
+      this.hotelCondition.endDate = e.getFullYear()+'-'+((e.getMonth()+1).toString().length == 1?'0'+(e.getMonth()+1):(e.getMonth()+1))+'-'+(e.getDate().toString().length == 1?'0'+e.getDate():e.getDate())
     },
     openSearch:function(){
       this.searchdis = true
@@ -165,6 +165,10 @@ export default {
       this.searchdis = false
       this.visacondition.ct = id
       this.visacondition.ctname = name
+    },
+    changeCity:function(name){
+      this.citydis = false
+      this.hotelCondition.destination = name
     },
     openProvice:function(){
       this.provicedis = true
@@ -176,6 +180,7 @@ export default {
     },
     closeComp:function(){
       this.provicedis = false
+      this.citydis = false
       this.searchdis = false
       this.typedis = false
     },
@@ -205,8 +210,10 @@ export default {
   components: {
     Banner,
     Countrys,
+    Cities,
     Provice,
-    Picker
+    Picker,
+    Calendar
   }
 }
 </script>

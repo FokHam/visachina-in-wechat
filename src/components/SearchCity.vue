@@ -11,7 +11,7 @@
   </div>
   <div class="searchresult" v-show="keyword != ''">
     <ul v-show="searchdata.length != 0">
-      <li v-for="item in searchdata" @click="choseCountry(item.name,item.area_id)">{{item.name}}</li>      
+      <li v-for="item in searchdata" @click="choseCity(item.name)">{{item.name}}</li>      
     </ul>
     <div class="backshadow" :class="{white:searchdata.length != 0}" @touchmove="stopscroll"></div>
   </div>
@@ -21,7 +21,7 @@
         <div class="tit">历史搜索</div>
         <div class="namelist">
           <ul>
-            <li v-for="item in historylist" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+            <li v-for="item in historylist" @click="choseCity(item.name)"><span>{{item.name}}</span></li>
           </ul>
         </div>
       </div>
@@ -29,17 +29,7 @@
         <div class="tit">热门搜索</div>
         <div class="namelist">
           <ul>
-            <li v-for="item in countryData.hotContries" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="countrylist">
-      <div class="item" v-for="countries in countryData.countries">
-        <div class="tit">{{countries.name}}</div>
-        <div class="namelist">
-          <ul>
-            <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>
+            <li v-for="item in hotcities" @click="choseCity(item.name)"><span>{{item.name}}</span></li>
           </ul>
         </div>
       </div>
@@ -59,17 +49,17 @@ export default {
     return{
       keyword:'',
       searchdata:[],
-      countryData:{},
+      hotcities:{},
       historylist:[]
     }
   },
   methods:{
     getCountryList:function(){
-      var url = '/api/visa/countries'
-      this.$http.get(url).then(function(result){
+      var url = '/api/hotel/hot-city'
+      this.$http.get(url).then(function(result){        
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          this.countryData = rst.data
+          this.hotcities = rst.data
         }else {
           console.log(rst.msg)
         }
@@ -79,12 +69,12 @@ export default {
     },
     keywordsChange:function(v){
       if (v != '') {
-        var url = '/api/visa/search-country',send={"name":v}
+        var url = '/api/hotel/search-city',send={"keyword":v}
         this.$http.get(url,{params:send}).then(function(result){
           var rst = JSON.parse(result.body)
           if (rst.status == 1) {
             if (rst.data) {
-              this.searchdata = rst.data
+              this.searchdata = rst.data.rows
             }else{
               this.searchdata = []
             }            
@@ -103,12 +93,12 @@ export default {
     closePage:function(){
       this.$emit('closePage')
     },
-    choseCountry:function(n,id){
-      this.setHistory(n,id)
-      this.$emit('choseCountry',n,id)
+    choseCity:function(n){
+      this.setHistory(n)
+      this.$emit('choseCity',n)
     },
-    setHistory:function(c,id){
-      var new_rec = {"name":c,"area_id":id}
+    setHistory:function(c){
+      var new_rec = {"name":c}
       if (!new RegExp(c).test(localStorage.hotelHistory)) {
         if(localStorage.hotelHistory){
           var hisObj = JSON.parse(localStorage.hotelHistory)

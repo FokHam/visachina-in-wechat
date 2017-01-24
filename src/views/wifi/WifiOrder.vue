@@ -104,7 +104,7 @@ export default {
 
 
       //calendar
-      minDay:3,
+      minDay:1,
       maxDay:99,
       singleTime: 0,
       startDate: new Date(sTime.getFullYear(),sTime.getMonth(),sTime.getDate()),
