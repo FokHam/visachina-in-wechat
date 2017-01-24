@@ -34,17 +34,17 @@
           <div class="search-input hotel-search" v-else>
             <div class="ipt country">
               <div class="tit">目的地城市</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
+              <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？" v-model="hotelCondition.destination"></div>
             </div>
             <div class="ipt calendar" v-on:click="openStartPicker()">
               <div class="tit">入住日期</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="startDate"></div>
+              <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="hotelCondition.startDate"></div>
             </div>
             <div class="ipt calendar lastchild" v-on:click="openEndPicker()">
               <div class="tit">离店日期</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="endDate"></div>
+              <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="hotelCondition.endDate"></div>
             </div>
-            <div class="s_btn">搜索</div>
+            <div class="s_btn" @click="searchHotel">搜索</div>
           </div>
         </div>
       </div>
@@ -103,100 +103,110 @@
       @confirm="endConfirm">
     </mt-datetime-picker>
   </div>
-
 </template>
 
 <script>
-import { DatetimePicker } from 'mint-ui'
-import { Indicator } from 'mint-ui'
-import { Toast } from 'mint-ui'
-import Banner from '../../components/Banner'
-import Countrys from '../../components/SearchCountry'
-import Provice from '../../components/ProviceList'
-import Picker from '../../components/Picker'
-export default {
-  name:'home',
-  beforeCreate(){
-    document.title = "众意旅游"
-  },
-  data:function(){
-    return {
-      isActive: 0,
-      searchdis:false,
-      provicedis:false,
-      typedis:false,
-      visacondition:{"ct":"","ctname":"","dq":"","dqname":"","lx":0,"rj":0,"fw":0,"page":1},
-      startDate: '',
-      endDate: '',
-      nowDate: new Date(),
-      selectDate: '',
-      typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
-      pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}],
-    }
-  },
-  methods:{
-    searchTap: function(v){
-      this.isActive = v
+  import { DatetimePicker } from 'mint-ui'
+  import { Indicator } from 'mint-ui'
+  import { Toast } from 'mint-ui'
+  import Banner from '../../components/Banner'
+  import Countrys from '../../components/SearchCountry'
+  import Provice from '../../components/ProviceList'
+  import Picker from '../../components/Picker'
+  export default {
+    name:'home',
+    beforeCreate(){
+      document.title = "众意旅游"
     },
-    openStartPicker:function() {
-        this.$refs.startpicker.open();
-    },
-    openEndPicker:function() {
-        this.$refs.endpicker.open();
-    },
-    startConfirm: function (t){
-      var m = t.getMonth()+1
-      this.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
-      var t = t.getTime() + 86400000
-      this.selectDate = new Date(t)
-    },
-    endConfirm: function (t){
-      var m = t.getMonth()+1
-      this.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
-    },
-    openSearch:function(){
-      this.searchdis = true
-    },
-    changeCountry:function(name,id){
-      this.searchdis = false
-      this.visacondition.ct = id
-      this.visacondition.ctname = name
-    },
-    openProvice:function(){
-      this.provicedis = true
-    },
-    choseProvice:function(name,id){
-      this.provicedis = false
-      this.visacondition.dq = id
-      this.visacondition.dqname = name
-    },
-    closeComp:function(){
-      this.provicedis = false
-      this.searchdis = false
-      this.typedis = false
-    },
-    visatypeSet:function(v){
-      if (v=='') {v='不限'}
-      this.typedis = false
-      var n = this.typelist.indexOf(v)
-      this.visacondition.lx = n
-    },
-    searchVisa:function(){
-      if (this.visacondition.ct != '' && this.visacondition.dq != '') {
-        this.$store.commit('searchConditionSave', this.visacondition)
-        this.$router.push('/visa')
-      }else {
-        Toast('请选择目的地和常住地');
+    data:function(){
+      return {
+        isActive: 0,
+        searchdis:false,
+        provicedis:false,
+        typedis:false,
+        visacondition:{"ct":"","ctname":"","dq":"","dqname":"","lx":0,"rj":0,"fw":0,"page":1},
+        hotelCondition: {
+          startDate: '',
+          endDate: '',
+          destination: ''
+        },
+        nowDate: new Date(),
+        selectDate: '',
+        typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
+        pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}],
       }
+    },
+    methods:{
+      searchTap: function(v){
+        this.isActive = v
+      },
+      openStartPicker:function() {
+          this.$refs.startpicker.open();
+      },
+      openEndPicker:function() {
+          this.$refs.endpicker.open();
+      },
+      startConfirm: function (t){
+        var m = t.getMonth()+1
+        this.hotelCondition.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+        var t = t.getTime() + 86400000
+        this.selectDate = new Date(t)
+      },
+      endConfirm: function (t){
+        var m = t.getMonth()+1
+        this.hotelCondition.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+      },
+      openSearch:function(){
+        this.searchdis = true
+      },
+      changeCountry:function(name,id){
+        this.searchdis = false
+        this.visacondition.ct = id
+        this.visacondition.ctname = name
+      },
+      openProvice:function(){
+        this.provicedis = true
+      },
+      choseProvice:function(name,id){
+        this.provicedis = false
+        this.visacondition.dq = id
+        this.visacondition.dqname = name
+      },
+      closeComp:function(){
+        this.provicedis = false
+        this.searchdis = false
+        this.typedis = false
+      },
+      visatypeSet:function(v){
+        if (v=='') {v='不限'}
+        this.typedis = false
+        var n = this.typelist.indexOf(v)
+        this.visacondition.lx = n
+      },
+      searchVisa:function(){
+        if (this.visacondition.ct != '' && this.visacondition.dq != '') {
+          this.$store.commit('searchConditionSave', this.visacondition)
+          this.$router.push('/visa')
+        }else {
+          Toast('请选择目的地和常住地');
+        }
+      },
+      searchHotel:function(){
+        if (this.startDate !== '' && this.endDate !== '' && this.destination !== '') {
+          this.$store.commit('searchHotelConditionSave', this.visacondition)
+          this.$router.push('/hotel')
+        }else {
+          Toast('请选择目的地和常住地');
+        }
+      },
+    },
+    components: {
+      Banner,
+      Countrys,
+      Provice,
+      Picker
     }
-  },
-  components: {
-    Banner,
-    Countrys,
-    Provice,
-    Picker
   }
-}
 </script>
 
 <style lang="less" scoped>

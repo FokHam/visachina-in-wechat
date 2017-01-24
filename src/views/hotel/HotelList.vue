@@ -82,7 +82,7 @@
         hotelList: []
       };
     },
-    created () {
+    created (searchCondition) {
       {
         this.getList();
       }
@@ -91,7 +91,8 @@
       getList (obj) {
         Indicator.open('拼命读取酒店数据中...');
         let url = '/api/hotel/list';
-        this.$http.get(url).then((response) => {
+        let send = obj;
+        this.$http.get(url, { params: obj }).then((response) => {
           // success callback
           console.log(JSON.parse(response.body));
           let data = JSON.parse(response.body).data;
@@ -101,6 +102,15 @@
           // error callback
           Indicator.close();
         });
+      }
+    },
+    computed: {
+      searchCondition () {
+        return {
+          startDate: this.$store.state.hotel.startDate,
+          endDate: this.$store.state.hotel.endDate,
+          destination: this.$store.state.hotel.destination
+        };
       }
     }
   }
