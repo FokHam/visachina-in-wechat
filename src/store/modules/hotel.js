@@ -6,6 +6,7 @@ d.setMilliseconds(0);
 let startDate = new Date(d.getTime() + 24*60*60*1000);
 let endDate = new Date(d.getTime() + 2*24*60*60*1000);
 let state = {
+  destination: "",
   productId: 0,
   startDate: startDate,
   endDate: endDate,
@@ -60,6 +61,11 @@ const mutations = {
   setHotelDate (state, payload) {
     state.startDate = payload.day1;
     state.endDate = payload.day2;
+  },
+  searchHotelConditionSave (state, payload) {
+    state.startDate = payload.startDate;
+    state.endDate = payload.endDate;
+    state.destination = payload.destination;
   }
 };
 

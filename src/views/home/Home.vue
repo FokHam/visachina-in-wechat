@@ -35,17 +35,17 @@
             <div class="search-input hotel-search" v-else>
               <div class="ipt country">
                 <div class="tit">目的地城市</div>
-                <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
+                <div class="txt"><input type="text" placeholder="你想去哪里？" v-model="hotelCondition.destination"></div>
               </div>
               <div class="ipt calendar" v-on:click="openStartPicker()">
                 <div class="tit">入住日期</div>
-                <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="startDate"></div>
+                <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="hotelCondition.startDate"></div>
               </div>
               <div class="ipt calendar lastchild" v-on:click="openEndPicker()">
                 <div class="tit">离店日期</div>
-                <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="endDate"></div>
+                <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="hotelCondition.endDate"></div>
               </div>
-              <div class="s_btn">搜索</div>
+              <div class="s_btn" @click="searchHotel">搜索</div>
             </div>
           </div>
         </div>
@@ -105,7 +105,6 @@
       @confirm="endConfirm">
     </mt-datetime-picker>
   </div>
-
 </template>
 
 <script>
@@ -120,10 +119,6 @@ export default {
   name:'home',
   beforeCreate(){
     document.title = "众意旅游"
-    Indicator.open('加载中...');
-  },
-  created: function () {
-    Indicator.close()
   },
   data:function(){
     return {
@@ -132,8 +127,11 @@ export default {
       provicedis:false,
       typedis:false,
       visacondition:{"ct":"","ctname":"","dq":"","dqname":"","lx":0,"rj":0,"fw":0,"page":1},
-      startDate: '',
-      endDate: '',
+      hotelCondition: {
+        startDate: '',
+        endDate: '',
+        destination: ''
+      },
       nowDate: new Date(),
       selectDate: '',
       typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
@@ -152,27 +150,13 @@ export default {
     },
     startConfirm: function (t){
       var m = t.getMonth()+1
-      var d = t.getDate()
-      if (m.length == 1) {
-        m = '0' + m 
-      }
-      if (d.length == 1) {
-        d = '0' + d
-      }
-      this.startDate = t.getFullYear() +'-'+ m +'-'+ d
+      this.hotelCondition.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
       var t = t.getTime() + 86400000
       this.selectDate = new Date(t)
     },
     endConfirm: function (t){
       var m = t.getMonth()+1
-      var d = t.getDate()
-      if (m.length == 1) {
-        m = '0' + m 
-      }
-      if (d.length == 1) {
-        d = '0' + d
-      }
-      this.endDate = t.getFullYear() +'-'+ m +'-'+ d
+      this.hotelCondition.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
     openSearch:function(){
       this.searchdis = true
@@ -208,7 +192,15 @@ export default {
       }else {
         Toast('请选择目的地和常住地');
       }
-    }
+    },
+    searchHotel:function(){
+      if (this.hotelCondition.startDate !== '' && this.hotelCondition.endDate !== '' && this.hotelCondition.destination !== '') {
+        this.$store.commit('searchHotelConditionSave', this.hotelCondition)
+        this.$router.push('/hotel')
+      }else {
+        Toast('请选择目的地和入离店日期');
+      }
+    },
   },
   components: {
     Banner,
