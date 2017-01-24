@@ -78,18 +78,12 @@
     </div>
     <p class="title">酒店信息</p>
     <div class="content">
-      <p class="content-para">Palace Place Chiang Mai酒店距离Night Bazaar夜市有 2公里，设有spa中心、24小时前台和旅游咨询台。酒店 各处均提供免费无线网络连接。</p>
-      <div class="img-wrapper">
-        <img src="/static/images/hotel/intropic01.png" alt="酒店产品介绍图片">
-      </div>
-      <p class="content-para">酒店距离清迈机场（Chiang Mai Airport）有10分钟车程， 距离清迈门（Chiang Mai Gate）有2.7公里，距离 Doi Suthep有10.2公里。</p>
-      <div class="img-wrapper">
-        <img src="/static/images/hotel/intropic02.png" alt="酒店产品介绍图片">
-      </div>
-      <p class="content-para">客房配有有线电视、迷你吧和电热水壶。连接浴室设有淋 浴设施。客房提供拖鞋和浴袍。部分客房配有平面电视。 每天06:00-15:00，客人可以在The Palace酒店享用泰式 美食。</p>
-      <div class="img-wrapper">
-        <img src="/static/images/hotel/intropic03.png" alt="酒店产品介绍图片">
-      </div>
+      <template v-for="(desc, n) in hotelDetail.descriptions">
+        <p class="content-para">{{ desc }}</p>
+        <div class="img-wrapper">
+          <img :src="hotelDetail.images[n]" alt="酒店产品介绍图片">
+        </div>
+      <template>
     </div>
   </div>
 </template>
@@ -105,6 +99,11 @@
         facility: [
           "gym", "bathtub", "laundry", "balcony", "tv", "nosmoke"
         ]
+      }
+    },
+    computed: {
+      hotelDetail () {
+        return this.$store.state.hotel.hotelDetail;
       }
     }
   }

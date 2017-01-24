@@ -29,7 +29,7 @@ export default{
   methods:{
     logoMove:function(e){
       this.navDis = false
-      e.preventDefault()      
+      e.preventDefault()
       var touchX = e.changedTouches[0].clientX
       var touchY = e.changedTouches[0].clientY
       if (touchX >= 0) {
@@ -37,16 +37,16 @@ export default{
           this.logoPositionX = touchX-27
         }else {
           this.logoPositionX = this.screenWidth-54
-        }        
+        }
       }else {
         this.logoPositionX = 0
       }
-      if (touchY >= 0) {        
+      if (touchY >= 0) {
         if (touchY < this.screenHeight) {
           this.logoPositionY = touchY-27
         }else {
           this.logoPositionY = this.screenHeight-54
-        } 
+        }
       }else {
         this.logoPositionY = 0
       }
@@ -57,7 +57,7 @@ export default{
         this.logoPositionX = 0
       }else {
         this.logoPositionX = this.screenWidth - 54
-      }           
+      }
     }
   },
   watch:{
@@ -106,7 +106,7 @@ export default{
       padding-top: 27px;
       background-position: center 4px;
       background-size: 21px;
-      background-repeat: no-repeat;   
+      background-repeat: no-repeat;
       &.n1{background-image: url('/static/images/home/icon-home.png');}
       &.n2{background-image: url('/static/images/home/icon-contact.png');}
       &.n3{background-image: url('/static/images/home/icon-user.png');}

@@ -70,17 +70,17 @@
         </router-link>
       </div>
     </div>
-    <countrys 
-    v-if="searchdis" 
-    @choseCountry="changeCountry" 
-    @closePage="closeComp">      
+    <countrys
+    v-if="searchdis"
+    @choseCountry="changeCountry"
+    @closePage="closeComp">
     </countrys>
-    <provice 
-    v-if="provicedis" 
-    @chosepvc="choseProvice" 
-    @closePage="closeComp">      
+    <provice
+    v-if="provicedis"
+    @chosepvc="choseProvice"
+    @closePage="closeComp">
     </provice>
-    <picker 
+    <picker
     v-if="typedis"
     :listdata="typelist"
     @confirm="visatypeSet"
@@ -123,7 +123,7 @@ export default {
     Indicator.open('加载中...');
   },
   created: function () {
-    Indicator.close()    
+    Indicator.close()
   },
   data:function(){
     return {
@@ -135,7 +135,7 @@ export default {
       startDate: '',
       endDate: '',
       nowDate: new Date(),
-      selectDate: '',      
+      selectDate: '',
       typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
       pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}],
     }
@@ -349,5 +349,5 @@ export default {
       }
     }
   }
-  
+
 </style>

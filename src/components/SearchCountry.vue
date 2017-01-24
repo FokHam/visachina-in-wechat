@@ -6,7 +6,6 @@
         <input type="text" placeholder="你想去哪儿？" v-model="keyword">
         <div class="clearinput" @click="clearinput" v-show="keyword!=''"></div>
       </div>
-      <div class="cancel" @click="closePage">取消</div>
     </div>
   </div>
   <div class="searchresult" v-show="keyword != ''">
@@ -39,13 +38,13 @@
         <div class="tit">{{countries.name}}</div>
         <div class="namelist">
           <ul>
-            <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>          
+            <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>
           </ul>
         </div>
       </div>
+
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -95,7 +94,7 @@ export default {
         });
       }else {
         this.searchdata = []
-      }      
+      }
     },
     clearinput:function(){
       this.keyword = ''
@@ -159,7 +158,7 @@ export default {
         }
         .clearinput{
           height: 20px;
-          width: 20px;          
+          width: 20px;
           position: absolute;
           right: 5px;
           top: 5px;
@@ -186,7 +185,7 @@ export default {
       padding-bottom: 15px;
       .tit{color: #999999;font-size: 0.7rem;padding: 0 5px;padding-bottom: 8px;}
       .namelist{
-        overflow: hidden;        
+        overflow: hidden;
         li{
           float: left;
           width: 25%;
@@ -209,7 +208,7 @@ export default {
     }
   }
   .searchresult {
-    position: absolute;    
+    position: absolute;
     width: 100%;
     min-height: 100%;
     top: 0;

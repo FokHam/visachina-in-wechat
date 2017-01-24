@@ -2,13 +2,18 @@
   <div class="hot-list-wrapper">
     <p class="hot-title"><i class="icon-hot"></i> 热销推荐</p>
     <ul class="hot-list">
-      <router-link :to="'/insuranceDetail/' + item.id" v-for="item in list">
+      <router-link :to="'/insuranceDetail/' + item.id"
+        v-for="(item, index) in hotInsuranceList">
         <li class="hot-item clearfix">
-          <img :src="item.imgPath" alt="热销推荐产品图">
+          <img :src="imgPath[index]" alt="热销推荐产品图">
           <div class="item-detail">
-            <p class="title">{{ item.name }}</p>
+            <p class="title">
+              {{ item.companyName ? (item.companyName + " - ") : "" }}
+              {{ item.name }}
+              {{ item.planName ? (" - " + item.planName) : ""}}
+            </p>
             <span class="price">{{ '¥' + item.price }}</span>
-            <span class="spec" v-for="detail in item.detail">{{ detail }}</span>
+            <span class="spec" v-for="plan in item.plans">{{ plan.name }}</span>
           </div>
         </li>
       </router-link>
@@ -17,34 +22,30 @@
 </template>
 
 <script>
-  import Mock from "mockjs"
-
   export default {
-    data: function () {
-      var obj = Mock.mock({
-        "list": [
-          {
-            "name": "惠择 - 申根国专属保障计划",
-            "price": "19",
-            "id": "1105",
-            "detail": ["身故残疾", "交通意外", "恭喜发财"],
-            "imgPath": "/static/images/insurance/hot2.png"
-          }, {
-            "name": "惠择 - 申根国专属保障计划",
-            "price": "138",
-            "id": "1101",
-            "detail": ["身故残疾", "交通意外", "恭喜发财"],
-            "imgPath": "/static/images/insurance/hot1.png"
-          }, {
-            "name": "惠择 - 申根国专属保障计划",
-            "price": "219",
-            "id": "1106",
-            "detail": ["身故残疾", "交通意外", "恭喜发财"],
-            "imgPath": "/static/images/insurance/hot3.jpg"
-          }
+    props: [
+      "hotInsuranceList"
+    ],
+    data () {
+      return {
+        imgPath: [
+          "/static/images/insurance/hot1.png",
+          "/static/images/insurance/hot2.png",
+          "/static/images/insurance/hot3.jpg",
+          "/static/images/insurance/hot1.png",
+          "/static/images/insurance/hot2.png",
+          "/static/images/insurance/hot3.jpg",
+          "/static/images/insurance/hot1.png",
+          "/static/images/insurance/hot2.png",
+          "/static/images/insurance/hot3.jpg",
+          "/static/images/insurance/hot1.png",
+          "/static/images/insurance/hot2.png",
+          "/static/images/insurance/hot3.jpg",
+          "/static/images/insurance/hot1.png",
+          "/static/images/insurance/hot2.png",
+          "/static/images/insurance/hot3.jpg"
         ]
-      });
-      return obj;
+      };
     }
   }
 </script>
@@ -89,9 +90,8 @@
       }
     }
     .price {
-      position: absolute;
-      right: 0.5rem;
-      top: 0.5rem;
+      float: right;
+      margin-top: -0.5rem;
       color: #FC4949;
       font-size: 1rem;
     }

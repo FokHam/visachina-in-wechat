@@ -25,7 +25,7 @@
     <div class="item"
       v-for="(age, index) in childAge"
       @click="doSelect('childAge', index)">
-      <span class="label">{{ "儿童" + index }}</span>
+      <span class="label">{{ "儿童" + (index + 1) }}</span>
       <span class="detail">{{ (age === 0 ? ("小于1") : age) + "岁" }}<i class="icon-pull-right"></i></span>
     </div>
     <p class="people-desc">最多可入住总人数为<span>{{ adultNum + "成人" + childNum + "儿童" }}</span></p>

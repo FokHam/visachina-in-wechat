@@ -44,6 +44,7 @@ export default {
     font-size: 0.7rem;
     img {
       width: 55%;
+      margin: auto;
     }
     p {
       margin-top: 0.2rem;

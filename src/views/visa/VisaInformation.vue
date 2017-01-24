@@ -1,4 +1,4 @@
-<template>  
+<template>
 <div class="visa-information" id="visa-information">
   <div class="column" v-for="item in materialsData.list">
     <div class="title">{{item.name_ca}}</div>
@@ -29,7 +29,7 @@ export default{
   name: 'visa-information',
   created: function () {
     document.body.scrollTop = 0
-    document.title = this.materialsData.guest_class_name    
+    document.title = this.materialsData.guest_class_name
   },
   data:function(){
     return{
@@ -39,19 +39,19 @@ export default{
       picUrl:'/static/images/visa/a1.png'
     }
   },
-  methods:{    
+  methods:{
     checkPic:function(){
       this.exampleDis = true
     },
     closePic:function(){
       this.exampleDis = false
     }
-    
+
   },
   computed: {
     materialsData () {
       return this.$store.state.visa.materialsData;
-    }    
+    }
   }
 }
 </script>

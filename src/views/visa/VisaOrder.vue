@@ -75,7 +75,7 @@
       <div class="ins_client" v-if="insuranceCheck">
         <div class="item-hd">
           <div class="i_tit">被保人<i class="help">help</i></div>
-          <span class="addbtn" @click="insuranceList.insurance=true" :class="{editbtn:insuranceList.list.length != 0}"></span>          
+          <span class="addbtn" @click="insuranceList.insurance=true" :class="{editbtn:insuranceList.list.length != 0}"></span>
         </div>
         <div class="list" v-if="insuranceList.list.length != 0">
           <ul>
@@ -84,9 +84,9 @@
                   <div class="name">{{item.name}}<span>{{item.e_name}}</span></div>
                   <div class="idnum">身份证：{{item.idnum}}</div>
                 </div>
-                <div class="price">￥69</div>              
+                <div class="price">￥69</div>
             </li>
-            
+
           </ul>
         </div>
       </div>
@@ -123,24 +123,24 @@
   v-if="invoiceData.invoice"
   :data="invoiceData.detail"
   @confirm="invoiceConfirm"
-  @closeCom="compClose">    
+  @closeCom="compClose">
   </invoice>
   <visa-passenger-list
   v-show="passengerList.passenger"
-  @confirm="passengerConfirm">    
+  @confirm="passengerConfirm">
   </visa-passenger-list>
   <contact-list
   v-show="contactInfo.contact"
-  @confirm="contactConfirm">    
+  @confirm="contactConfirm">
   </contact-list>
   <address-list
   v-show="deliveryInfo.delivery"
-  @confirm="deliveryConfirm">    
+  @confirm="deliveryConfirm">
   </address-list>
   <insur-client-list
   v-if="insuranceList.insurance"
   :passenger="passengerList.list"
-  @confirm="insuranceConfirm">    
+  @confirm="insuranceConfirm">
   </insur-client-list>
   <proposer
   v-if="proposerInfo.proposer"
@@ -163,7 +163,7 @@
 <script>
 import { Toast } from 'mint-ui'
 import { Indicator } from 'mint-ui'
-import { DatetimePicker } from 'mint-ui' 
+import { DatetimePicker } from 'mint-ui'
 import Invoice from './visaorder/Invoice'
 import VisaPassengerList from './visaorder/VisaPassengerList'
 import insurClientList from './visaorder/InsClientList'
@@ -173,10 +173,10 @@ import Proposer from './visaorder/Proposer'
 export default{
   name: 'visa-order',
   beforeCreate:function(){
-    document.title = "填写订单"    
+    document.title = "填写订单"
   },
   created: function () {
-    this.getVisaDetail()  
+    this.getVisaDetail()
   },
   data:function(){
     return{
@@ -220,20 +220,20 @@ export default{
       this.invoiceData.invoice=false
     },
     passengerConfirm:function(v){
-      this.passengerList.list=v      
+      this.passengerList.list=v
       this.passengerList.passenger=false
     },
     contactConfirm:function(v){
-      this.contactInfo.info=v      
+      this.contactInfo.info=v
       this.contactInfo.contact=false
     },
     deliveryConfirm:function(v){
-      this.deliveryInfo.info=v      
+      this.deliveryInfo.info=v
       this.deliveryInfo.delivery=false
     },
     insuranceConfirm:function(v){
       this.insuranceList.list = v
-      this.insuranceList.insurance=false      
+      this.insuranceList.insurance=false
     },
     setProposer:function(v){
       this.proposerInfo.info = v
@@ -241,7 +241,7 @@ export default{
     },
     compClose:function(){
       this.invoiceData.invoice=false
-    },    
+    },
     openDatepicker:function(){
       this.$refs.datepicker.open();
     },
@@ -273,7 +273,6 @@ export default{
         "invoice":this.invoiceData.detail
       };
       var url = '/api/visa/create-order';
-      console.log('发送数据：'+JSON.stringify(send));
       this.$http.post(url,send).then(function(result){
         console.log('返回数据：'+JSON.stringify(result))
         Indicator.close();
@@ -308,7 +307,7 @@ export default{
 <style lang="less" scoped>
 .visa-order{
   .top-part{
-    background-image: url('/static/images/visa/top-bg.png');      
+    background-image: url('/static/images/visa/top-bg.png');
     background-size: 25px;height: 136px;position: relative;
     margin: 10px;border-radius: 5px;color: #fff;
     padding: 15px;overflow: hidden;
@@ -318,12 +317,12 @@ export default{
       width: 100%;height: 48px;
       position: absolute;bottom: 0;left: 0;
       background-color: rgba(0, 0, 0, 0.2);
-      background-image: url('/static/images/visa/icon-calerder.png'); 
+      background-image: url('/static/images/visa/icon-calerder.png');
       background-repeat: no-repeat;background-size: 16px;
       background-position: 15px center;
       .inner{
         margin: 0 15px;height: 48px;
-        background-image: url('/static/images/visa/icon-right-white.png'); 
+        background-image: url('/static/images/visa/icon-right-white.png');
         background-repeat: no-repeat;background-size: 10px;
         background-position: right center;
         span{
@@ -350,8 +349,8 @@ export default{
     text-indent: -9999px;
     background-repeat: no-repeat;
   }
-  .clientname{    
-    margin-bottom: 10px;  
+  .clientname{
+    margin-bottom: 10px;
     border-bottom: 1px solid #EEEEEE;
     background-color: #fff;
     padding: 60px 10px 15px;
@@ -361,10 +360,10 @@ export default{
       .tit{float: left;font-size: 0.8rem;}
       .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
     }
-    .namelist{ 
-    padding-top: 10px; 
+    .namelist{
+    padding-top: 10px;
       ul{
-        overflow: hidden;        
+        overflow: hidden;
         li{
           display: inline-block;float: right;
           width: 45%;margin-bottom: 5px;
@@ -391,7 +390,7 @@ export default{
           display: block;
           background-color: #fff;
           width: 100%;
-          line-height: 40px;        
+          line-height: 40px;
         }
       }
       .txt{

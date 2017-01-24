@@ -6,27 +6,26 @@
         <span class="enter">查看更多 <i class="icon-arrow-right"></i></span>
       </router-link>
     </div>
-    <ul class="right-list">
-      <li class="right clearfix">
-        <span class="name">意外身故及伤残保障</span>
-        <span class="amount">300,000元</span>
-      </li>
-      <li class="right clearfix">
-        <span class="name">意外身故及伤残保障</span>
-        <span class="amount">300,000元</span>
-      </li>
-      <li class="right clearfix">
-        <span class="name">意外身故及伤残保障</span>
-        <span class="amount">300,000元</span>
+    <ul class="right-list"
+      v-if="isrDetail">
+      <li class="right clearfix"
+        v-for="plan in isrDetail.plans"
+        v-if="plan">
+        <span class="name">{{ plan.name }}</span>
+        <span class="amount">{{ plan.text }}</span>
       </li>
     </ul>
     <div v-if="withAge" class="age">
       <span class="title">承保年龄</span>
       <span class="value"
-        @click.stop="showAge = 1">18 - 85岁 <i class="icon-arrow-down"></i></span>
+        @click.stop="showAge = 1;">{{ isrDetail.age ? isrDetail.age[ageSelect].name : "" }}<i class="icon-arrow-down"></i></span>
       <ul v-if="showAge === 1" class="age-list">
-        <li class="active">0 - 17周岁</li>
-        <li>18 - 85周岁</li>
+        <li v-for="(age, index) in isrDetail.age"
+          :class="{ active: ageSelect === index }"
+          @click="changeAge(index)">
+          {{ age.name }}
+        </li>
+        <li></li>
       </ul>
     </div>
   </div>
@@ -35,15 +34,26 @@
 <script>
   export default {
     props: {
+      isrDetail: {
+        type: Object
+      },
       withAge: {
         type: Boolean,
         default: false
+      },
+      ageSelect: {
+        type: Number
       }
     },
     data: function () {
       return {
         showAge: 0
       };
+    },
+    methods: {
+      changeAge (n) {
+        this.$emit("changeAge", n);
+      }
     }
   }
 </script>
