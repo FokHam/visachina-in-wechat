@@ -38,7 +38,7 @@
     <div class="icon" @click="contactInfo.contact=true"></div>
   </div>
   <div class="invoice" @click="invoiceData.invoice=true">
-    <span>发票</span>
+    <span>发票</span><i>{{invoiceData.detail.header}}</i>
   </div>
   <div class="express">
     <div class="item-hd">
@@ -264,7 +264,7 @@ export default{
       }
     },
     creatOrder:function(){
-      Indicator.open('加载中');
+      Indicator.open('提交订单');
       var send = {
         "id":this.$route.params.id,
         "customers":this.passengerList.list,
@@ -435,12 +435,19 @@ export default{
   }
   .invoice{
     background: #fff;margin-bottom: 5px;padding: 10px;
+    position: relative;
     span{
       display: block;font-size: 0.7rem;
       background-image: url('/static/images/visa/icon-right-gray.png');
       background-repeat: no-repeat;
       background-position: right center;
       background-size: 0.5rem;
+    }
+    i{
+      display: inline-block;font-size: 0.7rem;
+      position: absolute;    right: 30px;
+    top: 10px;
+    font-style: normal;
     }
   }
   .recommend{

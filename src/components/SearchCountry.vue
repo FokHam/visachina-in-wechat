@@ -3,43 +3,45 @@
   <div class="topipt">
     <div class="layer">
       <div class="ipt">
-        <input type="text" placeholder="你想去哪儿？" @keyup="keywordsChange()" v-model="keyword">
+        <input type="text" placeholder="你想去哪儿？" v-model="keyword">
         <div class="clearinput" @click="clearinput" v-show="keyword!=''"></div>
       </div>
       <div class="cancel" @click="closePage">取消</div>
     </div>
   </div>
-  <div class="searchresult" v-show="searchdata.length != 0">
-    <ul>
-      <li v-for="item in searchdata">{{item.name}}</li>      
+  <div class="searchresult" v-show="keyword != ''">
+    <ul v-show="searchdata.length != 0">
+      <li v-for="item in searchdata" @click="choseCountry(item.name,item.area_id)">{{item.name}}</li>      
     </ul>
-    <div class="backshadow" @click="clearinput"></div>
+    <div class="backshadow" :class="{white:searchdata.length != 0}" @touchmove="stopscroll"></div>
   </div>
-  <div class="wordsrecord">
-    <div class="item history" v-if="historylist.length!=0">
-      <div class="tit">历史搜索</div>
-      <div class="namelist">
-        <ul>
-          <li v-for="item in historylist" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
-        </ul>
+  <div class="country-list" v-show="searchdata.length == 0">
+    <div class="wordsrecord">
+      <div class="item history" v-if="historylist.length!=0">
+        <div class="tit">历史搜索</div>
+        <div class="namelist">
+          <ul>
+            <li v-for="item in historylist" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="item hot">
+        <div class="tit">热门搜索</div>
+        <div class="namelist">
+          <ul>
+            <li v-for="item in countryData.hotContries" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+          </ul>
+        </div>
       </div>
     </div>
-    <div class="item hot">
-      <div class="tit">热门搜索</div>
-      <div class="namelist">
-        <ul>
-          <li v-for="item in countryData.hotContries" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div class="countrylist">
-    <div class="item" v-for="countries in countryData.countries">
-      <div class="tit">{{countries.name}}</div>
-      <div class="namelist">
-        <ul>
-          <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>          
-        </ul>
+    <div class="countrylist">
+      <div class="item" v-for="countries in countryData.countries">
+        <div class="tit">{{countries.name}}</div>
+        <div class="namelist">
+          <ul>
+            <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>          
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -76,10 +78,21 @@ export default {
         console.log("请求失败")
       });
     },
-    keywordsChange:function(){
-      if (this.keyword != '') {
-        console.log(this.keyword)
-        this.searchdata = [{"name":"中国"},{"name":"美国"},{"name":"德国"},{"name":"澳大利亚"},{"name":"西班牙"},{"name":"巴基斯坦"},{"name":"泰国"}]
+    keywordsChange:function(v){
+      if (v != '') {
+        var url = '/api/visa/search-country',send={"name":v}
+        this.$http.get(url,{params:send}).then(function(result){
+          var rst = JSON.parse(result.body)
+          if (rst.status == 1) {
+            if (rst.data) {
+              this.searchdata = rst.data
+            }else{
+              this.searchdata = []
+            }            
+          }else {
+            console.log(rst.msg)
+          }
+        });
       }else {
         this.searchdata = []
       }      
@@ -107,6 +120,14 @@ export default {
         }
         this.historylist = JSON.stringify(localStorage.visaHistory)
       }      
+    },
+    stopscroll:function(e){
+      e.preventDefault() 
+    }
+  },
+  watch:{
+    keyword: function (val, oldVal) {
+      this.keywordsChange(val)
     }
   }
 }
@@ -114,11 +135,7 @@ export default {
 
 <style lang="less" scoped>
 .search-page{
-  position: fixed;
-  height: 100%;width: 100%;top: 0;left: 0;background: #ececec;
-  z-index: 1001;
-  overflow-y:scroll;
-  overflow-scrolling: touch;-webkit-overflow-scrolling: touch;
+  background: #ececec;
   .topipt{
     position: fixed;top: 0;left: 0;width: 100%;z-index: 999;
     .layer{
@@ -159,6 +176,8 @@ export default {
       }
     }
   }
+  .country-list{
+  }
   .wordsrecord{margin-bottom: 10px;padding-top: 60px !important;}
   .wordsrecord,.countrylist{
     background-color: #fff;
@@ -192,14 +211,17 @@ export default {
   .searchresult {
     position: absolute;    
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     top: 0;
     left: 0;
+    z-index: 1;
+    overflow-y: scroll;
+    overflow-scrolling: touch;-webkit-overflow-scrolling: touch;
     ul {
       background: #fff;
       padding: 50px 10px 0 10px;
       position: relative;
-      z-index: 99;
+      z-index: 99;      
       li {
         font-size: 0.7rem;
         height: 30px;
@@ -214,7 +236,11 @@ export default {
     .backshadow{
       position: absolute;height: 100%;width: 100%;
       left: 0;top: 0;background-color: rgba(0, 0, 0, 0.5);
+      &.white{
+        background-color: #fff;
+      }
     }
+
   }
 }
 </style>

@@ -6,21 +6,20 @@
     </div>
     <div class="desc">
       <div class="top">
-        <div class="name">日本旅行WIFI租赁（深圳取还）</div>
-        <div class="txt">押金：<i>500</i>元/台</div>
+        <div class="name">{{pageData.name}}</div>
+        <div class="txt">押金：<i>{{pageData.erp_foregift_price}}</i>元/台</div>
       </div>
       <div class="btm">
         <div class="txt">覆盖范围：日本全境</div>
         <div class="price">
-          <i>￥9</i><span>&frasl; 天起</span>
+          <i>￥{{pageData.cost_price}}</i><span>&frasl; 天起</span>
         </div>
       </div>
     </div>
   </div>
   <div class="part-desc">
     <div class="tit">WIFI亮点:</div>
-    <div class="con">24小时机场取还更方便，覆盖全国43个机场柜台，20个市区网点，
-5个海外分公司</div>
+    <div class="con">{{pageData.web_point}}</div>
     <div class="orderbtn">预定</div>
   </div>
   <div class="part-locations">
@@ -102,28 +101,36 @@
 
 <script>
 import { Indicator } from 'mint-ui'
-
 export default {
   name:"wifi-detail",
-  beforeCreate(){
-    document.title = '产品详情'
-    Indicator.open('加载中...')
-  },
   created: function () {
-    Indicator.close()
-    
+    document.title = '产品详情'
+    this.getWifiDetails()
   },
   components: {
     
   },
   data:function(){
     return{
-      
-      
+      pageData:{},
+      descData:{}      
     }
   },
   methods:{
-    
+    getWifiDetails:function(){      
+      Indicator.open('加载中...')
+      var url = '/api/wifi/info?id='+this.$route.params.id
+      this.$http.get(url).then(function(result){
+        Indicator.close()
+        console.log(result.body)
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.pageData = rst.data          
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    }
   }
 }
 

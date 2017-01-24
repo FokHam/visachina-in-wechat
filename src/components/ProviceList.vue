@@ -9,7 +9,7 @@
       </ul>
     </div>
   </div>
-  <div class="backshadow" @click="closePage"></div>
+  <div class="backshadow" @touchmove="stopscroll" @click="closePage"></div>
 </div>
 </template>
 
@@ -48,6 +48,9 @@
       },
       closePage:function(){
         this.$emit('closePage')
+      },
+      stopscroll:function(e){
+        e.preventDefault() 
       }
     }
   }

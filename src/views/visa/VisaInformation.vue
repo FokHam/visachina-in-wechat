@@ -8,9 +8,9 @@
         <div class="con">
           <p>{{cate.description}}</p>
         </div>
-        <div class="example">
+        <!--<div class="example">
           <span v-for="files in cate.files" @click="checkPic">{{files}}</span>
-        </div>
+        </div>-->
       </li>      
     </ul>
   </div>

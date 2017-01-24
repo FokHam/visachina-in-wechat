@@ -1,72 +1,74 @@
 <template>
   <div id="home" class="home">
-    <banner :pics="pics"></banner>
-    <div class="search">
-      <div class="tabs">
-        <span v-on:click="searchTap(0)" v-bind:class="{active:isActive == 0}"><i>签证</i></span>
-        <span v-on:click="searchTap(1)" v-bind:class="{active:isActive == 1}"><i>酒店</i></span>
-      </div>
-      <div class="tabcon">
-        <div class="inner">
-          <div class="search-input visa-search" v-if="isActive == 0">
-            <div class="ipt country">
-              <div class="tit">国家</div>
-              <div class="txt" @click="openSearch"><input readonly="readonly" v-model="visacondition.ctname" type="text" placeholder="你想去哪里？"></div>
-            </div>
-            <div class="ipt position">
-              <div class="tit">常住地</div>
-              <div class="txt" @click="openProvice"><input readonly="readonly" type="text" v-model="visacondition.dqname" placeholder="你居住在哪里？"></div>
-            </div>
-            <div class="ipt visatype lastchild">
-              <div class="tit">签证类型</div>
-              <div class="txt" @click="typedis=true">
-                <span v-if="visacondition.lx==0">不限</span>
-                <span v-if="visacondition.lx==1">旅游签证</span>
-                <span v-if="visacondition.lx==2">商务签证</span>
-                <span v-if="visacondition.lx==3">探亲访友签证</span>
-                <span v-if="visacondition.lx==4">工作签证</span>
-                <span v-if="visacondition.lx==5">留学签证</span>
-                <span v-if="visacondition.lx==6">其他签证</span>
+    <div class="homePage" v-if="searchdis == false">
+      <banner :pics="pics"></banner>
+      <div class="search">
+        <div class="tabs">
+          <span v-on:click="searchTap(0)" v-bind:class="{active:isActive == 0}"><i>签证</i></span>
+          <span v-on:click="searchTap(1)" v-bind:class="{active:isActive == 1}"><i>酒店</i></span>
+        </div>
+        <div class="tabcon">
+          <div class="inner">
+            <div class="search-input visa-search" v-if="isActive == 0">
+              <div class="ipt country">
+                <div class="tit">国家</div>
+                <div class="txt" @click="openSearch"><input readonly="readonly" v-model="visacondition.ctname" type="text" placeholder="你想去哪里？"></div>
               </div>
+              <div class="ipt position">
+                <div class="tit">常住地</div>
+                <div class="txt" @click="openProvice"><input readonly="readonly" type="text" v-model="visacondition.dqname" placeholder="你居住在哪里？"></div>
+              </div>
+              <div class="ipt visatype lastchild">
+                <div class="tit">签证类型</div>
+                <div class="txt" @click="typedis=true">
+                  <span v-if="visacondition.lx==0">不限</span>
+                  <span v-if="visacondition.lx==1">旅游签证</span>
+                  <span v-if="visacondition.lx==2">商务签证</span>
+                  <span v-if="visacondition.lx==3">探亲访友签证</span>
+                  <span v-if="visacondition.lx==4">工作签证</span>
+                  <span v-if="visacondition.lx==5">留学签证</span>
+                  <span v-if="visacondition.lx==6">其他签证</span>
+                </div>
+              </div>
+              <div class="s_btn" @click="searchVisa">搜索</div>
             </div>
-            <div class="s_btn" @click="searchVisa">搜索</div>
-          </div>
-          <div class="search-input hotel-search" v-else>
-            <div class="ipt country">
-              <div class="tit">目的地城市</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
+            <div class="search-input hotel-search" v-else>
+              <div class="ipt country">
+                <div class="tit">目的地城市</div>
+                <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？"></div>
+              </div>
+              <div class="ipt calendar" v-on:click="openStartPicker()">
+                <div class="tit">入住日期</div>
+                <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="startDate"></div>
+              </div>
+              <div class="ipt calendar lastchild" v-on:click="openEndPicker()">
+                <div class="tit">离店日期</div>
+                <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="endDate"></div>
+              </div>
+              <div class="s_btn">搜索</div>
             </div>
-            <div class="ipt calendar" v-on:click="openStartPicker()">
-              <div class="tit">入住日期</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天入住？" v-model="startDate"></div>
-            </div>
-            <div class="ipt calendar lastchild" v-on:click="openEndPicker()">
-              <div class="tit">离店日期</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想哪一天离开？" v-model="endDate"></div>
-            </div>
-            <div class="s_btn">搜索</div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="morelink">
-      <div class="tit">途经更多产品</div>
-      <div class="l_list">
-        <router-link class="insurance" to="/insurance"><span>保险</span></router-link>
-        <router-link class="wifi" to="/wifi"><span>wifi</span></router-link>
-        <router-link class="notarization" to=""><span>公证认证</span></router-link>
-        <router-link class="line" to=""><span>线路</span></router-link>
+      <div class="morelink">
+        <div class="tit">途经更多产品</div>
+        <div class="l_list">
+          <router-link class="insurance" to="/insurance"><span>保险</span></router-link>
+          <router-link class="wifi" to="/wifi"><span>wifi</span></router-link>
+          <router-link class="notarization" to=""><span>公证认证</span></router-link>
+          <router-link class="line" to=""><span>线路</span></router-link>
+        </div>
       </div>
-    </div>
-    <div class="check-made">
-      <img src="/static/images/home/bg-in-bt.png">
-      <router-link class="check" to="">
-        <i>查看签证进度</i>
-        <span>登陆</span>
-      </router-link>
-      <router-link class="customized" to="">
-        <span>定制行程 ></span>
-      </router-link>
+      <div class="check-made">
+        <img src="/static/images/home/bg-in-bt.png">
+        <router-link class="check" to="">
+          <i>查看签证进度</i>
+          <span>登陆</span>
+        </router-link>
+        <router-link class="customized" to="">
+          <span>定制行程 ></span>
+        </router-link>
+      </div>
     </div>
     <countrys 
     v-if="searchdis" 
@@ -117,7 +119,7 @@ import Picker from '../../components/Picker'
 export default {
   name:'home',
   beforeCreate(){
-    document.title = "途经旅游"
+    document.title = "众意旅游"
     Indicator.open('加载中...');
   },
   created: function () {

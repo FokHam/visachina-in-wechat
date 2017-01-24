@@ -2,8 +2,8 @@
 <div class="user-collect" id="user-collect">
   <div class="toppart">
     <div class="userinfo">
-      <div class="pic"><img src="/static/images/usercenter/headpath.png"></div>
-      <div class="name">TRAVELLER</div>
+      <div class="pic"><img :src="userInfo.wx_head_img"></div>
+      <div class="name">{{userInfo.wx_name}}</div>
     </div>
     <div class="showtype" @click="openSelect">{{screening}}</div>
   </div>
@@ -131,6 +131,7 @@ export default{
   },
   data:function(){
     return{
+      userInfo:JSON.parse(localStorage.userInfo),
       screening:'全部',
       typeList:[
         {
@@ -149,7 +150,6 @@ export default{
       this.screening = values.toString()
     },
   }
-
 }
 </script>
 

@@ -1,67 +1,69 @@
 <template>
   <div id="visa" class="visa">
-    <div class="part-top">
-      <img src="/static/images/visa/banner.png">
-      <div class="flag">
-        <div class="inner">
-          <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'.png'">
-        </div>        
-      </div>
-      <div class="location">
-        <span class="c_name">{{visaCondition.ctname}}</span>
-        <span class="m_name" @click="provicedis=true,tabcount=0">{{visaCondition.dqname}}</span>
-      </div>
-      <div class="search_btn" @click="searchdis=true,tabcount=0"><span>搜索国家</span></div>
-    </div>
-    <div class="screening">
-      <div class="tabs">
-        <span :class="{on:tabcount == 1}" @click="tapDrop(1)">签证类别</span>
-        <span :class="{on:tabcount == 2}" @click="tapDrop(2)">入境期限</span>
-        <span :class="{on:tabcount == 3}" @click="tapDrop(3)">加急</span>
-        <div class="openscren" @click="screendis=true,tabcount=0">筛选</div>
-      </div>
-      <div class="tabselecter" v-show="tabcount != 0">
-        <div class="options" :class="{on1:tabcount == 1}">
-          <ul>
-            <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>            
-          </ul>
+    <div class="visaPage" v-show="searchdis == false">
+      <div class="part-top">
+        <img src="/static/images/visa/banner.png">
+        <div class="flag">
+          <div class="inner">
+            <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'.png'">
+          </div>        
         </div>
-        <div class="options" :class="{on2:tabcount == 2}">
-          <ul>
-            <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>            
-          </ul>
+        <div class="location">
+          <span class="c_name">{{visaCondition.ctname}}</span>
+          <span class="m_name" @click="provicedis=true,tabcount=0">{{visaCondition.dqname}}</span>
         </div>
-        <div class="options" :class="{on3:tabcount == 3}">
-          <ul>
-            <li v-for="item in screenStr.fw" :class="{on:item.data==visaCondition.fw}" @click="visaCondition.fw=item.data">{{item.text}}</li>
-          </ul>
-        </div>
+        <div class="search_btn" @click="searchdis=true,tabcount=0"><span>搜索国家</span></div>
       </div>
-      <div class="shadow" v-show="tabcount != 0" @click="tabcount=0"></div>
-    </div>
-    <div class="visalist">
-      <ul v-infinite-scroll="loadMore"
-      infinite-scroll-disabled="loading"
-      infinite-scroll-distance="40">
-        <li v-for="item in listdata"><router-link :to="'/visaDetail/'+item.id">
-          <div class="visapic">
-            <img :src="'/static/images/visa/type'+item.visatype+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
+      <div class="screening">
+        <div class="tabs">
+          <span :class="{on:tabcount == 1}" @click="tapDrop(1)">签证类别</span>
+          <span :class="{on:tabcount == 2}" @click="tapDrop(2)">入境期限</span>
+          <span :class="{on:tabcount == 3}" @click="tapDrop(3)">加急</span>
+          <div class="openscren" @click="screendis=true,tabcount=0">筛选</div>
+        </div>
+        <div class="tabselecter" v-show="tabcount != 0">
+          <div class="options" :class="{on1:tabcount == 1}">
+            <ul>
+              <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>            
+            </ul>
           </div>
-          <div class="visainfo">
-            <div class="tit">{{item.name}}</div>
-            <div class="type">
-              <span class="p" v-show="item.lx == 0">贴纸签</span>
-              <span class="e" v-show="item.lx == 1">电子签</span>
-              <span class="op" v-show="item.lx == 2">另纸签</span>
-            </div>
-            <div class="day-price">
-              <span class="day">受理天数：{{item.acceptancedays}}天</span>
-              <span class="price"><i>￥</i>{{item.lower_price}}</span>
-            </div>
+          <div class="options" :class="{on2:tabcount == 2}">
+            <ul>
+              <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>            
+            </ul>
           </div>
-        </router-link></li>
-      </ul>
-      <p class="page-infinite-loading">{{loadingtxt}}</p>      
+          <div class="options" :class="{on3:tabcount == 3}">
+            <ul>
+              <li v-for="item in screenStr.fw" :class="{on:item.data==visaCondition.fw}" @click="visaCondition.fw=item.data">{{item.text}}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="shadow" v-show="tabcount != 0" @click="tabcount=0"></div>
+      </div>
+      <div class="visalist">
+        <ul v-infinite-scroll="loadMore"
+        infinite-scroll-disabled="loading"
+        infinite-scroll-distance="40">
+          <li v-for="item in listdata"><router-link :to="'/visaDetail/'+item.id">
+            <div class="visapic">
+              <img :src="'/static/images/visa/type'+item.visatype+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
+            </div>
+            <div class="visainfo">
+              <div class="tit">{{item.name}}</div>
+              <div class="type">
+                <span class="p" v-show="item.lx == 0">贴纸签</span>
+                <span class="e" v-show="item.lx == 1">电子签</span>
+                <span class="op" v-show="item.lx == 2">另纸签</span>
+              </div>
+              <div class="day-price">
+                <span class="day">受理天数：{{item.acceptancedays}}天</span>
+                <span class="price"><i>￥</i>{{item.lower_price}}</span>
+              </div>
+            </div>
+          </router-link></li>
+        </ul>
+        <p class="page-infinite-loading">{{loadingtxt}}</p>      
+      </div>
     </div>
     <countrys 
     v-if="searchdis" 
@@ -94,7 +96,7 @@ import Provice from '../../components/ProviceList'
 
 export default {
   name:"visa",
-  beforeCreate(){    
+  beforeCreate(){
     document.title = "签证列表"    
   },
   created: function () {  
@@ -158,6 +160,9 @@ export default {
       }      
     },
     getListData:function(t){
+      if (this.searchdis==true) {
+        return false
+      }
       Indicator.open('加载中...');
       if (t=="reload") {
         this.listdata = []
@@ -225,9 +230,9 @@ export default {
   }
   .location{
     position: absolute;
-    left: 50%;margin-left: -15px;
+    left: 50%;margin-left: -30px;
     top: 50%;
-    .c_name{color: #fff;font-size: 0.8rem;}
+    .c_name{color: #fff;font-size: 0.8rem;display: inline-block;width: 70px;text-align: center;}
     .m_name{color: #fff;font-size: 0.6rem;
       background-image: url('/static/images/visa/icon-location.png');
       background-position: left center;

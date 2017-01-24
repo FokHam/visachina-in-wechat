@@ -40,8 +40,7 @@ import { Indicator } from 'mint-ui'
 export default{
   name:'user-center',
   beforeCreate(){
-    document.title = '个人中心'
-    Indicator.open('加载中...')
+    document.title = '个人中心'    
   },
   created: function () {
     this.getUserInfo();
@@ -51,12 +50,12 @@ export default{
   },
   data:function(){
     return{
-      userInfo:[]
-      
+      userInfo:[]      
     }
   },
   methods:{
     getUserInfo:function(){
+      Indicator.open('加载中...')
       var api = "/api/member/index";
       this.$http.get(api).then(function(result){
         Indicator.close();
@@ -64,6 +63,7 @@ export default{
         var rst = result.body
         if (rst.status == 1) {
           this.userInfo = rst.data
+          localStorage.userInfo = JSON.stringify(rst.data)
         }else {
           console.log(rst.msg)
         }

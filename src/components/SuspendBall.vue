@@ -1,11 +1,11 @@
-`<template>
+<template>
 <div class="user-function" :class="{ani:moveAni}" @touchmove="logoMove" :style="{transform:'translate('+logoPositionX+'px,'+logoPositionY+'px)'}" @touchend="logoReposition" @touchstart="moveAni=false" @click="navDis=!navDis">
   <div class="logo">logo</div>
   <div class="memu" :class="{active:navDis,left:whichSide=='left',right:whichSide=='right'}">
     <ul>
-      <li class="n1"><router-link to="/home">首页</router-link></li>
-      <li class="n2"><router-link to="/home">客服</router-link></li>
-      <li class="n3"><router-link to="/userCenter">我的</router-link></li>
+      <router-link class="n1" to="/home">首页</router-link>
+      <router-link class="n2" to="/home">客服</router-link>
+      <router-link class="n3" to="/userCenter">我的</router-link>
     </ul>
   </div>
 </div>
@@ -97,7 +97,10 @@ export default{
       right: 27px;
       &.active{width: 130px; padding: 0 35px 0 20px;}
     }
-    li{
+    a{
+      display: block;text-align: center;
+      font-size: 12px;color: #fff;
+      height: 15px;line-height: 15px; 
       float: left;
       width: 33.33%;
       padding-top: 27px;
@@ -107,11 +110,6 @@ export default{
       &.n1{background-image: url('/static/images/home/icon-home.png');}
       &.n2{background-image: url('/static/images/home/icon-contact.png');}
       &.n3{background-image: url('/static/images/home/icon-user.png');}
-      a{
-        display: block;text-align: center;
-        font-size: 12px;color: #fff;
-        height: 15px;line-height: 15px;        
-      }
     }
   }
 }
