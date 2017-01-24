@@ -82,9 +82,9 @@
         hotelList: []
       };
     },
-    created (searchCondition) {
+    created () {
       {
-        this.getList();
+        this.getList(this.searchCondition);
       }
     },
     methods: {

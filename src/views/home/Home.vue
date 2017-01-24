@@ -34,7 +34,7 @@
           <div class="search-input hotel-search" v-else>
             <div class="ipt country">
               <div class="tit">目的地城市</div>
-              <div class="txt"><input readonly="readonly" type="text" placeholder="你想去哪里？" v-model="hotelCondition.destination"></div>
+              <div class="txt"><input type="text" placeholder="你想去哪里？" v-model="hotelCondition.destination"></div>
             </div>
             <div class="ipt calendar" v-on:click="openStartPicker()">
               <div class="tit">入住日期</div>
@@ -192,11 +192,11 @@
         }
       },
       searchHotel:function(){
-        if (this.startDate !== '' && this.endDate !== '' && this.destination !== '') {
-          this.$store.commit('searchHotelConditionSave', this.visacondition)
+        if (this.hotelCondition.startDate !== '' && this.hotelCondition.endDate !== '' && this.hotelCondition.destination !== '') {
+          this.$store.commit('searchHotelConditionSave', this.hotelCondition)
           this.$router.push('/hotel')
         }else {
-          Toast('请选择目的地和常住地');
+          Toast('请选择目的地和入离店日期');
         }
       },
     },
