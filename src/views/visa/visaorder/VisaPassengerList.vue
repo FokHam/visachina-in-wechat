@@ -45,7 +45,7 @@ export default {
   },
   methods:{
     getPassenger:function(){
-      var url = '/member/passenger'
+      var url = '/api/member/passenger'
       this.$http.get(url).then(function(result){
         console.log(result.body)
         var rst = JSON.parse(result.body)

@@ -80,7 +80,7 @@ export default {
       this.searchdis = false
     },
     getWifiIndex:function(){
-      var url = '/wifi/index'
+      var url = '/api/wifi/index'
       this.$http.get(url).then(function(result){
         Indicator.close()
         var rst = JSON.parse(result.body)

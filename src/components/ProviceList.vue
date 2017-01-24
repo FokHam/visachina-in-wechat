@@ -26,7 +26,7 @@
     },
     methods:{
       getProvinceList:function(){
-        var url = '/visa/province'
+        var url = '/api/visa/province'
         this.$http.get(url).then(function(result){
           var rst = JSON.parse(result.body)          
           if (rst.status == 1) {

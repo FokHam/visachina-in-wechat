@@ -18,7 +18,7 @@
       };
     },
     created () {
-      let url = "/insurance/home";
+      let url = "/api/insurance/home";
       this.$http.get(url).then((response) => {
         let body = JSON.parse(response.body);
         if (body.status === 1) {

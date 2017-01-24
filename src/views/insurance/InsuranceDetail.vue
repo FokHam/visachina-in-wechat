@@ -62,7 +62,7 @@
       }
     },
     created () {
-      let url = "/insurance/info";
+      let url = "/api/insurance/info";
       let send = { id: this.$route.params.id };
       Indicator.open('拼命读取保险数据中...');
       this.$http.get(url, { params: send }).then((response) => {

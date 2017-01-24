@@ -29,7 +29,7 @@
 <script>
 export default {
   created () {
-    let url = "/insurance/list";
+    let url = "/api/insurance/list";
     let send = { type: this.$route.params.type };
     this.$http.get(url, { params: send }).then((response) => {
       let body = JSON.parse(response.body);

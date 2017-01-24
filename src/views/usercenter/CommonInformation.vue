@@ -170,7 +170,7 @@ export default{
       
     },
     getPassenger:function(){
-      var url = '/member/passenger'
+      var url = '/api/member/passenger'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -181,7 +181,7 @@ export default{
       });
     },
     getAddress:function(){
-      var url = '/member/address'
+      var url = '/api/member/address'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -192,7 +192,7 @@ export default{
       });
     },
     getContacter:function(){
-      var url = '/member/contact'
+      var url = '/api/member/contact'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -203,7 +203,7 @@ export default{
       });
     },
     getCredential:function(){
-      var url = '/member/invoice'
+      var url = '/api/member/invoice'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -217,13 +217,13 @@ export default{
       var url = '';
       switch (type) {
         case 'passenger':
-        url = '/member/passenger-set?id='+id
+        url = '/api/member/passenger-set?id='+id
         break;
         case 'address':
-        url = '/member/address-set?id='+id
+        url = '/api/member/address-set?id='+id
         break;
         case 'contact':
-        url = '/member/contact-set?id='+id
+        url = '/api/member/contact-set?id='+id
         break;
       }
       this.$http.get(url).then(function(result){
@@ -239,13 +239,13 @@ export default{
         var url = '';
         switch (type) {
           case 'passenger':
-          url = '/member/passenger-delete?id='+id
+          url = '/api/member/passenger-delete?id='+id
           break;
           case 'address':
-          url = '/member/address-delete?id='+id
+          url = '/api/member/address-delete?id='+id
           break;
           case 'contact':
-          url = '/member/contact-delete?id='+id
+          url = '/api/member/contact-delete?id='+id
           break;
         }
         this.$http.get(url).then(function(result){

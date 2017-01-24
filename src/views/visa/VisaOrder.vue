@@ -204,7 +204,7 @@ export default{
   methods:{
     getVisaDetail:function(){
       Indicator.open('加载中...');
-      var url = '/visa/info?id='+this.$route.params.id
+      var url = '/api/visa/info?id='+this.$route.params.id
       this.$http.get(url).then(function(result){
         Indicator.close();
         var rst = JSON.parse(result.body)
@@ -272,7 +272,7 @@ export default{
         "shipping":{"method":1,"shippingId":this.deliveryInfo.info.id},
         "invoice":this.invoiceData.detail
       };
-      var url = '/visa/create-order';
+      var url = '/api/visa/create-order';
       this.$http.post(url,send).then(function(result){
         console.log('返回数据：'+JSON.stringify(result))
         Indicator.close();

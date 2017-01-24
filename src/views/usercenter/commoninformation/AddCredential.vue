@@ -70,7 +70,7 @@ export default {
       }
     },
     submitData:function(){
-      var url = '/member/invoice-create',send=this.clientinfo;      
+      var url = '/api/member/invoice-create',send=this.clientinfo;      
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -82,7 +82,7 @@ export default {
     },
     remove:function(){
       MessageBox.confirm('确定删除?').then(action => {
-        var url = '/member/invoice-delete?id='+this.clientinfo.id        
+        var url = '/api/member/invoice-delete?id='+this.clientinfo.id        
         this.$http.get(url).then(function(result){
           this.$emit('submit','credential')
           var rst = result.body

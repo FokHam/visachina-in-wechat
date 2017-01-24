@@ -65,7 +65,7 @@ export default {
   },
   methods:{
     getCountryList:function(){
-      var url = '/visa/countries'
+      var url = '/api/visa/countries'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
