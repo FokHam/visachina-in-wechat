@@ -152,13 +152,27 @@ export default {
     },
     startConfirm: function (t){
       var m = t.getMonth()+1
-      this.startDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+      var d = t.getDate()
+      if (m.length == 1) {
+        m = '0' + m 
+      }
+      if (d.length == 1) {
+        d = '0' + d
+      }
+      this.startDate = t.getFullYear() +'-'+ m +'-'+ d
       var t = t.getTime() + 86400000
       this.selectDate = new Date(t)
     },
     endConfirm: function (t){
       var m = t.getMonth()+1
-      this.endDate = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+      var d = t.getDate()
+      if (m.length == 1) {
+        m = '0' + m 
+      }
+      if (d.length == 1) {
+        d = '0' + d
+      }
+      this.endDate = t.getFullYear() +'-'+ m +'-'+ d
     },
     openSearch:function(){
       this.searchdis = true

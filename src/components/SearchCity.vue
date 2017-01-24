@@ -50,8 +50,8 @@
 <script>
 export default {
   created: function () {
-    if (localStorage.visaHistory) {
-      this.historylist = JSON.parse(localStorage.visaHistory)
+    if (localStorage.hotelHistory) {
+      this.historylist = JSON.parse(localStorage.hotelHistory)
     }
     this.getCountryList();
   },
@@ -109,15 +109,15 @@ export default {
     },
     setHistory:function(c,id){
       var new_rec = {"name":c,"area_id":id}
-      if (!new RegExp(c).test(localStorage.visaHistory)) {
-        if(localStorage.visaHistory){
-          var hisObj = JSON.parse(localStorage.visaHistory)
+      if (!new RegExp(c).test(localStorage.hotelHistory)) {
+        if(localStorage.hotelHistory){
+          var hisObj = JSON.parse(localStorage.hotelHistory)
           hisObj.unshift(new_rec)
-          localStorage.visaHistory = JSON.stringify(hisObj.slice(0,4))
+          localStorage.hotelHistory = JSON.stringify(hisObj.slice(0,4))
         }else {
-          localStorage.visaHistory = JSON.stringify([new_rec])
+          localStorage.hotelHistory = JSON.stringify([new_rec])
         }
-        this.historylist = JSON.stringify(localStorage.visaHistory)
+        this.historylist = JSON.stringify(localStorage.hotelHistory)
       }      
     },
     stopscroll:function(e){
