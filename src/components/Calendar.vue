@@ -1,6 +1,6 @@
 <template>
   <div class="calendar-wrapper">
-    <div @click="confirm" class="qdan">确定按钮</div>
+    <div @click="confirm" class="qdan">确定</div>
     <div class="type-selecter">
       <div @click="selectType = 1" :class="{ active: selectType === 1 }" class="type-box">
         <p class="title">{{ type1 + "日期" }}</p>
@@ -55,13 +55,14 @@
 
   export default {
     props: {
+      dayDelay: Number,
       multipleDate: Boolean, //单个或多个日期
       minDay: Number,        //最小日期
       maxDay: Number,        //最大日期
       day1: {                //第一个已选日期
         type: Date,
         default: function () {
-          return now;
+          return this.dayDelay ? now : new Date(now.getTime() + 24 * 3600 * this.dayDelay);
         }
       },
       day2: Date,             //第二个已选日期
@@ -125,6 +126,9 @@
       isExpiredDay: function (year, month, date, calCalendar) {
         var today = new Date(),
             theDay = new Date(year, month, (this.selectType === 1) || calCalendar ? date : date - (this.minDay - 1), 23, 59, 59, 999);
+        if (this.dayDelay) {
+          today = new Date(today.getTime() + 24 * 3600 * 1000 * this.dayDelay);
+        }
         if (today.getTime() > theDay.getTime()) {
           return true;
         }
@@ -194,7 +198,11 @@
     right: 0;
     z-index: 100;
     text-align: center;
-    font-size: 2rem;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    border-radius: 0.1rem;
+    border: 0.02rem solid #008be0;
+    color: #008be0;
   }
   .calendar-wrapper {
     padding-top: 2.5rem;

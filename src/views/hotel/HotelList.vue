@@ -1,23 +1,24 @@
 <template>
   <div class="hotel-list">
     <div class="search-bar">
-      <div class="date-wrapper">
-        <p>住06-18</p>
-        <p>离06-24</p>
+      <div class="date-wrapper"
+      @click="pickingDate = true">
+        <p>住{{ this.startDate.format("MM-dd") }}</p>
+        <p>离{{ this.endDate.format("MM-dd") }}</p>
         <i class="icon-pulldown"></i>
       </div>
       <div class="input-wrapper">
         <i class="icon-search"></i>
         <input type="text" name="" value="" placeholder="输入城市">
       </div>
-      <div class="position-wrapper">
+      <!-- <div class="position-wrapper">
         <i class="icon-position"></i>
         <p>定位</p>
-      </div>
+      </div> -->
     </div>
     <div class="filter-bar">
       <span class="filter-btn">
-        途经推荐
+        区域
         <i class="icon-pulldown"></i>
       </span>
       <span class="filter-btn">
@@ -66,16 +67,33 @@
             <p><span class="yuan">¥</span>{{ item.price }}</p>
           </div>
         </div>
-      </div>
+      </router-link>
     </div>
-  </router-link>
+    <calendar v-if="pickingDate"
+      v-on:confirm="setDate"
+      type1="入住"
+      type2="离店"
+      :multipleDate="true"
+      :pickType ="1"
+      :minDay="minimunDay"
+      :maxDay="maximunDay"
+      :day1="startDate"
+      :day2="endDate"
+      :dayDelay="1"
+    ></calendar>
+  </div>
 </template>
 
 <script>
   import { Indicator } from 'mint-ui'
+  import calendar from "../../components/Calendar.vue"
+
   export default {
     data () {
       return {
+        pickingDate: false,
+        minimunDay: 2,
+        maximunDay: 28,
         facilityList: [
           "wifi", "park", "swim"
         ],
@@ -84,14 +102,13 @@
     },
     created () {
       {
-        this.getList(this.searchCondition);
+        this.getList({ cityname: this.destination });
       }
     },
     methods: {
       getList (obj) {
         Indicator.open('拼命读取酒店数据中...');
         let url = '/api/hotel/list';
-        let send = obj;
         this.$http.get(url, { params: obj }).then((response) => {
           // success callback
           console.log(JSON.parse(response.body));
@@ -102,16 +119,28 @@
           // error callback
           Indicator.close();
         });
+      },
+      setDate (day1, day2) {
+        this.$store.commit("setHotelDate", {
+          day1: day1,
+          day2: day2
+        });
+        this.pickingDate = false;
       }
     },
     computed: {
-      searchCondition () {
-        return {
-          startDate: this.$store.state.hotel.startDate,
-          endDate: this.$store.state.hotel.endDate,
-          destination: this.$store.state.hotel.destination
-        };
+      destination () {
+        return this.$store.state.hotel.destination;
+      },
+      startDate () {
+        return this.$store.state.hotel.startDate;
+      },
+      endDate () {
+        return this.$store.state.hotel.endDate;
       }
+    },
+    components: {
+      calendar
     }
   }
 </script>

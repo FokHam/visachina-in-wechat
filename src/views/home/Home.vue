@@ -101,7 +101,8 @@
     :minDay="minDay"
     :maxDay="maxDay"
     :day1="startDate"
-    :day2="endDate">
+    :day2="endDate"
+    :dayDelay="1">
   </calendar>
   </div>
 </template>
@@ -121,7 +122,13 @@ export default {
     document.title = "众意旅游"
   },
   data:function(){
-    var sTime = new Date(),eTime = new Date(sTime.getTime() + 24*60*60*1000)
+    var sTime = new Date(), eTime;
+      sTime.setTime(sTime.getTime() + 24 * 3600 * 1000);
+      sTime.setHours(0);
+      sTime.setMinutes(0);
+      sTime.setSeconds(0);
+      sTime.setMilliseconds(0);
+      eTime = new Date(sTime.getTime() + 24 * 3600 * 1000);
     return {
       isActive: 0,
       searchdis:false,
@@ -144,7 +151,7 @@ export default {
       endDate: new Date(eTime.getFullYear(),eTime.getMonth(),eTime.getDate()),
       multipleDate: true,
       pickingType: 1,
-      pickingDate: false    
+      pickingDate: false
     }
   },
   methods:{

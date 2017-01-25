@@ -11,7 +11,7 @@
   </div>
   <div class="searchresult" v-show="keyword != ''">
     <ul v-show="searchdata.length != 0">
-      <li v-for="item in searchdata" @click="choseCity(item.name)">{{item.name}}</li>      
+      <li v-for="item in searchdata" @click="choseCity(item.name)">{{item.name}}</li>
     </ul>
     <div class="backshadow" :class="{white:searchdata.length != 0}" @touchmove="stopscroll"></div>
   </div>
@@ -55,8 +55,8 @@ export default {
   },
   methods:{
     getCountryList:function(){
-      var url = '/api/hotel/hot-city'
-      this.$http.get(url).then(function(result){        
+      var url = '/api/hotel/hotcity'
+      this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.hotcities = rst.data
@@ -69,7 +69,7 @@ export default {
     },
     keywordsChange:function(v){
       if (v != '') {
-        var url = '/api/hotel/search-city',send={"keyword":v}
+        var url = '/api/hotel/searchcity',send={"keyword":v}
         this.$http.get(url,{params:send}).then(function(result){
           var rst = JSON.parse(result.body)
           if (rst.status == 1) {
@@ -77,7 +77,7 @@ export default {
               this.searchdata = rst.data.rows
             }else{
               this.searchdata = []
-            }            
+            }
           }else {
             console.log(rst.msg)
           }
@@ -108,10 +108,10 @@ export default {
           localStorage.hotelHistory = JSON.stringify([new_rec])
         }
         this.historylist = JSON.stringify(localStorage.hotelHistory)
-      }      
+      }
     },
     stopscroll:function(e){
-      e.preventDefault() 
+      e.preventDefault()
     }
   },
   watch:{
@@ -210,7 +210,7 @@ export default {
       background: #fff;
       padding: 50px 10px 0 10px;
       position: relative;
-      z-index: 99;      
+      z-index: 99;
       li {
         font-size: 0.7rem;
         height: 30px;

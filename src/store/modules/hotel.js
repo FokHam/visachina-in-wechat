@@ -63,8 +63,18 @@ const mutations = {
     state.endDate = payload.day2;
   },
   searchHotelConditionSave (state, payload) {
-    state.startDate = payload.startDate;
-    state.endDate = payload.endDate;
+    let start = new Date(payload.startDate);
+    let end = new Date(payload.endDate);
+    start.setHours(0);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+    end.setHours(0);
+    end.setMinutes(0);
+    end.setSeconds(0);
+    end.setMilliseconds(0);
+    state.startDate = start;
+    state.endDate = end;
     state.destination = payload.destination;
   }
 };

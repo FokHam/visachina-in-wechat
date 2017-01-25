@@ -91,6 +91,7 @@
       :maxDay="maximunDay"
       :day1="startDate"
       :day2="endDate"
+      :dayDelay="1"
     ></calendar>
   </div>
 </template>
