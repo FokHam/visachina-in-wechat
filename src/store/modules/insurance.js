@@ -1,7 +1,8 @@
 import { Toast } from 'mint-ui';
 
-const state = {
+let state = {
   productId: 0,
+  productDetail: {},
   type: "",
   startDate: "",
   endDate: "",
@@ -14,14 +15,31 @@ const state = {
 
 const mutations = {
   resetInsuranceState (state) {
-    state = {
-      productId: 0,
-      selectedInsuredPersonIds: [],
-      selectedPolicyHolderId: "",
-      insuredPerson: [],
-      policyHolder: {},
-      destinaiton: []
-    };
+    let d = new Date(),
+        minDay = 2,
+        startDate = new Date(),
+        type = 0;
+    startDate = new Date(startDate.getTime() + 24*3600000);
+    startDate.setHours(0);
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
+    let endDate = new Date(startDate.getTime() + 24*3600000*(minDay - 1 + 1));
+
+    state.startDate = startDate,
+    state.endDate = endDate,
+    state.type = type,
+    state.selectedInsuredPersonIds = [],
+    state.selectedPolicyHolderId = "",
+    state.insuredPerson = [],
+    state.policyHolder = {}
+  },
+  setInsuranceEndDate (state, payload) {
+    state.endDate = payload.endDate;
+  },
+  setInsuranceDetail (state, payload) {
+    state.productId = payload.id;
+    state.productDetail = payload.detail;
   },
   toggleInsuredPerson (state, id) {
     let index = state.selectedInsuredPersonIds.indexOf(id);
@@ -52,19 +70,7 @@ const mutations = {
   }
 };
 
-const actions = {
-  increment (context, payload) {
-    context.commit("increment", payload);
-  },
-  incrementAsync ({ commit }) {
-    setTimeout(() => {
-      commit("increment");
-    }, 1000);
-  }
-};
-
 export default {
   state,
-  mutations,
-  actions
+  mutations
 };

@@ -28,8 +28,13 @@
           </div>
         </div>
       </div>
-      <div v-if="selected === 2 || selected === 3" class="insurance-tips">
-        <p v-for="item in tips">{{ item }}</p>
+      <div v-if="selected === 2"
+        class="insurance-tips"
+        v-html="insuranceDetail.web_tb">
+      </div>
+      <div v-if="selected === 3"
+        class="insurance-tips"
+        v-html="insuranceDetail.web_sp">
       </div>
     </div>
   </div>
@@ -110,6 +115,11 @@
     methods: {
       tab: function (n) {
         this.selected = n;
+      }
+    },
+    computed: {
+      insuranceDetail () {
+        return this.$store.state.insurance.productDetail;
       }
     }
   }

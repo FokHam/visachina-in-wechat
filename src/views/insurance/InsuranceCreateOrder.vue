@@ -3,7 +3,7 @@
     <div class="order-title">
       <p class="product-name">申根险意外保险 （经典型）</p>
       <p>适合人群：商务出差人士</p>
-      <p>{{ "投保周期：" + startDate + " — " + endDate }}</p>
+      <p>{{ "投保周期：" + startDate.format("yyyy.MM.dd") + " — " + endDate.format("yyyy.MM.dd") }}</p>
     </div>
     <detail-content></detail-content>
     <div class="order-info">
@@ -80,9 +80,9 @@
 </template>
 
 <script>
-  import DetailContent from "./InsuranceDetail/DetailContent"
-  import SelectInsuredPerson from "./InsuranceCreateOrder/SelectInsuredPerson"
-  import SelectPolicyHolder from "./InsuranceCreateOrder/SelectPolicyHolder"
+  import DetailContent from "./insuranceDetail/DetailContent"
+  import SelectInsuredPerson from "./insuranceCreateOrder/SelectInsuredPerson"
+  import SelectPolicyHolder from "./insuranceCreateOrder/SelectPolicyHolder"
   import AddressPicker from "../../components/AddressPicker"
 
   import { Toast } from 'mint-ui';

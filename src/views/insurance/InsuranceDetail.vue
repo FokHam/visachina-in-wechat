@@ -9,12 +9,7 @@
       :withAge="true"
       @changeAge="changeAge"
     ></detail-content>
-    <detail-datepicker
-      :type="type"
-      :date1="startDate"
-      :date2="endDate"
-      :minDay="minDay"
-    ></detail-datepicker>
+    <detail-datepicker></detail-datepicker>
     <detail-create
       :isrDetail="insuranceDetail"
     ></detail-create>
@@ -22,31 +17,17 @@
 </template>
 
 <script>
-  import DetailHeader from "./InsuranceDetail/DetailHeader"
-  import DetailContent from "./InsuranceDetail/DetailContent"
-  import DetailDatepicker from "./InsuranceDetail/DetailDatepicker"
-  import DetailCreate from "./InsuranceDetail/DetailCreate"
+  import DetailHeader from "./insuranceDetail/DetailHeader"
+  import DetailContent from "./insuranceDetail/DetailContent"
+  import DetailDatepicker from "./insuranceDetail/DetailDatepicker"
+  import DetailCreate from "./insuranceDetail/DetailCreate"
   import { Indicator } from 'mint-ui'
 
   export default {
     data: function () {
-      let d = new Date(),
-          minDay = 3,
-          startDate = new Date(),
-          type = 0;
-      startDate.setHours(0);
-      startDate.setMinutes(0);
-      startDate.setSeconds(0);
-      startDate.setMilliseconds(0);
-      let endDate = new Date(startDate.getTime() + 24*60*60*1000*(minDay - 1));
-
       return {
-        type: type, // 0单次，1一年多次，2一年一次
-        minDay: minDay,
-        startDate: startDate,
-        endDate: endDate,
-        totalDay: "",
-        insuranceDetail: {},
+        type: 0, // 0单次，1一年多次，2一年一次
+        minDay: 3,
         ageSelect: 0
       }
     },
@@ -57,19 +38,38 @@
       DetailCreate
     },
     computed: {
-      totalDay: function () {
+      totalDay () {
         return (startDate.getTime() - endDate.getTime())/24/60/60/1000;
+      },
+      productId () {
+        return this.$store.state.insurance.productId;
+      },
+      insuranceDetail () {
+        return this.$store.state.insurance.productDetail;
+      },
+      startDate () {
+        return this.$store.state.insurance.startDate;
+      },
+      endDate () {
+        return this.$store.state.insurance.endDate;
       }
     },
     created () {
       let url = "/api/insurance/info";
       let send = { id: this.$route.params.id };
+      if (this.$route.params.id === this.productId) {
+        return false;
+      }
+      this.$store.commit("resetInsuranceState");
       Indicator.open('拼命读取保险数据中...');
       this.$http.get(url, { params: send }).then((response) => {
         console.log(JSON.parse(response.body));
         let body = JSON.parse(response.body);
         if (body.status === 1) {
-          this.insuranceDetail = body.data;
+          this.$store.commit("setInsuranceDetail", {
+            id: this.$route.params.id,
+            detail: body.data
+          });
           Indicator.close();
         } else {
           console.log("服务器错误");
@@ -85,5 +85,8 @@
   }
 </script>
 
-<style>
+<style lang="less" scoped>
+  .isr-d-page {
+    padding-bottom: 2.5rem;
+  }
 </style>

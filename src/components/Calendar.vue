@@ -117,7 +117,10 @@
         }
       },
       isActiveDay: function (year, month, date) {
-        if (this.selected.length !== 2) { return false }
+        if (this.dateFormat[0] === this.dateFormat[1]) {
+          return false;
+        }
+        if (this.selected.length !== 2 || !this.multipleDate) { return false }
         var theDate = new Date(year, month, date);
         if ((theDate.getTime() >= this.startDate.getTime()) && (theDate.getTime() <= this.endDate.getTime())) {
           return true;
@@ -133,14 +136,14 @@
           return true;
         }
       },
-      changeDate: function (year, month, date) {
+      changeDate: function (year, month, date) { //选择日期逻辑
         if (this.isExpiredDay(year, month, date)) { return false; }
         if (this.selectType === 2 ) {
           Vue.set(this.selected, 1, new Date(year, month, date));
         } else {
           Vue.set(this.selected, 0, new Date(year, month, date));
         }
-        if ((this.selected[0].getTime() > (this.selected[1].getTime() - 24*60*60*1000*(this.minDay - 1)))) {
+        if ((this.selected[0].getTime() >= (this.selected[1].getTime() - 24*60*60*1000*(this.minDay - 1)))) {
           if (this.selectType === 1) {
             var day = new Date(this.selected[0].getFullYear(), this.selected[0].getMonth(), this.selected[0].getDate() + (this.minDay - 1));
             this.selected[1] = day;
@@ -148,7 +151,7 @@
             var day = new Date(this.selected[1].getFullYear(), this.selected[1].getMonth(), this.selected[1].getDate() - (this.minDay - 1));
             this.selected[0] = day;
           }
-        } else if (this.maxDay && (this.selected[1].getTime() > (this.selected[0].getTime() + 24*60*60*1000*(this.maxDay - 1)))) {
+        } else if (this.maxDay && (this.selected[1].getTime() >= (this.selected[0].getTime() + 24*60*60*1000*(this.maxDay - 1)))) {
           if (this.selectType === 1) {
             var day = new Date(this.selected[0].getFullYear(), this.selected[0].getMonth(), this.selected[0].getDate() + (this.maxDay - 1));
             this.selected[1] = day;
@@ -156,6 +159,9 @@
             var day = new Date(this.selected[1].getFullYear(), this.selected[1].getMonth(), this.selected[1].getDate() - (this.maxDay - 1));
             this.selected[0] = day;
           }
+        }
+        if (this.selectType === 1 && this.multipleDate) {
+          this.selectType = 2;
         }
       },
       confirm: function () {
@@ -231,7 +237,11 @@
           margin-bottom: 0.2rem;
         }
         &.active {
+          background-color: #008be0;
           border-bottom: 0.1rem solid #008be0;
+          p {
+            color: #fff;
+          }
         }
       }
     }
