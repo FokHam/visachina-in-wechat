@@ -9,7 +9,9 @@
       :withAge="true"
       @changeAge="changeAge"
     ></detail-content>
-    <detail-datepicker></detail-datepicker>
+    <detail-datepicker
+      :ageSelect="ageSelect"
+    ></detail-datepicker>
     <detail-create
       :isrDetail="insuranceDetail"
     ></detail-create>

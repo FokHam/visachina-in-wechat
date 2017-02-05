@@ -72,6 +72,9 @@
   import Calendar from "../../../components/Calendar.vue";
 
   export default {
+    props: [
+      "ageSelect"
+    ],
     data: function () {
       return {
         weekDay: ["日", "一", "二", "三", "四", "五", "六"],
@@ -97,7 +100,7 @@
         let url = "/api/insurance/trial";
         let send = {
           id: this.$route.params.id,
-          birthday: "1991-04-19",
+          birthday: this.birthdayList[this.ageSelect].birthday,
           startDate: this.startDate.format("yyyy-MM-dd"),
           endDate: new Date(this.endDate.getTime() + 24*3600000).format("yyyy-MM-dd"), //试算时结束日期需加一天
           insureType: this.selectType ? (this.annualMulti ? 4 : 3) : 0
@@ -105,6 +108,10 @@
         console.log(send);
         this.$http.get(url, {params: send}).then((response) => {
           console.log(JSON.parse(response.body));
+          let respMsg = JSON.parse(response.body);
+          if (respMsg.status === 1 ) {
+            this.$store.commit("setInsurancePrice", respMsg.data);
+          }
         }, (response) => {
           console.log("服务器错误");
         });
@@ -150,6 +157,9 @@
       },
       multiple () {
         return this.$store.state.insurance.productDetail.web_many_frequency;
+      },
+      birthdayList () {
+        return this.$store.state.insurance.productDetail.age;
       }
     },
     watch: {

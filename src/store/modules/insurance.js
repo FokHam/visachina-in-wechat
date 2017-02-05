@@ -67,6 +67,9 @@ const mutations = {
   setInsuranceDate (state, payload) {
     state.startDate = payload.day1;
     state.endDate = payload.day2;
+  },
+  setInsurancePrice (state, price) {
+    state.productDetail.price = price;
   }
 };
 

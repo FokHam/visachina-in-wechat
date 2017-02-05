@@ -18,7 +18,10 @@
     <div v-if="withAge" class="age">
       <span class="title">承保年龄</span>
       <span class="value"
-        @click.stop="showAge = 1;">{{ isrDetail.age ? isrDetail.age[ageSelect].name : "" }}<i class="icon-arrow-down"></i></span>
+        @click.stop="showAge = 1;">
+        {{ isrDetail.age ? isrDetail.age[ageSelect].name : "" }}
+        <i class="icon-arrow-down"></i>
+      </span>
       <ul v-if="showAge === 1" class="age-list">
         <li v-for="(age, index) in isrDetail.age"
           :class="{ active: ageSelect === index }"
