@@ -8,15 +8,15 @@
       </div>
       <ul class="person-list wave-btm-bg">
         <li v-for="(person, index) in pList"
-            @click="togglePolicyHolder(person.id)"
+            @click="togglePolicyHolder(person.id, index)"
             class="person-item">
           <i :class="{ on: person.id === selectedPolicyHolderId }" class="icon-radio"></i>
           <div class="info-box">
-            <p class="name">{{ person.cName }}<span class="detail">{{ person.phone }}</span></p>
+            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ person.phone }}</span></p>
             <p class="item">{{ person.email }}</span></p>
           </div>
           <i class="icon-edit"
-             @click.stop="editingPerson=true"></i>
+             @click.stop="editPerson(index)"></i>
         </li>
       </ul>
       <div class="confirm-button"
@@ -25,7 +25,8 @@
       </div>
       <edit-policy-holder
         v-if="editingPerson"
-        v-on:confirm="editingPerson=false">
+        v-on:confirm="editConfirm"
+        :policyHolderDetail="selectedDetail">
       </edit-policy-holder>
     </div>
   </div>
@@ -33,48 +34,38 @@
 
 <script>
   import EditPolicyHolder from './InsuranceEditPolicyHolder'
+  import { Toast } from 'mint-ui'
 
   export default {
+    created () {
+      this.getList();
+    },
     data: function () {
+      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      typeList[99] = "其他";
       return {
         editingPerson: false,
-        idTypeList: ["身份证", "军官证", "护照"],
-        pList: [
-          {
-            id: 77,
-            cName: "黄旭光",
-            eName: "Huangxuguang",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28",
-            phone: "13480101603",
-            email: "hoxtonlau@gmail.com"
-          },{
-            id: 11,
-            cName: "刘德华",
-            eName: "Liudehua",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28",
-            phone: "13512312361",
-            email: "ldehua@126.com"
-          },{
-            id: 61,
-            cName: "张学友",
-            eName: "Zhangxueyou",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28",
-            phone: "15822138888",
-            email: "zxueyou@hotmail.com"
-          },
-        ]
+        selectedDetail: {},
+        pList: []
       };
     },
     methods: {
+      editPerson (n) {
+        this.selectedDetail = this.pList[n];
+        this.editingPerson = true;
+      },
+      getList () {
+        let url = "/api/member/passenger";
+        this.$http.get(url).then((response) => {
+          console.log(JSON.parse(response.body));
+          let body = JSON.parse(response.body);
+          if (body.status === 1) {
+            this.pList = body.data;
+          }
+        }, (response) => {
+          console.log("服务器错误！");
+        });
+      },
       confirm () {
         let that = this;
         that.pList.map(function (obj) {
@@ -84,8 +75,16 @@
         });
         this.$router.go(-1);
       },
-      togglePolicyHolder (id) {
-        this.$store.commit("togglePolicyHolder", id);
+      togglePolicyHolder (id, n) {
+        if (!this.pList[n].phone || !this.pList[n].email) {
+          Toast("请先完善该投保人信息");
+        } else {
+          this.$store.commit("togglePolicyHolder", id);
+        }
+      },
+      editConfirm () {
+        this.getList();
+        this.editingPerson = false;
       }
     },
     components: {

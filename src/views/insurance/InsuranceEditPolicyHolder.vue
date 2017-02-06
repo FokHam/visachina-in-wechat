@@ -3,33 +3,42 @@
     <ul class="info-list wave-btm-bg">
       <li class="info-item">
         <span class="label">中文名字</span>
-        <input v-model="cName" class="info-input" type="text" placeholder="与证件保持一致" value="">
+        <input v-model="pDetail.surname" class="info-input surname" type="text" placeholder="姓" value="">
+        <input v-model="pDetail.name" class="info-input name" type="text" placeholder="名" value="">
       </li>
       <li class="info-item">
         <span class="label">英文名字</span>
-        <input v-model="eName" class="info-input" type="text" placeholder="例如：Zhangsan" value="">
+        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓First name" value="">
+        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名Last name" value="">
       </li>
       <li class="info-item">
         <span class="label">未选择证件类型</span>
-        <input v-model="idNo" type="text" class="number" value="" placeholder="输入正确的证件号">
+        <input v-model="pDetail.id_number" type="text" class="number" value="" placeholder="输入正确的证件号">
         <span class="show-more-btn"
-          :class="{selected: typeof(idType) === 'number'}"
+          :class="{selected: typeof(pDetail.id_type) === 'number'}"
           @click.stop="idTypeSelecting = true">
-          {{ typeof(idType) === "number" ? idTypeSlots[0].values[idType] : "请选择证件类型"}}
+          {{ typeof(pDetail.id_type) === "number" ? idTypeSlots[pDetail.id_type] : "请选择证件类型"}}
           <i class="icon-arrow-right"></i>
         </span>
       </li>
+      <li class="info-item radio">
+        <span class="label">性别</span>
+        <div class="ipt">
+          <div class="woman" :class="{on: pDetail.sexual === 2}" @click="pDetail.sexual=2"><i></i>女</div>
+          <div class="man" :class="{on: pDetail.sexual === 1}" @click="pDetail.sexual=1"><i></i>男</div>
+        </div>
+      </li>
       <li class="info-item" @click="openBdatePicker">
         <span class="label">出生日期</span>
-        <input v-model="birthday" class="info-input" type="text" placeholder="与证件保持一致" value="">
+        <input v-model="pDetail.birthday" class="info-input" type="text" placeholder="与证件保持一致" value="">
       </li>
       <li class="info-item">
         <span class="label">手机号码</span>
-        <input v-model="phone" class="info-input" type="text" placeholder="请填写手机号码" value="">
+        <input v-model="pDetail.phone" class="info-input" type="text" placeholder="请填写手机号码" value="">
       </li>
       <li class="info-item">
         <span class="label">邮箱</span>
-        <input v-model="email" class="info-input" type="text" placeholder="请填写常用邮箱" value="">
+        <input v-model="pDetail.email" class="info-input" type="text" placeholder="请填写常用邮箱" value="">
       </li>
     </ul>
     <div class="confirm-btn"
@@ -46,33 +55,44 @@
       date-format="{value} 日"
       @confirm="confirmBdate">
     </mt-datetime-picker>
-    <mt-picker v-show="idTypeSelecting"
-      :visibleItemCount="3"
-      :slots="idTypeSlots"
-      @change="onIdTypeChange"></mt-picker>
+    <picker v-if="idTypeSelecting"
+      :listdata="idTypeSlots"
+      @confirm="idTypeSet"
+      @close="idTypeSelecting=false">
+    </picker>
   </div>
 </template>
 
 <script>
+  import Picker from '../../components/Picker';
+
   export default {
+    props: [
+      "policyHolderDetail"
+    ],
     data () {
       const minimunDate = new Date(1900, 0, 1);
       const maximunDate = new Date();
+      let pHolder = this.policyHolderDetail;
+      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      typeList[99] = "其他";
       return {
-        id: "",
-        cName: "",
-        eName: "",
-        idType: "",
-        idNo: "",
-        birthday: "",
-        phone: "",
-        email: "",
+        pDetail: {
+          id: pHolder.id || "",
+          name: pHolder.name || "",
+          surname: pHolder.surname || "",
+          spell_name: pHolder.spell_name || "",
+          spell_surname: pHolder.spell_surname || "",
+          id_type: typeof parseInt(pHolder.id_type) === "number" ? parseInt(pHolder.id_type) : "",
+          id_number: pHolder.id_number || "",
+          birthday: pHolder.birthday || "",
+          sexual: parseInt(pHolder.sexual) || 1,
+          phone: pHolder.phone || "",
+          email: pHolder.email || ""
+        },
         minimunDate: minimunDate,
         maximunDate: maximunDate,
-        idTypeSlots: [{
-          flex: 1,
-          values: ["身份证", "军官证", "护照"]
-        }],
+        idTypeSlots: typeList,
         idTypeSelecting: false
       }
     },
@@ -85,9 +105,22 @@
             d = day.getDate() > 9 ? day.getDate() : "0" + day.getDate();
         this.birthday = day.getFullYear() + "-" + m + "-" + d;
       },
+      idTypeSet () {
+
+      },
       confirmPerson () {
-        //保存信息
-        this.$emit("confirm");
+        let url = "/api/member/passenger-create";
+        let send = this.pDetail;
+        console.log(send);
+        this.$http.get(url, {params: send}).then((response) => {
+          console.log(JSON.parse(response.body));
+          let body = JSON.parse(response.body);
+          if (body.status === 1) {
+            this.$emit("confirm");
+          }
+        }, (response) => {
+          console.log("服务器错误！");
+        });
       },
       onIdTypeChange (p, v) {
         this.idType = this.idTypeSlots[0].values.indexOf(v[0]);
@@ -121,6 +154,38 @@
       line-height: 3.2rem;
       border-top: 0.05rem solid #eee;
       margin: 0 0.5rem;
+      &.radio{
+        .ipt{
+          overflow: hidden;
+          .man,.woman{
+            line-height: 60px;float: right;
+            font-size: 0.7rem;
+            padding-left: 1rem;
+            position: relative;
+            padding-right: 10px;
+            i{
+              display: block;
+              height: 0.7rem;
+              width: 0.7rem;
+              position: absolute;
+              border-radius: 0.7rem;
+              left: 0px;
+              top: 50%;
+              margin-top: -0.4rem;
+            }
+          }
+          .man{i{border: 0.1rem solid #239BE8;}}
+          .woman{i{border: 0.1rem solid #E961AC;}}
+          .man.on{i{background-color: #239BE8;}}
+          .woman.on{i{background-color: #E961AC;}}
+        }
+      }
+      .surname {
+        width: 40%
+      }
+      .name {
+        width: 30%;
+      }
       &:first-child {
         border-top: none;
       }

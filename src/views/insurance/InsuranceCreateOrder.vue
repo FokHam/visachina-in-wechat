@@ -17,16 +17,16 @@
       <div v-if="insuredPerson.length" class="person-list">
         <div class="person-item"
           @click="selectingIp=true"
-          v-for="person in insuredPerson">
+          v-for="(person, index) in insuredPerson">
           <p>
-            <span>{{ person.cName }}</span>
-            <span>{{ person.eName }}</span>
+            <span>{{ person.surname + " " + person.name }}</span>
+            <span>{{ person.spell_surname + " " + person.spell_name }}</span>
           </p>
           <p>
-            <span>{{ idTypeList[person.idType] }}</span>
-            <span>{{ person.idNo }}</span>
+            <span>{{ idTypeList[person.id_type] }}</span>
+            <span>{{ person.id_number }}</span>
           </p>
-          <span class="price">¥69</span>
+          <span class="price">¥{{ priceList[index] ? priceList[index] : "读取中.." }}</span>
         </div>
       </div>
       <div class="person">
@@ -75,23 +75,52 @@
 <script>
   import DetailContent from "./insuranceDetail/DetailContent"
   import AddressPicker from "../../components/AddressPicker"
+  import Vue from "vue"
 
   import { Toast } from 'mint-ui';
 
   export default {
     data: function () {
+      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      typeList[99] = "其他";
       return {
         selectingIp: false,
         selectingPh: false,
         singlePrice: 150,
-        idTypeList: ["身份证"]
+        idTypeList: typeList,
+        priceList: []
       }
     },
     components: {
       DetailContent,
       AddressPicker
     },
+    created () {
+      this.trial();
+    },
     methods: {
+      trial () {
+        let url = "/api/insurance/trial";
+        let that = this;
+        let send = {
+          id: this.$route.params.id,
+          birthday: "",
+          startDate: this.startDate.format("yyyy-MM-dd"),
+          endDate: new Date(this.endDate.getTime() + 24*3600000).format("yyyy-MM-dd"), //试算时结束日期需加一天
+          insureType: this.selectType ? (this.annualMulti ? 4 : 3) : 0
+        };
+        this.insuredPerson.map(function (obj, n) {
+          console.log(send);
+          send.birthday = obj.birthday;
+          that.$http.get(url, {params: send}).then((response) => {
+            console.log(JSON.parse(response.body));
+            let respMsg = JSON.parse(response.body);
+            Vue.set(that.priceList, n, respMsg.data);
+          }, (response) => {
+            console.log("服务器错误");
+          });
+        });
+      },
       createOrder () {
         let tempObj = this.$store.state.insurance;
         let message = "";

@@ -13,12 +13,12 @@
             class="person-item">
           <i :class="{ on: selectedPersonIds && (selectedPersonIds.indexOf(person.id) !== -1) }" class="icon-radio"></i>
           <div class="info-box">
-            <p class="name">{{ person.cName }}<span class="detail">{{ person.eName }}</span></p>
-            <p class="item">{{ idTypeList[person.idType] }} <span class="detail">{{ person.idNo }}</span></p>
+            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ (person.spell_surname ? person.spell_surname : "") + " " + person.spell_name }}</span></p>
+            <p class="item">{{ idTypeList[person.id_type] }} <span class="detail">{{ person.id_number }}</span></p>
             <p class="item">出生日期 <span class="detail">{{ person.birthday }}</span></p>
           </div>
           <i class="icon-edit"
-             @click.stop="editingPerson=true"></i>
+             @click.stop="editPerson(index)"></i>
         </li>
       </ul>
       <div class="confirm-button"
@@ -28,85 +28,46 @@
     </div>
     <edit-insured-person
       v-if="editingPerson"
-      v-on:confirm="editingPerson=false">
+      v-on:confirm="editConfirm"
+      :insuredPersonDetail="selectedDetail">
     </edit-insured-person>
   </div>
 </template>
 
 <script>
   import EditInsuredPerson from './InsuranceEditInsuredPerson'
+  import { Toast } from 'mint-ui'
 
   export default {
+    created () {
+      this.getList();
+    },
     data: function () {
+      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      typeList[99] = "其他";
       return {
         editingPerson: false,
-        idTypeList: ["身份证", "军官证", "护照"],
-        pList: [
-          {
-            id: 77,
-            cName: "黄旭光",
-            eName: "Huangxuguang",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28"
-          },
-          {
-            id: 66,
-            cName: "刘德华",
-            eName: "Liudehua",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28"
-          },
-          {
-            id: 11,
-            cName: "张学友",
-            eName: "Zhangxueyou",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28"
-          },
-          {
-            id: 15,
-            cName: "王菲",
-            eName: "Wangfei",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28"
-          },
-          {
-            id: 16,
-            cName: "薛蛮子",
-            eName: "Xuemanzi",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28"
-          },
-          {
-            id: 12,
-            cName: "范火火",
-            eName: "Fanhuohuo",
-            gender: 1,
-            idType: 0,
-            idNo: "441581199104280019",
-            birthday: "1991-04-28"
-          }
-        ]
+        idTypeList: typeList,
+        pList: [],
+        selectedDetail: {}
       }
     },
     methods: {
       getList () {
-        let url = "/api/insurance/peoples";
+        let url = "/api/member/passenger";
         this.$http.get(url).then((response) => {
           console.log(JSON.parse(response.body));
+          let body = JSON.parse(response.body);
+          if (body.status === 1) {
+            this.pList = body.data;
+          }
         }, (response) => {
           console.log("服务器错误！");
         });
+      },
+      editConfirm () {
+        this.getList();
+        this.editingPerson = false;
       },
       confirm () {
         let arr = [],
@@ -123,6 +84,10 @@
       },
       toggleInsuredPerson (id) {
         this.$store.commit("toggleInsuredPerson", id);
+      },
+      editPerson (n) {
+        this.selectedDetail = this.pList[n];
+        this.editingPerson = true;
       }
     },
     components: {
