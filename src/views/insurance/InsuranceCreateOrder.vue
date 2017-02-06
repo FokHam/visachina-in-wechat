@@ -9,9 +9,10 @@
     <div class="order-info">
       <div class="person">
         <span class="label">被保人<i class="icon-question"></i></span>
-        <i :class="[insuredPerson.length === 0 ? 'icon-addperson' : 'icon-edit']"
-          @click="selectingIp=true"
-        ></i>
+        <router-link
+        :class="[insuredPerson.length === 0 ? 'icon-addperson' : 'icon-edit']"
+        :to="'/InsuranceSelectInsuredPerson/' + $route.params.id"
+        ></router-link>
       </div>
       <div v-if="insuredPerson.length" class="person-list">
         <div class="person-item"
@@ -30,15 +31,15 @@
       </div>
       <div class="person">
         <span class="label">投保人<i class="icon-question"></i></span>
-        <i class="icon-addperson"
+        <router-link class="icon-addperson"
           v-if="!policyHolder.cName"
-          @click="selectingPh=true"
-        ></i>
+          :to="'/InsuranceSelectPolicyHolder/' + $route.params.id"
+        ></router-link>
       </div>
       <div class="person-list"
         v-if="policyHolder.cName">
-        <div class="person-item"
-          @click="selectingPh=true">
+        <router-link class="person-item"
+          :to="'/InsuranceSelectPolicyHolder/' + $route.params.id">
           <p>
             <span>{{ policyHolder.cName }}</span>
             <span>{{ policyHolder.eName }}</span>
@@ -48,7 +49,7 @@
             <span>{{ policyHolder.idNo }}</span>
           </p>
           <i class="icon-arrow-right"></i>
-        </div>
+        </router-link>
       </div>
       <div class="person">
         <span class="label">收益人<i class="icon-question"></i></span>
@@ -68,21 +69,11 @@
       <span class="button"
         @click="createOrder">提交订单</span>
     </div>
-    <select-insured-person
-      v-if="selectingIp"
-      @confirm="selectIpConfirm">
-    </select-insured-person>
-    <select-policy-holder
-      v-if="selectingPh"
-      @confirm="selectPhConfirm">
-    </select-policy-holder>
   </div>
 </template>
 
 <script>
   import DetailContent from "./insuranceDetail/DetailContent"
-  import SelectInsuredPerson from "./insuranceCreateOrder/SelectInsuredPerson"
-  import SelectPolicyHolder from "./insuranceCreateOrder/SelectPolicyHolder"
   import AddressPicker from "../../components/AddressPicker"
 
   import { Toast } from 'mint-ui';
@@ -98,17 +89,9 @@
     },
     components: {
       DetailContent,
-      SelectInsuredPerson,
-      SelectPolicyHolder,
       AddressPicker
     },
     methods: {
-      selectIpConfirm () {
-        this.selectingIp = false;
-      },
-      selectPhConfirm () {
-        this.selectingPh = false;
-      },
       createOrder () {
         let tempObj = this.$store.state.insurance;
         let message = "";
@@ -254,6 +237,7 @@
       .person-item {
         position: relative;
         border-bottom: 0.05rem solid #eee;
+        display: block;
         &:last-child {
           border-bottom: none;
         }

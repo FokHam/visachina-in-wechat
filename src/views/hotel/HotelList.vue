@@ -35,7 +35,7 @@
       </span>
     </div>
     <div class="item-list">
-      <router-link v-for="item in hotelList"
+      <router-link v-for="(item, index) in hotelList"
         class="hotel-item"
         :to="'/hotelDetail/' + item.id">
         <div class="hotel-pic">
@@ -60,6 +60,7 @@
           <div class="collect">
             <i class="icon-heart"
               :class="{ on : item.collect }"
+            @click.prevent="collectItem(item.id, index)"
             ></i>
             <p>{{ (item.collect ? "已" : "未") + "收藏" }}</p>
           </div>
@@ -126,6 +127,18 @@
           day2: day2
         });
         this.pickingDate = false;
+      },
+      collectItem (id, index) {
+        let url = "/api/member/collect-create";
+        let send = {
+          type: "hotel",
+          product_id: id
+        }
+        this.$http.get(url, {params: send}).then((response) => {
+          console.log(JSON.parse(response.body));
+        }, (response) => {
+          console.log("服务器错误！");
+        });
       }
     },
     computed: {

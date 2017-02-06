@@ -26,6 +26,9 @@
         this.nowchoose = values.toString()
       },
       confirm:function(){
+        if (this.nowchoose=='') {
+          this.nowchoose=this.listdata[0]
+        }
         this.$emit('confirm',this.nowchoose)
       },
       close:function(){
