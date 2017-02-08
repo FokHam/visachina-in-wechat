@@ -114,7 +114,7 @@ export default {
       }      
     },
     submitData:function(){
-      var url = '/api/member/passenger-create',send=this.clientinfo;      
+      var url = '/api/member/passenger_create',send=this.clientinfo;      
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {

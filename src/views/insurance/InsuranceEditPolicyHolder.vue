@@ -109,7 +109,7 @@
 
       },
       confirmPerson () {
-        let url = "/api/member/passenger-create";
+        let url = "/api/member/passenger_create";
         let send = this.pDetail;
         console.log(send);
         this.$http.get(url, {params: send}).then((response) => {

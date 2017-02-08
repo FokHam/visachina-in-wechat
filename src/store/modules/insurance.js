@@ -10,7 +10,8 @@ let state = {
   selectedPolicyHolderId: "",
   insuredPerson: [],
   policyHolder: {},
-  destinaiton: ["英国", "美国", "意大利"]
+  insureType: 0,
+  destination: []
 };
 
 const mutations = {
@@ -26,13 +27,21 @@ const mutations = {
     startDate.setMilliseconds(0);
     let endDate = new Date(startDate.getTime() + 24*3600000*(minDay - 1 + 1));
 
-    state.startDate = startDate,
-    state.endDate = endDate,
-    state.type = type,
-    state.selectedInsuredPersonIds = [],
-    state.selectedPolicyHolderId = "",
-    state.insuredPerson = [],
-    state.policyHolder = {}
+    state.startDate = startDate;
+    state.endDate = endDate;
+    state.type = type;
+    state.selectedInsuredPersonIds = [];
+    state.selectedPolicyHolderId = "";
+    state.insuredPerson = [];
+    state.policyHolder = {};
+    state.insureType = 0;
+    state.destination = [];
+  },
+  setInsuranceState (state, payload) {
+    state[payload.type] = payload.data;
+  },
+  setInsureType (state, type) {
+    state.insureType = type;
   },
   setInsuranceEndDate (state, payload) {
     state.endDate = payload.endDate;

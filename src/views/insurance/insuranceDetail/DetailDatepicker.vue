@@ -15,14 +15,14 @@
       ></calendar>
     <div class="tabbar">
       <span class="tabbar-btn"
-        :class="{ active: selectType === 0, fullWidth: !multiple && !annual}"
-        @click="selectType = 0;">
+        :class="{ active: insureType === 0, fullWidth: !multiple && !annual}"
+        @click="insureType = 0">
         单次
       </span>
       <span class="tabbar-btn"
         v-if="multiple || annual"
-        :class="{ active: selectType === 1 || selectType === 2 }"
-        @click="selectType = 1;">
+        :class="{ active: insureType === 1 || insureType === 2 }"
+        @click="insureType = 1">
         {{ annualMulti ? "一年多次" : "一年一次" }}
         <i class="icon-arrow-down"
           v-if="multiple"
@@ -36,7 +36,7 @@
       </span>
     </div>
     <div class="single-time"
-      v-if="selectType === 0">
+      v-if="insureType === 0">
       <div class="date-show"
         @click="pickingDate = 1; pickingType = 1">
         <i class="icon-calendar"></i>
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div class="multiple-time"
-      v-if="selectType === 1 || selectType === 2">
+      v-if="insureType === 1 || insureType === 2">
       <div class="date-show"
         @click="pickingDate = 1; pickingType = 1">
         <i class="icon-calendar"></i>
@@ -78,7 +78,7 @@
     data: function () {
       return {
         weekDay: ["日", "一", "二", "三", "四", "五", "六"],
-        selectType: 0,
+        insureType: 0,
         pickingDate: false,
         changingAnnual: false,
         annualMulti: true
@@ -103,7 +103,7 @@
           birthday: this.birthdayList[this.ageSelect].birthday,
           startDate: this.startDate.format("yyyy-MM-dd"),
           endDate: new Date(this.endDate.getTime() + 24*3600000).format("yyyy-MM-dd"), //试算时结束日期需加一天
-          insureType: this.selectType ? (this.annualMulti ? 4 : 3) : 0
+          insureType: this.insureType ? (this.annualMulti ? 4 : 3) : 0
         };
         console.log(send);
         this.$http.get(url, {params: send}).then((response) => {
@@ -122,7 +122,7 @@
         return (this.endDate.getTime() - this.startDate.getTime())/1000/60/60/24 + 1;
       },
       multipleDate () {
-        return this.selectType === 0;
+        return this.insureType === 0;
       },
       startDate () {
         return this.$store.state.insurance.startDate;
@@ -131,7 +131,7 @@
         return this.$store.state.insurance.endDate;
       },
       minDay () {
-        switch (this.selectType) {
+        switch (this.insureType) {
           case 0:
             return this.$store.state.insurance.productDetail.min_day;
             break;
@@ -142,7 +142,7 @@
         }
       },
       maxDay () {
-        switch (this.selectType) {
+        switch (this.insureType) {
           case 0:
             return this.$store.state.insurance.productDetail.max_day;
             break;
@@ -163,8 +163,8 @@
       }
     },
     watch: {
-      selectType () {
-        switch (this.selectType) {
+      insureType () {
+        switch (this.insureType) {
           case 0:
             this.$store.commit("setInsuranceEndDate", {
               endDate: new Date(this.startDate.getTime() + 24*60*60*1000*(this.minDay - 1))
@@ -177,6 +177,10 @@
             });
             break;
         }
+        this.$store.commit("setInsureType", this.insureType ? (this.annualMulti ? 4 : 3) : 0);
+      },
+      annualMulti () {
+        this.$store.commit("setInsureType", this.insureType ? (this.annualMulti ? 4 : 3) : 0);
       }
     },
     components: {

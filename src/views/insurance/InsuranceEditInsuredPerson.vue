@@ -13,7 +13,7 @@
       </li>
       <li class="info-item">
         <span class="label">证件类型</span>
-      <input v-model="pDetail.id_number" type="text" class="number" value="" placeholder="输入正确的证件号">
+        <input v-model="pDetail.id_number" type="text" class="number" value="" placeholder="输入正确的证件号">
         <span class="show-more-btn"
           :class="{selected: typeof(pDetail.id_type) === 'number'}"
           @click.stop="idTypeSelecting = true">
@@ -67,7 +67,7 @@
       const minimunDate = new Date(1900, 0, 1);
       const maximunDate = new Date();
       let isrDetail = this.insuredPersonDetail;
-      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      let typeList = ["", "身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
       typeList[99] = "其他";
       return {
         pDetail: {
@@ -101,7 +101,7 @@
       },
       confirm () {
         //保存信息
-        let url = "/api/member/passenger-create";
+        let url = "/api/member/passenger_create";
         let send = this.pDetail;
         console.log(send);
         this.$http.get(url, {params: send}).then((response) => {

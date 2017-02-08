@@ -1,104 +1,165 @@
 <template>
   <div class="isr-o-page">
-    <div class="order-title">
-      <p class="product-name">申根险意外保险 （经典型）</p>
-      <p>适合人群：商务出差人士</p>
-      <p>{{ "投保周期：" + startDate.format("yyyy.MM.dd") + " — " + endDate.format("yyyy.MM.dd") }}</p>
-    </div>
-    <detail-content></detail-content>
-    <div class="order-info">
-      <div class="person">
-        <span class="label">被保人<i class="icon-question"></i></span>
-        <router-link
-        :class="[insuredPerson.length === 0 ? 'icon-addperson' : 'icon-edit']"
-        :to="'/InsuranceSelectInsuredPerson/' + $route.params.id"
-        ></router-link>
+    <div v-if="!selectingDestination">
+      <div class="order-title">
+        <p class="product-name">申根险意外保险 （经典型）</p>
+        <p>适合人群：商务出差人士</p>
+        <p>{{ "投保周期：" + startDate.format("yyyy.MM.dd") + " — " + endDate.format("yyyy.MM.dd") }}</p>
       </div>
-      <div v-if="insuredPerson.length" class="person-list">
-        <div class="person-item"
-          @click="selectingIp=true"
-          v-for="(person, index) in insuredPerson">
-          <p>
-            <span>{{ person.surname + " " + person.name }}</span>
-            <span>{{ person.spell_surname + " " + person.spell_name }}</span>
-          </p>
-          <p>
-            <span>{{ idTypeList[person.id_type] }}</span>
-            <span>{{ person.id_number }}</span>
-          </p>
-          <span class="price">¥{{ priceList[index] ? priceList[index] : "读取中.." }}</span>
+      <detail-content></detail-content>
+      <div class="order-info">
+        <div class="person">
+          <span class="label">被保人<i class="icon-question" @click="showTip(1)"></i></span>
+          <router-link
+          :class="[insuredPerson.length === 0 ? 'icon-addperson' : 'icon-edit']"
+          :to="'/InsuranceSelectInsuredPerson/' + $route.params.id"
+          ></router-link>
+        </div>
+        <div v-if="insuredPerson.length" class="person-list">
+          <div class="person-item"
+            @click="selectingIp=true"
+            v-for="(person, index) in insuredPerson">
+            <p>
+              <span>{{ person.surname + " " + person.name }}</span>
+              <span>{{ person.spell_surname + " " + person.spell_name }}</span>
+            </p>
+            <p>
+              <span>{{ idTypeList[person.id_type] }}</span>
+              <span>{{ person.id_number }}</span>
+            </p>
+            <span class="price">¥{{ priceList[index] ? priceList[index] : "读取中.." }}</span>
+          </div>
+        </div>
+        <div class="person">
+          <span class="label">投保人<i class="icon-question" @click="showTip(2)"></i></span>
+          <router-link class="icon-addperson"
+            v-if="!policyHolder.name"
+            :to="'/InsuranceSelectPolicyHolder/' + $route.params.id"
+          ></router-link>
+        </div>
+        <div class="person-list"
+          v-if="policyHolder.name">
+          <router-link class="person-item"
+            :to="'/InsuranceSelectPolicyHolder/' + $route.params.id">
+            <p>
+              <span>{{ policyHolder.surname + policyHolder.name }}</span>
+              <span>{{ policyHolder.spell_surname + policyHolder.spell_name }}</span>
+            </p>
+            <p>
+              <span>{{ idTypeList[policyHolder.id_type] }}</span>
+              <span>{{ policyHolder.id_number }}</span>
+            </p>
+            <i class="icon-arrow-right"></i>
+          </router-link>
+        </div>
+        <div class="person">
+          <span class="label">收益人<i class="icon-question" @click="showTip(3)"></i></span>
+          <span class="read-only">法定继承人</span>
+        </div>
+        <div class="person"
+          @click="selectingDestination=true"
+          v-if="insuranceState.productDetail.web_city.length">
+          <span class="label">目的地</span>
+          <span class="destination-item" v-for="item in insuranceState.destination">{{ item }}</span>
+          <i class="icon-write"></i>
+        </div>
+        <div class="person"
+          v-if="insuranceState.productDetail.web_visa_flag">
+          <span class="label">签证办理城市</span>
+          <input type="text" name="" value="" v-model="visaCity" placeholder="填写签证办理城市">
+          <i class="icon-write"></i>
+        </div>
+        <div class="person"
+          @click.stop="targetTypeSelecting = true">
+          <span class="label">出行目的</span>
+          <span class="show-more-btn">
+            {{ targetType ? targetTypeList[targetType] : "选择出行目的"}}
+          </span>
+          <i class="icon-arrow-right"></i>
         </div>
       </div>
-      <div class="person">
-        <span class="label">投保人<i class="icon-question"></i></span>
-        <router-link class="icon-addperson"
-          v-if="!policyHolder.cName"
-          :to="'/InsuranceSelectPolicyHolder/' + $route.params.id"
-        ></router-link>
+      <div class="order-submit">
+        <p class="amount">
+          <span>订单金额：</span>
+          <span class="num">{{ "¥" + amount }}</span>
+        </p>
+        <span class="button"
+          @click="createOrder">提交订单</span>
       </div>
-      <div class="person-list"
-        v-if="policyHolder.cName">
-        <router-link class="person-item"
-          :to="'/InsuranceSelectPolicyHolder/' + $route.params.id">
-          <p>
-            <span>{{ policyHolder.cName }}</span>
-            <span>{{ policyHolder.eName }}</span>
-          </p>
-          <p>
-            <span>{{ idTypeList[policyHolder.idType] }}</span>
-            <span>{{ policyHolder.idNo }}</span>
-          </p>
-          <i class="icon-arrow-right"></i>
-        </router-link>
+      <div class="tip-shower"
+        v-if="tipShowFlag"
+        @click.stop="tipShowFlag=false">
+        <p>{{ tipShowText }}</p>
       </div>
-      <div class="person">
-        <span class="label">收益人<i class="icon-question"></i></span>
-        <span class="read-only">法定继承人</span>
-      </div>
-      <div class="person">
-        <span class="label">目的地</span>
-        <span>冰岛</span>
-        <i class="icon-write"></i>
-      </div>
+      <picker v-show="targetTypeSelecting"
+        :listdata="targetTypeList"
+        @confirm="targetTypeSet"
+        @close="targetTypeSelecting=false">
+      </picker>
     </div>
-    <div class="order-submit">
-      <p class="amount">
-        <span>订单金额：</span>
-        <span class="num">{{ "¥" + amount + " (" + singlePrice + " x " + insuredPerson.length + "人)"}}</span>
-      </p>
-      <span class="button"
-        @click="createOrder">提交订单</span>
-    </div>
+    <destination-picker
+      v-if="selectingDestination"
+      @close="selectingDestination=false"
+      ></destination-picker>
   </div>
 </template>
 
 <script>
   import DetailContent from "./insuranceDetail/DetailContent"
   import AddressPicker from "../../components/AddressPicker"
+  import DestinationPicker from "./insuranceCreateOrder/DestinationPicker"
+  import Picker from "../../components/Picker"
   import Vue from "vue"
 
-  import { Toast } from 'mint-ui';
+  import { Toast } from "mint-ui"
 
   export default {
     data: function () {
-      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      let targetList = ["", "旅游", "商务", "探亲", "留学", "务工", "其他"];
+      let typeList = ["", "身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
       typeList[99] = "其他";
       return {
+        tipShowText: "",
+        tipShowFlag: false,
         selectingIp: false,
         selectingPh: false,
-        singlePrice: 150,
+        selectingDestination: false,
+        targetType: 0,
         idTypeList: typeList,
-        priceList: []
+        targetTypeList: targetList,
+        targetTypeSelecting: false,
+        priceList: [],
+        visaCity: ""
       }
     },
     components: {
       DetailContent,
-      AddressPicker
+      AddressPicker,
+      Picker,
+      DestinationPicker
     },
     created () {
       this.trial();
     },
     methods: {
+      targetTypeSet (v) {
+        this.targetType = this.targetTypeList.indexOf(v);
+        this.targetTypeSelecting = false;
+      },
+      showTip (n) {
+        this.tipShowFlag = true;
+        switch (n) {
+          case 1:
+            this.tipShowText = "此次出行者，投保人和被保人可为同一人";
+            break;
+          case 2:
+            this.tipShowText = "购买此保险的人，通常为付款人（须成年人）";
+            break;
+          case 3:
+            this.tipShowText = "如需修改此项，请致电保险公司进行修改";
+            break;
+        }
+      },
       trial () {
         let url = "/api/insurance/trial";
         let that = this;
@@ -107,7 +168,7 @@
           birthday: "",
           startDate: this.startDate.format("yyyy-MM-dd"),
           endDate: new Date(this.endDate.getTime() + 24*3600000).format("yyyy-MM-dd"), //试算时结束日期需加一天
-          insureType: this.selectType ? (this.annualMulti ? 4 : 3) : 0
+          insureType: this.insureType //0默认，3一年一次，4一年多次
         };
         this.insuredPerson.map(function (obj, n) {
           console.log(send);
@@ -122,29 +183,39 @@
         });
       },
       createOrder () {
+        let url = "/api/insurance/create_order";
         let tempObj = this.$store.state.insurance;
         let message = "";
         let send = {
-          productId: this.$route.params.id,
-          startDate: this.startDate,
-          endDate: this.endDate,
+          id: this.$route.params.id,
+          beginDate: this.startDate.format("yyyy-MM-dd"),
+          endDate: this.endDate.format("yyyy-MM-dd"),
+          insureType: this.insureType,
+          destination: this.destination,
+          visaCity: this.visaCity,
+          tripPurposeId: this.targetType,
           insuredPerson: this.insuredPerson,
           policyHolder: this.policyHolder,
-          destinaiton: tempObj.destinaiton,
           amount: this.amount
         };
         switch (true) {
-          case !send.productId:
+          case !send.id:
             message = "产品ID错误";
             break;
-          case !send.startDate:
+          case !send.beginDate:
+            message = "起始时间错误";
+            break;
+          case !send.endDate:
             message = "起始时间错误";
             break;
           case !(send.insuredPerson.length > 0):
             message = "请添加被保人";
             break;
-          case !send.policyHolder.cName:
+          case !send.policyHolder.name:
             message = "请添加投保人";
+            break;
+          case !send.tripPurposeId:
+            message = "请选择出行目的";
             break;
         }
         if (message !== "") {
@@ -153,19 +224,47 @@
             position: "middle",
             duration: 1500
           });
+        } else {
+          this.$http.post(url, send).then((response) => {
+            let body = JSON.parse(response.body);
+            console.log(JSON.parse(response.body));
+            if (body.status !== 1) {
+              Toast(body.msg);
+            }
+          }, (response) => {
+            Toast(body.msg);
+          });
         }
         console.log(send);
       }
     },
     computed: {
+      insuranceState () {
+        return this.$store.state.insurance;
+      },
+      destination () {
+        return this.$store.state.insurance.destination;
+      },
       insuredPerson () {
         return this.$store.state.insurance.insuredPerson;
       },
       policyHolder () {
         return this.$store.state.insurance.policyHolder;
       },
+      insureType () {
+        return this.$store.state.insurance.insureType;
+      },
       amount () {
-        return this.insuredPerson.length * this.singlePrice;
+        let amount = 0;
+        for (let i = 0; i < this.insuredPerson.length; i += 1) {
+          let n = this.priceList[i];
+          if (typeof n === "number") {
+            amount += n;
+          } else {
+            return "读取中";
+          }
+        }
+        return amount;
       },
       startDate () {
         return this.$store.state.insurance.startDate;
@@ -178,6 +277,35 @@
 </script>
 
 <style lang="less" scoped>
+  .icon-arrow-right {
+    position: absolute;
+    right: 0.5rem;
+    top: 0; bottom: 0;
+    margin: auto;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: url(/static/images/insurance/arrow-r.png) center no-repeat;
+    background-size: contain;
+  }
+  .tip-shower {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 10;
+    p {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      line-height: 3rem;
+      font-size: 0.8rem;
+      background: #fff;
+      text-align: center;
+      color: #666;
+    }
+  }
   .isr-o-page {
     padding-bottom: 3.5rem;
   }
@@ -209,6 +337,13 @@
       position: relative;
       height: 2.2rem;
       border-bottom: 0.05rem solid #eee;
+      .destination-item {
+        margin-right: 0.5rem;
+      }
+      input {
+        border: none;
+        font-size: 0.7rem;
+      }
       .read-only {
         font-size: 0.7rem;
         color: #999;

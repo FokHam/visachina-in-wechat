@@ -12,29 +12,29 @@
             <i class="icon-feature"></i>产品特色
           </p>
           <p class="content">
-            {{ feature }}
+            {{ productDetail.feature }}
           </p>
         </div>
         <div class="pd-item">
           <p class="title">
             <i class="icon-guarantee"></i>保障内容
           </p>
-          <div v-for="item in guarantee" class="grt-item">
-            <p class="item-title">{{ item.title }}</p>
-            <p v-for="item in item.items" class="detail">
-              <i class="icon-tick"></i>{{ item.name }}
-              <span>{{ item.amount + "元" }}</span>
+          <div v-for="plan in productDetail.plans" class="grt-item">
+            <p class="item-title">{{ plan.title }}</p>
+            <p v-for="text in plan.data" class="detail">
+              <i class="icon-tick"></i>{{ text.name }}
+              <span>{{ text.texts }}</span>
             </p>
           </div>
         </div>
       </div>
       <div v-if="viewNum === 2"
         class="insurance-tips"
-        v-html="insuranceDetail.web_tb">
+        v-html="productDetail.web_tb">
       </div>
       <div v-if="viewNum === 3"
         class="insurance-tips"
-        v-html="insuranceDetail.web_sp">
+        v-html="productDetail.web_sp">
       </div>
     </div>
   </div>
@@ -43,66 +43,41 @@
 <script>
   export default {
     data: function () {
-      return {
-          viewNum: 1,
-          feature: "境外旅行期间的意外伤害、住院医疗、紧急救援、旅行不便等其他特色服务。",
-          guarantee: [
+      let plans = [
+        {
+          title: "个人财务及责任",
+          data: [
             {
-              title: "旅程阻碍保障",
-              items: [{
-                  name: "行李延误",
-                  amount: 6000
-                }, {
-                  name: "旅程延误",
-                  amount: 7000
-                }, {
-                  name: "旅行证件遗失",
-                  amount: 10000
-                }, {
-                  name: "旅行证件没遗失",
-                  amount: 0.5
-              }]
-            },
-            {
-              title: "个人意外伤害和医疗保障",
-              items: [{
-                  name: "意外身故和伤残",
-                  amount: 210000
-                }, {
-                  name: "医药补偿",
-                  amount: 60000
-                }, {
-                  name: "旅行绑架及非法拘禁",
-                  amount: 180000
-                }]
-            },
-            {
-              title: "紧急救援",
-              items: [{
-                  name: "意外及急性病医疗",
-                  amount: 10000
-                }, {
-                  name: "既往疾病急救医药补偿",
-                  amount: 3000
-                }, {
-                  name: "紧急医疗运送和送返",
-                  amount: 5000
-                }]
-            },
-            {
-              title: "个人财务保障",
-              items: [{
-                  name: "手机及平板电脑保障",
-                  amount: 10000
-                }, {
-                  name: "随身财产",
-                  amount: 3000
-                }, {
-                  name: "不随身财产",
-                  amount: 5000
-                }]
+              name: "随身财产",
+              texts: "5000元"
+            },{
+              name: "随身财产",
+              texts: "5000元"
+            },{
+              name: "随身财产",
+              texts: "5000元"
             }
           ]
+        },{
+          title: "个人财务及责任",
+          data: [
+            {
+              name: "随身财产",
+              texts: "5000元"
+            },{
+              name: "随身财产",
+              texts: "5000元"
+            },{
+              name: "随身财产",
+              texts: "5000元"
+            }
+          ]
+        }
+      ];
+      return {
+          viewNum: 1,
+          feature: this.productDetail && this.productDetail.feature,
+          plans: plans
         }
       },
     methods: {
@@ -111,7 +86,7 @@
       }
     },
     computed: {
-      insuranceDetail () {
+      productDetail () {
         return this.$store.state.insurance.productDetail;
       }
     }

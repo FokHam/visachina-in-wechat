@@ -43,7 +43,7 @@
       this.getList();
     },
     data: function () {
-      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      let typeList = ["", "身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
       typeList[99] = "其他";
       return {
         editingPerson: false,
