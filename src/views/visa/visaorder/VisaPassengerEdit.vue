@@ -44,8 +44,7 @@ export default {
     }
   },
   methods:{
-    typeSet:function(v){
-      if (v=='') {v='在职'}      
+    typeSet:function(v){     
       this.passengerInfo.type = this.typeList.indexOf(v) + 1
       this.typedis = false      
     },
@@ -57,7 +56,7 @@ export default {
     },
     saveClient:function(){
       if (this.passengerInfo.name != '' && this.passengerInfo.type != '') {
-        var url = '/api/member/passenger-create',send=this.passengerInfo;      
+        var url = '/api/member/passenger_create',send=this.passengerInfo;      
         this.$http.get(url,{params:send}).then(function(result){
           var rst = JSON.parse(result.body)
           if (rst.status == 1) {

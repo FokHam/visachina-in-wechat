@@ -94,10 +94,6 @@ export default {
     },
     confirm:function(){
       if (this.clientename != '' && this.clientid != '' && this.birthday != '' && this.idType != '') {
-
-
-        
-        
         this.$emit('confirm',this.proposerInfo)
       }else{
         Toast('不可以留空哦~')

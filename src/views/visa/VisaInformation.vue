@@ -8,9 +8,9 @@
         <div class="con">
           <p>{{cate.description}}</p>
         </div>
-        <!--<div class="example">
-          <span v-for="files in cate.files" @click="checkPic">{{files}}</span>
-        </div>-->
+        <div class="example">
+          <span v-for="file in cate.files" @click="checkPic(file.real_name,file.url)">{{file.real_name}}</span>
+        </div>
       </li>      
     </ul>
   </div>
@@ -40,7 +40,9 @@ export default{
     }
   },
   methods:{
-    checkPic:function(){
+    checkPic:function(name,url){
+      this.picTxt = name
+      this.picUrl = url
       this.exampleDis = true
     },
     closePic:function(){

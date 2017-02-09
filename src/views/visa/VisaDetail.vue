@@ -80,18 +80,22 @@
       </div>
     </div>
     <div class="booking">
-      <div class="addfev">收藏</div>
+      <div class="addfev" :class="{collect:iscollect==1}" @click="addCollect">收藏</div>
       <div class="bookbtn"><router-link :to="'/visaOrder/'+$route.params.id">立即预定</router-link></div>
     </div>
-    <email :isshow="emailDis" @closePage="closeSend"></email>
+    <email
+    v-if="emailDis"
+    :typedata="pageData.materials"
+    :proid="$route.params.id"
+    @closePage="closeSend">      
+    </email>
   </div>
-  
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
 import Email from './visaDetail/Email'
-
 export default{
   name: 'visa-detail',
   beforeCreate:function(){
@@ -117,7 +121,8 @@ export default{
     return{
       pageData:'',
       tabStatus:0,
-      emailDis:false      
+      emailDis:false,
+      iscollect:0      
     }
   },
   methods:{    
@@ -140,15 +145,39 @@ export default{
       var url = '/api/visa/info?id='+this.$route.params.id
       this.$http.get(url).then(function(result){
         Indicator.close();
+        console.log(result.body)
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.pageData = rst.data
+          this.isCollect()
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    addCollect:function(){
+      var url = '/api/member/collect_create?type=visa&product_id=' + this.$route.params.id
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.isCollect()
+          Toast(rst.msg)
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    isCollect:function(){
+      var url = '/api/member/is_collect?type=visa&product_id=' + this.$route.params.id
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {          
+          this.iscollect = rst.data.result
         }else {
           console.log(rst.msg)
         }
       });
     }
-    
   }
 }
 </script>

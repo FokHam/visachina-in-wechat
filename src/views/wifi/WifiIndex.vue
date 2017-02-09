@@ -1,44 +1,50 @@
 <template>
 <div class="wifi" id="wifi" v-if="pageData != ''">
-  <div class="grid_top">
-    <div class="search" @click="searchdis=true"><span>你想去哪儿？</span></div>
-    <div class="banner">
-      <img src="/static/images/wifi/banner.png">
-    </div>
-    <router-link class="help" to="/WifiHelp">
-      <div class="tit">新手攻略</div>
-      <div class="txt">如何预定、取还、使用 ></div>
-    </router-link>
-  </div>
-  <div class="grid_hot">
-    <div class="tit">热门目的地WIFI</div>
-    <div class="list">
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-1.png"><span>日本</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-2.png"><span>韩国</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-3.png"><span>泰国</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-4.png"><span>香港</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-5.png"><span>欧洲</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-6.png"><span>尼泊尔</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-7.png"><span>法国</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-8.png"><span>德国</span><div class="s"></div></router-link>
-      <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-9.png"><span>挪威</span><div class="s"></div></router-link>
-    </div>
-  </div>
-  <div class="grid_suggest">
-    <div class="tit">爆款推荐</div>
-    <div class="list">
-      <router-link v-for="item in pageData.hotProducts" class="item" :to="'/WifiDetail/'+item.id">
-        <div class="left" :style="{'background-image':'url('+item.image+')'}"></div>
-        <div class="right">
-          <div class="name">{{item.name}}</div>
-          <div class="tags"><span>多人畅享</span><span>超低价</span></div>
-          <div class="price"><span>￥{{item.price}}</span>/天起</div>
-        </div>
+  <div class="wifiPage" v-if="searchdis == false">
+    <div class="grid_top">
+      <div class="search" @click="searchdis=true"><span>你想去哪儿？</span></div>
+      <div class="banner">
+        <img src="/static/images/wifi/banner.png">
+      </div>
+      <router-link class="help" to="/WifiHelp">
+        <div class="tit">新手攻略</div>
+        <div class="txt">如何预定、取还、使用 ></div>
       </router-link>
-      
+    </div>
+    <div class="grid_hot">
+      <div class="tit">热门目的地WIFI</div>
+      <div class="list">
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-1.png"><span>日本</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-2.png"><span>韩国</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-3.png"><span>泰国</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-4.png"><span>香港</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-5.png"><span>欧洲</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-6.png"><span>尼泊尔</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-7.png"><span>法国</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-8.png"><span>德国</span><div class="s"></div></router-link>
+        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-9.png"><span>挪威</span><div class="s"></div></router-link>
+      </div>
+    </div>
+    <div class="grid_suggest">
+      <div class="tit">爆款推荐</div>
+      <div class="list">
+        <router-link v-for="item in pageData.hotProducts" class="item" :to="'/WifiDetail/'+item.id">
+          <div class="left" :style="{'background-image':'url('+item.image+')'}"></div>
+          <div class="right">
+            <div class="name">{{item.name}}</div>
+            <div class="tags"><span>多人畅享</span><span>超低价</span></div>
+            <div class="price"><span>￥{{item.price}}</span>/天起</div>
+          </div>
+        </router-link>
+        
+      </div>
     </div>
   </div>
-  <country v-if="searchdis" v-on:choseCountry="changeCountry" v-on:closePage="closeComp"></country>
+  <country 
+  v-if="searchdis" 
+  v-on:choseCountry="changeCountry" 
+  v-on:closePage="closeComp">    
+  </country>
 </div>
 </template>
 

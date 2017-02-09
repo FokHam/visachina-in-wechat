@@ -62,7 +62,6 @@ export default {
   },
   methods:{
     typeSet:function(v){
-      if (v=='') {v='身份证'}
       this.passengerInfo.idtype = v
       this.typedis = false      
     },

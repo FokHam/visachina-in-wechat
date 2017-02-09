@@ -15,7 +15,7 @@
         <ul>
           <li v-for="(item,index) in listData.passenger">
             <div class="top">
-              <div class="name">{{item.name}}<span>{{item.spell}}</span></div>
+              <div class="name">{{item.surname+item.name}}<span>{{item.spell_surname+item.spell_name}}</span></div>
               <div class="idnum">{{idTypeStr[item.id_type]}} {{item.id_number}}</div>
             </div>
             <div class="bottom">
@@ -108,7 +108,7 @@
   v-if="addData.credential.display"
   :info="addData.credential.data"
   @submit="closeComponents">
-  </add-credential>
+  </add-credential>  
 </div>
 </template>
 
@@ -148,7 +148,7 @@ export default{
         "contacter":[],
         "credential":[]
       },
-      idTypeStr:['','身份证','护照','出生证','驾照','港澳通行证','军官证','台胞证','警官证']
+      idTypeStr:['','身份证','护照','出生证','驾照','港澳通行证','军官证','台胞证','警官证'],      
     }
   },
   methods:{
@@ -217,13 +217,13 @@ export default{
       var url = '';
       switch (type) {
         case 'passenger':
-        url = '/api/member/passenger-set?id='+id
+        url = '/api/member/passenger_set?id='+id
         break;
         case 'address':
-        url = '/api/member/address-set?id='+id
+        url = '/api/member/address_set?id='+id
         break;
         case 'contact':
-        url = '/api/member/contact-set?id='+id
+        url = '/api/member/contact_set?id='+id
         break;
       }
       this.$http.get(url).then(function(result){
@@ -239,13 +239,13 @@ export default{
         var url = '';
         switch (type) {
           case 'passenger':
-          url = '/api/member/passenger-delete?id='+id
+          url = '/api/member/passenger_delete?id='+id
           break;
           case 'address':
-          url = '/api/member/address-delete?id='+id
+          url = '/api/member/address_delete?id='+id
           break;
           case 'contact':
-          url = '/api/member/contact-delete?id='+id
+          url = '/api/member/contact_delete?id='+id
           break;
         }
         this.$http.get(url).then(function(result){

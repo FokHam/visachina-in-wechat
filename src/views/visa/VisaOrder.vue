@@ -18,7 +18,7 @@
     </div>
     <div class="namelist" v-if="passengerList.list.length != 0">
       <ul>
-        <li v-for="(item, index) in passengerList.list" :class="{left:index % 2 == 0}"><span class="name">{{item.name}}</span><span class="type">{{typeList[item.type-1]}}</span></li>
+        <li v-for="(item, index) in passengerList.list" :class="{left:index % 2 == 0}"><span class="name">{{item.surname+item.name}}</span><span class="type">{{typeList[item.type-1]}}</span></li>
       </ul>
     </div>
   </div>
@@ -272,14 +272,16 @@ export default{
         "shipping":{"method":1,"shippingId":this.deliveryInfo.info.id},
         "invoice":this.invoiceData.detail
       };
-      var url = '/api/visa/create-order';
+      let header = {
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      };
+      var url = '/api/visa/create_order';
       this.$http.post(url,send).then(function(result){
-        console.log('返回数据：'+JSON.stringify(result))
         Indicator.close();
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          console.log(JSON.stringify(rst.data))
-        }else {
+          this.$router.push('/visaOrderDetail/'+rst.data.orderID)
+        }else{
           console.log(rst.msg)
         }
       });
