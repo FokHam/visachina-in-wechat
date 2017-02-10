@@ -42,6 +42,7 @@
   </div>
   <country 
   v-if="searchdis" 
+  :hotlist="pageData.hotCounties"
   v-on:choseCountry="changeCountry" 
   v-on:closePage="closeComp">    
   </country>
@@ -49,14 +50,13 @@
 </template>
 
 <script>
-import Country from '../../components/SearchCountry'
+import Country from './wifiindex/SearchCountry'
 import { Indicator } from 'mint-ui'
 
 export default {
   name:"wifi",
   beforeCreate(){
-    document.title = "全球WIFI"
-    Indicator.open('加载中...');
+    document.title = "全球WIFI"    
   },
   created: function () {    
     this.getWifiIndex()
@@ -78,14 +78,17 @@ export default {
       var bd_width = document.body.clientWidth
       this.hotItemWidth = (bd_width-34)/3
     },
-    changeCountry:function(name){
+    changeCountry:function(name,id){
       this.searchdis = false
-      alert(name);
+      var data = {"name":name,"area_id":id}
+      this.$store.commit('wifiConditionSave',data)
+      this.$router.push('/wifiList')
     },
     closeComp:function(){
       this.searchdis = false
     },
     getWifiIndex:function(){
+      Indicator.open('加载中...');
       var url = '/api/wifi/index'
       this.$http.get(url).then(function(result){
         Indicator.close()

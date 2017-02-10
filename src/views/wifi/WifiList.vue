@@ -3,95 +3,33 @@
   <div class="screen">
     <div class="tabs">
       <ul>
-        <li :class="{on:countrydis}" class="left" @click="countrydis=true"><span>目的地</span></li>
-        <li :class="{on:provincedis}" @click="provincedis=true" class="right"><span>自取城市/快递</span></li>
+        <li :class="{on:countrydis}" class="left" @click="countrydis=true"><span>目的地{{'['+wifiCondition.name+']'}}</span></li>
+        <li :class="{on:provincedis}" @click="provincedis=true" class="right"><span>自取城市{{wifiCondition.cityname!=''?'['+wifiCondition.cityname+']':'[全部]'}}</span></li>
       </ul>
     </div>
   </div>
   <div class="list">
-    <ul>
-      <li>
-        <router-link to="/wifiDetail/1213">
-          <div class="tit">日本旅行WIFI租赁（广州取还）</div>
+    <ul v-infinite-scroll="loadMore"
+      infinite-scroll-disabled="loading"
+      infinite-scroll-distance="40">
+      <li v-for="item in listData">
+        <router-link :to="'/wifiDetail/'+item.id">
+          <div class="tit">{{item.name}}</div>
           <div class="desc">
             <div class="tags">
               <span class="b">4G网络</span>
               <span class="r">3个取机点</span>
             </div>
-            <div class="co_name">供应商：环球漫游</div>
+            <div class="co_name">供应商：{{item.company}}</div>
           </div>
-          <div class="price"><i>￥9</i><span>&frasl; 天起</span></div>
+          <div class="price"><i>￥{{item.price}}</i><span>&frasl; 天起</span></div>
         </router-link>
-      </li>
-      <li>
-        <router-link to="/wifiDetail/1213">
-          <div class="tit">日本旅行WIFI租赁（广州取还）</div>
-          <div class="desc">
-            <div class="tags">
-              <span class="b">4G网络</span>
-              <span class="r">3个取机点</span>
-            </div>
-            <div class="co_name">供应商：环球漫游</div>
-          </div>
-          <div class="price"><i>￥9</i><span>&frasl; 天起</span></div>
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/wifiDetail/1213">
-          <div class="tit">日本旅行WIFI租赁（广州取还）</div>
-          <div class="desc">
-            <div class="tags">
-              <span class="b">4G网络</span>
-              <span class="r">3个取机点</span>
-            </div>
-            <div class="co_name">供应商：环球漫游</div>
-          </div>
-          <div class="price"><i>￥9</i><span>&frasl; 天起</span></div>
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/wifiDetail/1213">
-          <div class="tit">日本旅行WIFI租赁（广州取还）</div>
-          <div class="desc">
-            <div class="tags">
-              <span class="b">4G网络</span>
-              <span class="r">3个取机点</span>
-            </div>
-            <div class="co_name">供应商：环球漫游</div>
-          </div>
-          <div class="price"><i>￥9</i><span>&frasl; 天起</span></div>
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/wifiDetail/1213">
-          <div class="tit">日本旅行WIFI租赁（广州取还）</div>
-          <div class="desc">
-            <div class="tags">
-              <span class="b">4G网络</span>
-              <span class="r">3个取机点</span>
-            </div>
-            <div class="co_name">供应商：环球漫游</div>
-          </div>
-          <div class="price"><i>￥9</i><span>&frasl; 天起</span></div>
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/wifiDetail/1213">
-          <div class="tit">日本旅行WIFI租赁（广州取还）</div>
-          <div class="desc">
-            <div class="tags">
-              <span class="b">4G网络</span>
-              <span class="r">3个取机点</span>
-            </div>
-            <div class="co_name">供应商：环球漫游</div>
-          </div>
-          <div class="price"><i>￥9</i><span>&frasl; 天起</span></div>
-        </router-link>
-      </li>
+      </li>      
     </ul>
+    <p class="page-infinite-loading" v-if="pagestatus">加载更多数据</p>   
   </div>
-  <country :isShow="countrydis" :cname="$route.params.country" @choseCountry="changeCountry" @closePage="closeComp"></country>
-  <province :isShow="provincedis" :cname="progettype" @choseGetType="changeGetType" @closePage="closeComp"></province>
+  <country :isShow="countrydis" @choseCountry="changeCountry" @closePage="closeComp"></country>
+  <province :isShow="provincedis" @choseGetType="changeGetType" @closePage="closeComp"></province>
 </div>
 </template>
 
@@ -99,15 +37,12 @@
 import Country from './wifilist/Country'
 import Province from './wifilist/Province'
 import { Indicator } from 'mint-ui'
-
+import { InfiniteScroll } from 'mint-ui'
 export default {
   name:"wifi-list",
-  beforeCreate(){
-    document.title = this.$route.params.country
-    Indicator.open('加载中...')
-  },
   created: function () {
-    Indicator.close()
+    document.title = this.wifiCondition.name
+    this.getData('refresh')
   },
   components: {
     Country,
@@ -115,29 +50,65 @@ export default {
   },
   data:function(){
     return{
+      wifiCondition:this.wifiCondition,
       countrydis:false,
       provincedis:false,
-      progettype:''
-      
+      listData:[],
+      pagestatus:true  
     }
   },
   methods:{
-    changeCountry:function(name){
-      this.countrydis = false
-      console.log(name);
+    getData:function(v){
+      if (v == 'refresh') {
+        this.listData = []
+      }
+      Indicator.open('加载中...');
+      var url = '/api/wifi/list',send = this.wifiCondition
+      this.$http.get(url,{params:send}).then(function(result){
+        Indicator.close()
+        var rst = JSON.parse(result.body)
+        console.log(result.body)
+        if (rst.status == 1) {
+          for (var i in rst.data.rows){
+            this.listData.push(rst.data.rows[i])
+          }
+          if (wifiCondition.page == rst.data.totalPage) {
+            this.pagestatus = false            
+          }                  
+        }else {
+          console.log(rst.msg)
+        }
+      });
     },
-    changeGetType:function(name){
+    loadMore:function(){
+      console.log('aa')
+      if (this.listData.length != 0) {
+        this.getData()
+      }      
+    },
+    changeCountry:function(name,id){
+      this.countrydis = false
+      var data = {"name":name,"area_id":id}
+      this.$store.commit('wifiConditionSave',data)
+      this.getData('refresh')
+    },
+    changeGetType:function(name,id){
       this.provincedis = false
-      this.progettype = name
-      console.log(name);
+      var data = {"name":name,"area_id":id}
+      this.$store.commit('wifiConditionCity',data)
+      this.getData('refresh')
     },
     closeComp:function(){
       this.countrydis = false
       this.provincedis = false
     }
+  },
+  computed: {
+    wifiCondition () {
+      return this.$store.state.wifi.wifiCondition;
+    }    
   }
 }
-
 </script>
 
 <style lang="less" scoped>
@@ -207,5 +178,10 @@ export default {
       }
     }
   }
+  .page-infinite-loading {
+        line-height: 40px;
+        text-align: center;
+        font-size: 0.7rem;
+    }
 }
 </style>

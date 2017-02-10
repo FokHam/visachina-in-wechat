@@ -4,7 +4,7 @@ import VisaIndex from './views/visa/VisaIndex'
 import VisaDetail from './views/visa/VisaDetail'
 import VisaInformation from './views/visa/VisaInformation'
 import VisaOrder from './views/visa/VisaOrder'
-import VisaOrderDetail from './views/visa/OrderDetail'
+import VisaOrderDetail from './views/visa/VisaOrderDetail'
 import VisaProgress from './views/visa/VisaProgress'
 import ProgressDetail from './views/visa/ProgressDetail'
 import VisaSuccess from './views/visa/Success'
@@ -94,7 +94,7 @@ var routes = [{
   path: "/wifiHelp",
   component: WifiHelp
 },{
-  path: "/wifiList/:country",
+  path: "/wifiList",
   component: WifiList
 },{
   path: "/wifiDetail/:id",
