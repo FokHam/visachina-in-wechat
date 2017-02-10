@@ -17,7 +17,14 @@ let state = {
   roomNum: 1,
   checkInDate: "",
   checkOutDate: "",
-  hotelDetail: {}
+  hotelList: {},
+  hotelDetail: {},
+  hotelFiltSelected: {
+    area: "",
+    price: "",
+    stars: "",
+    nation: ""
+  }
 };
 
 const mutations = {
@@ -48,6 +55,9 @@ const mutations = {
         }
       }
     }
+  },
+  setHotelState (state, payload) {
+    state[payload.type] = payload.data;
   },
   setChildAge (state, payload) {
     state.childAge[payload.index] = payload.age;

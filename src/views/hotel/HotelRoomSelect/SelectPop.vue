@@ -141,7 +141,7 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0 0.5rem;
-    max-height: 10rem;
+    max-height: 14rem;
     overflow: scroll;
     .title {
       position: fixed;

@@ -34,8 +34,7 @@
             { first: isSelectedDay(item.year, item.month, n) },
             { active: isActiveDay(item.year, item.month, n) },
             { last: isLastDay(item.year, item.month, n) }]"
-          @click="changeDate(item.year, item.month, n)"
-          >
+          @click="changeDate(item.year, item.month, n)">
           <span class="num">{{ n }}</span>
           <i class="mask"></i>
           <span class="mark" v-if="(selected[0].date===n) && (selected[0].month===item.month) && (selected[0].year===item.year)">{{ type1 }}</span>

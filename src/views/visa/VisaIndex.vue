@@ -6,7 +6,7 @@
         <div class="flag">
           <div class="inner">
             <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'.png'">
-          </div>        
+          </div>
         </div>
         <div class="location">
           <span class="c_name">{{visaCondition.ctname}}</span>
@@ -24,12 +24,12 @@
         <div class="tabselecter" v-show="tabcount != 0">
           <div class="options" :class="{on1:tabcount == 1}">
             <ul>
-              <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>            
+              <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>
             </ul>
           </div>
           <div class="options" :class="{on2:tabcount == 2}">
             <ul>
-              <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>            
+              <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>
             </ul>
           </div>
           <div class="options" :class="{on3:tabcount == 3}">
@@ -65,24 +65,24 @@
         <p class="page-infinite-loading">{{loadingtxt}}</p>      
       </div>
     </div>
-    <countrys 
-    v-if="searchdis" 
+    <countrys
+    v-if="searchdis"
     @choseCountry="changeCountry"
-    @closePage="closeComp">      
+    @closePage="closeComp">
     </countrys>
     <provice
-    v-if="provicedis" 
-    @closePage="closeComp" 
-    @chosepvc="choseProvice">      
+    v-if="provicedis"
+    @closePage="closeComp"
+    @chosepvc="choseProvice">
     </provice>
-    <screen     
-    v-if="screendis" 
-    :condition="visaCondition" 
+    <screen
+    v-if="screendis"
+    :condition="visaCondition"
     :typeStr="screenStr"
-    @closePage="closeComp" 
-    @chosescr="screenConfirm">      
-    </screen>     
-    
+    @closePage="closeComp"
+    @chosescr="screenConfirm">
+    </screen>
+
   </div>
 </template>
 
@@ -97,9 +97,9 @@ import Provice from '../../components/ProviceList'
 export default {
   name:"visa",
   beforeCreate(){
-    document.title = "签证列表"    
+    document.title = "签证列表"
   },
-  created: function () {  
+  created: function () {
     Indicator.close();
     if (this.visaCondition.ct=='') {
       this.$router.push('/home')
@@ -157,7 +157,7 @@ export default {
     loadMore:function(){
       if (this.listdata.length != 0) {
         this.getListData()
-      }      
+      }
     },
     getListData:function(t){
       if (this.searchdis==true) {
@@ -172,12 +172,12 @@ export default {
         console.log(result)
         Indicator.close()
         var rst = JSON.parse(result.body)
-        
+
         if (rst.status == 1) {
           if (rst.data.list.length > 0) {
             for (var i=0; i<rst.data.list.length; i++) {
               this.listdata.push(rst.data.list[i])
-            }            
+            }
             //this.visaCondition.page += 1
             this.loadingtxt = '加载列表中...'
           }else {
@@ -193,7 +193,7 @@ export default {
   computed: {
     visaCondition () {
       return this.$store.state.visa.visaCondition;
-    }    
+    }
   },
   watch:{
     visaCondition:{
@@ -239,7 +239,7 @@ export default {
       background-size: 0.8rem;
       background-repeat: no-repeat;
       padding-left: 17px;
-    }    
+    }
   }
   .search_btn{
     width: 175px;
@@ -266,7 +266,7 @@ export default {
     }
   }
 }
-.screening{  
+.screening{
   position: relative;
   .tabs{
     border-bottom: 1px solid #C0C0C0;
@@ -302,7 +302,7 @@ export default {
       position: absolute;
       top: 0;
       right: 10px;
-      padding-right: 15px;      
+      padding-right: 15px;
     }
   }
   .tabselecter{
@@ -313,7 +313,7 @@ export default {
     background: #fff;
     .options{
       height: 0px;
-      -webkit-transition: height .3s;      
+      -webkit-transition: height .3s;
       transition: height .3s;
       overflow: hidden;
       li{
@@ -339,7 +339,7 @@ export default {
 
 }
 .visalist{
-    ul{  
+    ul{
       li{
         position: relative;
         padding:10px;

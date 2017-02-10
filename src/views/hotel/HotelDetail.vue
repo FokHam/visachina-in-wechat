@@ -1,104 +1,120 @@
 <template>
   <div class="hotel-detail">
-    <div class="hotel-image">
-      <div class="image-wrapper">
-        <img class="image"
-          :src="hotelDetail.web_img"
-          :alt="hotelDetail.cname">
-      </div>
-      <p class="name">{{ hotelDetail.cname }}( {{ hotelDetail.ename }} )</p>
-      <div class="diamond-level">
-        <i class="icon-diamond"
-          v-for="n in hotelDetail.stars"></i>
-      </div>
-      <div class="collect">
-        <i class="icon-heart"
-          :class="{ on: hotelDetail.collect }"
-        ></i>
-      </div>
-    </div>
-    <div class="hotel-more">
-      <div class="item">
-        <span>{{ hotelDetail.address }}</span>
-        <span class="location">{{ hotelDetail.ccity }}, {{ hotelDetail.ccountry }}</span>
-        <span class="more">地图<i class="icon-more"></i></span>
-      </div>
-      <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
-        <span>酒店简介</span>
-        <span class="more">详情 <i class="icon-more"></i></span>
-      </router-link>
-    </div>
-    <div class="hotel-choice">
-      <div class="choice-item"
-        @click="pickingDate=true">
-        <i class="icon icon-calendar"></i>
-        <div class="choice-detail">
-          <p>{{ startDate.format("MM-dd") }} <span>周五 入住</span></p>
-          <p>{{ endDate.format("MM-dd") }} <span>周日 离店</span></p>
+    <div v-show="!pickingNation">
+      <div class="hotel-image">
+        <div class="image-wrapper">
+          <img class="image"
+            :src="hotelDetail.web_img || '/static/images/hotel/detail-default.png'"
+            :alt="hotelDetail.cname">
         </div>
-        <i class="icon-more"></i>
+        <p class="name">{{ hotelDetail.cname }}( {{ hotelDetail.ename }} )</p>
+        <div class="diamond-level">
+          <i class="icon-diamond"
+            v-for="n in hotelDetail.stars"></i>
+        </div>
+        <div class="collect">
+          <i class="icon-heart"
+            :class="{ on: hotelDetail.collect }"
+            @click="collectItem"
+          ></i>
+        </div>
       </div>
-      <div class="choice-item">
-        <i class="icon icon-people"></i>
-        <router-link to="/hotelRoomSelect" class="choice-detail">共{{ roomNum }}间 每间<br>{{ adultNum }}成人 {{ childNum }}儿童</router-link>
-        <i class="icon-more"></i>
+      <div class="hotel-more">
+        <div class="item">
+          <span>{{ hotelDetail.address }}</span>
+          <span class="location">{{ hotelDetail.ccity }}, {{ hotelDetail.ccountry }}</span>
+          <span class="more">地图<i class="icon-more"></i></span>
+        </div>
+        <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
+          <span>酒店简介</span>
+          <span class="more">详情 <i class="icon-more"></i></span>
+        </router-link>
+        <div class="item"
+          @click="pickingNation=true">
+          <span>客人国籍</span>
+          <span class="more">{{ nationalityName }} <i class="icon-more"></i></span>
+        </div>
       </div>
-    </div>
-    <div class="hotel-roomtype">
-      <div class="item"
-        v-for="(item, index) in roomType"
-        @click="viewing = true;
-        viewingRoomTypeNum = index">
-        <div class="item-left">
-          <p class="name">{{ item.name }}</p>
-          <p class="detail">
-            <!-- <span v-if="item.area">{{ item.area + "m" }}<sup>2</sup></span> -->
-            {{ item.bed + " " + item.breakfast }}
-          </p>
-          <span class="cancel"
-            :class="item.cancel_flag ? 'cancelable' : '' "
-            v-if="!item.cancel">{{ item.cancel_flag ? "可以取消" : "不可取消" }}</span>
+      <div class="hotel-choice">
+        <div class="choice-item"
+          @click="pickingDate=true">
+          <i class="icon icon-calendar"></i>
+          <div class="choice-detail">
+            <p>{{ startDate.format("MM-dd") }} <span>周五 入住</span></p>
+            <p>{{ endDate.format("MM-dd") }} <span>周日 离店</span></p>
+          </div>
           <i class="icon-more"></i>
         </div>
-        <div class="item-right">
-          <p class="price">
-            <span class="yuan">¥</span>{{ item.total_price }}
-          </p>
-          <router-link :to="'/hotelForm/' + $route.params.id " class="order-btn">预订</router-link>
+        <div class="choice-item">
+          <i class="icon icon-people"></i>
+          <router-link to="/hotelRoomSelect" class="choice-detail">共{{ roomNum }}间 每间<br>{{ adultNum }}成人 {{ childNum }}儿童</router-link>
+          <i class="icon-more"></i>
         </div>
       </div>
-    </div>
-    <div class="hotel-policy"
-      v-if="hDetail.policy.length">
-      <p class="title">酒店政策</p>
-      <div class="item"
-        v-for="item in hDetail.policy">
-        <p class="item-title">{{ item.title }}</p>
-        <p class="item-content">{{ item.content }}</p>
+      <div class="hotel-roomtype">
+        <div class="item"
+          v-for="(item, index) in roomType"
+          @click="viewing = true;
+          viewingRoomTypeNum = index">
+          <div class="item-left">
+            <p class="name">{{ item.name }}</p>
+            <p class="detail">
+              <!-- <span v-if="item.area">{{ item.area + "m" }}<sup>2</sup></span> -->
+              {{ item.bed + " " + item.breakfast }}
+            </p>
+            <span class="cancel"
+              :class="item.cancel_flag ? 'cancelable' : '' "
+              v-if="!item.cancel">{{ item.cancel_flag ? "可以取消" : "不可取消" }}</span>
+            <i class="icon-more"></i>
+          </div>
+          <div class="item-right">
+            <p class="price">
+              <span class="yuan">¥</span>{{ item.total_price }}
+            </p>
+            <router-link :to="'/hotelForm/' + $route.params.id " class="order-btn">预订</router-link>
+          </div>
+        </div>
       </div>
+      <div class="hotel-policy"
+        v-if="hDetail.policy.length">
+        <p class="title">酒店政策</p>
+        <!-- <div class="item"
+          v-for="item in hDetail.policy">
+          <p class="item-title">{{ item.title }}</p>
+          <p class="item-content">{{ item.content }}</p>
+        </div> -->
+        <div v-html="hotelDetail.policy"
+          class="policy-content"></div>
+      </div>
+      <room-detail :detailObj="viewingRoomType"
+        v-if="viewing"
+        @hide="viewing = false"
+      ></room-detail>
+      <calendar v-if="pickingDate"
+        v-on:confirm="setDate"
+        type1="入住"
+        type2="离店"
+        :multipleDate="true"
+        :pickType ="1"
+        :minDay="minimunDay"
+        :maxDay="maximunDay"
+        :day1="startDate"
+        :day2="endDate"
+        :dayDelay="1"
+      ></calendar>
     </div>
-    <room-detail :detailObj="viewingRoomType"
-      v-if="viewing"
-      @hide="viewing = false"
-    ></room-detail>
-    <calendar v-if="pickingDate"
-      v-on:confirm="setDate"
-      type1="入住"
-      type2="离店"
-      :multipleDate="true"
-      :pickType ="1"
-      :minDay="minimunDay"
-      :maxDay="maximunDay"
-      :day1="startDate"
-      :day2="endDate"
-      :dayDelay="1"
-    ></calendar>
+    <search-nation
+      v-if="pickingNation"
+      @closePage="pickingNation=false"
+      @chooseNationality="pickNation">
+    </search-nation>
   </div>
 </template>
 
 <script>
-  import roomDetail from "./HotelDetail/RoomDetail.vue"
-  import calendar from "../../components/Calendar.vue"
+  import roomDetail from "./HotelDetail/RoomDetail"
+  import calendar from "../../components/Calendar"
+  import SearchNation from "../../components/SearchNation"
   import { Indicator } from 'mint-ui'
 
   export default {
@@ -151,9 +167,12 @@
             price: 1299
           }
         ],
+        nationality: "CN",
+        nationalityName: "中国",
         viewingRoomTypeNum: 0,
         viewing: false,
-        pickingDate: false
+        pickingDate: false,
+        pickingNation: false
       }
     },
     computed: {
@@ -199,7 +218,7 @@
         let id = this.$route.params.id;
         let send = {"id": id};
         this.$http.get(url, {params: send}).then((response) => {
-          // console.log(JSON.parse(response.body));
+          console.log(JSON.parse(response.body));
           let responseBody = JSON.parse(response.body);
           if (responseBody.status === 1) {
             let data = responseBody.data;
@@ -210,7 +229,6 @@
             console.log("请求失败！");
           }
         }, (response) => {
-          // error callback
         });
       },
       getRoom () {
@@ -222,19 +240,16 @@
           qty: this.roomNum,
           checkIn: this.startDate.format("yyyy-MM-dd"),
           checkOut: this.endDate.format("yyyy-MM-dd"),
-          nationality: "cn",
+          nationality: this.nationality,
           adult: this.adultNum,
           children: this.childNum,
           childrenAge: this.childrenAge
         };
         this.$http.get(url, {params: send}).then((response) => {
-          // success callback
-          console.log(JSON.parse(response.body));
           let data = JSON.parse(response.body).data;
           this.roomType = data.rows;
           Indicator.close();
         }, (response) => {
-          // error callback
           Indicator.close();
         });
       },
@@ -244,6 +259,24 @@
           day2: day2
         });
         this.pickingDate = false;
+      },
+      collectItem () {
+        let url = "/api/member/collect_create";
+        let send = {
+          type: "hotel",
+          product_id: this.$route.params.id
+        };
+        let that = this;
+        this.$http.get(url, {params: send}).then((response) => {
+          that.hotelDetail.collect = !that.hotelDetail.collect;
+        }, (response) => {
+          console.log("服务器错误！");
+        });
+      },
+      pickNation (name, nationality) {
+        this.nationalityName = name;
+        this.nationality = nationality;
+        this.pickingNation = false;
       }
     },
     watch: {
@@ -251,7 +284,8 @@
       endDate: "getRoom",
       qty: "getRoom",
       adultNum: "getRoom",
-      childNum: "getRoom"
+      childNum: "getRoom",
+      nationality: "getRoom"
     },
     created () {
       let newProductId = this.$route.params.id;
@@ -266,7 +300,8 @@
     },
     components: {
       roomDetail,
-      calendar
+      calendar,
+      SearchNation
     }
   }
 </script>
@@ -287,7 +322,7 @@
     height: 1.1rem;
     width: 1.1rem;
     &.on {
-      background-image: url(/static/images/hotel/uncollect.png);
+      background-image: url(/static/images/hotel/collect.png);
     }
   }
   .icon-more {
@@ -355,7 +390,7 @@
       display: block;
       position: relative;
       padding: 0.6rem;
-      padding-right: 2rem;
+      padding-right: 3rem;
       border-bottom: 0.05rem solid #c0c0c0;
       &:last-child {
         border-bottom: none;
@@ -484,8 +519,15 @@
       font-size: 0.9rem;
       line-height: 1;
       margin-right: -0.5rem;
+      margin-bottom: 0.5rem;
       padding-bottom: 0.5rem;
       border-bottom: 0.05rem solid #c0c0c0;
+    }
+    .policy-content {
+      font-size: 0.75rem;
+      p {
+        line-height: 2rem;
+      }
     }
     .item {
       margin-bottom: 0.5rem;
@@ -494,7 +536,6 @@
         font-size: 0.75rem;
       }
       .item-content {
-        color: #999;
       }
     }
   }
