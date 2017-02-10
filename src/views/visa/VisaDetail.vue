@@ -3,7 +3,7 @@
     <div class="visaname">
       <div class="name">
       <span>【{{pageData.typename}}】</span>
-      {{pageData.name}}<停留天数{{pageData.info.staydays}}，有效期限{{pageData.info.expirydate}}，{{pageData.info.interview==0?'无需面试':'需要面试'}}></div>
+      {{pageData.name+'<'}}停留天数{{pageData.info.staydays}}，有效期限{{pageData.info.expirydate}}，{{pageData.info.interview==0?'无需面试':'需要面试'}}></div>
       <div class="day-price">
         <span class="day">受理天数：7-15天</span>
         <span class="price"><i>￥</i>299</span>

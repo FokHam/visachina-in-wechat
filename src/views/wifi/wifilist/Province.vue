@@ -11,7 +11,7 @@
       <div class="country_list">
         <div class="item_list" v-for="(item,index) in listData" v-show="cstype == index">
           <ul>
-            <li v-for="(province,index) in item.list" :class="{on:csItem == province.name}" @click="choseGetType(province.name)">{{province.name}}</li>
+            <li v-for="(province,index) in item.list" :class="{on:csItem == province.city_name}" @click="choseGetType(province.city_name,province.id)">{{province.city_name}}</li>
           </ul>
         </div>        
       </div>
@@ -24,6 +24,7 @@
 export default {  
   props:['isShow'],
   created: function () {
+    this.getProvinceList()
   },
   data:function(){
     return{
@@ -31,10 +32,8 @@ export default {
       cstype:0,
       csItem:'',
       listData:[
-        {"type":"自取城市","list":[
-            {"name":"北京"},{"name":"天津"},{"name":"河北"},{"name":"山西"},{"name":"内蒙古"},{"name":"辽宁"},{"name":"吉林"},{"name":"黑龙江"},{"name":"上海"},{"name":"江苏"},{"name":"浙江"},{"name":"安徽"},{"name":"福建"},{"name":"江西"},{"name":"山东"},{"name":"河南"},{"name":"湖北"},{"name":"湖南"},{"name":"广东"},{"name":"宁夏"},{"name":"新疆"},{"name":"香港"},{"name":"澳门"}
-          ]
-        }/*,
+        {"type":"自取城市","list":[]}
+        /*,
         {"type":"快递取还","list":[
             {"name":"快递取还"}
           ]
@@ -44,13 +43,26 @@ export default {
 
     }
   },
-  methods:{    
+  methods:{
+    getProvinceList:function(){
+      var url = '/api/wifi/places_cities'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.listData[0].list = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      }, function(result){
+        console.log("请求失败")
+      });
+    },
     closePage:function(){
       this.$emit('closePage')
     },
-    choseGetType:function(name){
+    choseGetType:function(name,id){
       this.csItem = name
-      this.$emit('choseGetType',name)
+      this.$emit('choseGetType',name,id)
     }
   }
 }

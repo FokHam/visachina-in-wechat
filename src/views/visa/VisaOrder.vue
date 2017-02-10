@@ -282,7 +282,7 @@ export default{
         if (rst.status == 1) {
           this.$router.push('/visaOrderDetail/'+rst.data.orderID)
         }else{
-          console.log(rst.msg)
+          Toast(rst.msg)
         }
       });
     }
@@ -314,7 +314,7 @@ export default{
     margin: 10px;border-radius: 5px;color: #fff;
     padding: 15px;overflow: hidden;
     .tit{font-size: 1rem;margin-bottom: 5px;}
-    .desc{font-size: 0.7rem;}
+    .desc{font-size: 0.8rem;}
     .estimated{
       width: 100%;height: 48px;
       position: absolute;bottom: 0;left: 0;
@@ -328,7 +328,7 @@ export default{
         background-repeat: no-repeat;background-size: 10px;
         background-position: right center;
         span{
-          font-size: 0.7rem;color: #fff;line-height: 48px;padding-left: 28px;
+          font-size: 0.8rem;color: #fff;line-height: 48px;padding-left: 28px;
           i{
             display: inline-block;color: #008BE4;
             font-size: 0.6rem;background-color: #fff;
@@ -360,7 +360,7 @@ export default{
     .item-hd{
       overflow: hidden;
       .tit{float: left;font-size: 0.8rem;}
-      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
+      .addbtn{float: right;font-size: 0.8rem;color: #008BE4;display: block;}
     }
     .namelist{
     padding-top: 10px;
@@ -397,7 +397,7 @@ export default{
       }
       .txt{
         position: absolute;left: 0;top: 0;line-height: 40px;
-        font-size: 0.7rem;color: #000;padding-right: 5px;width: 60px;
+        font-size: 0.8rem;color: #000;padding-right: 5px;width: 60px;
       }
       &:first-child{border-top: none;}
       &.name,&.phone{margin-right: 55px;border-right: 1px solid #CCCCCC;}
@@ -417,9 +417,9 @@ export default{
     padding: 10px;margin-bottom: 5px;
     .item-hd{
       overflow: hidden;
-      .tit{float: left;font-size: 0.7rem;}
-      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
-      .delitype{float: right;font-size: 0.7rem;color: #999999;}
+      .tit{float: left;font-size: 0.8rem;}
+      .addbtn{float: right;font-size: 0.8rem;color: #008BE4;display: block;}
+      .delitype{float: right;font-size: 0.8rem;color: #999999;}
     }
     .addressinfo{
       padding: 7px 0;
@@ -438,14 +438,14 @@ export default{
     background: #fff;margin-bottom: 5px;padding: 10px;
     position: relative;
     span{
-      display: block;font-size: 0.7rem;
+      display: block;font-size: 0.8rem;
       background-image: url('/static/images/visa/icon-right-gray.png');
       background-repeat: no-repeat;
       background-position: right center;
       background-size: 0.5rem;
     }
     i{
-      display: inline-block;font-size: 0.7rem;
+      display: inline-block;font-size: 0.8rem;
       position: absolute;    right: 30px;
     top: 10px;
     font-style: normal;
@@ -463,7 +463,7 @@ export default{
     .insurance{
       padding-right: 10px;
       .tit{
-        font-size: 0.7rem;color: #008BE4;line-height: 35px;
+        font-size: 0.8rem;color: #008BE4;line-height: 35px;
         padding-left: 15px;
         background-image: url('/static/images/visa/icon-insurance.png');
         background-repeat: no-repeat;background-position: left center;
@@ -489,7 +489,7 @@ export default{
           padding: 0 90px 0 17px;
         }
         .price{
-          font-size: 0.7rem;color: #666666;position: absolute;
+          font-size: 0.8rem;color: #666666;position: absolute;
           top: 1px;right: 0;width: 90px;text-align: right;
           span{color: #F95800;font-size: 0.8rem;}
         }
@@ -500,7 +500,7 @@ export default{
             display: inline-block;
             width: 50%;color: #666666;
             float: left;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             line-height: 30px;
             text-align: center;
           }
@@ -542,9 +542,9 @@ export default{
           background-repeat: no-repeat;
           background-position:right center;
         }
-        .txt{color: #999999;font-size: 0.7rem;line-height: 30px;
+        .txt{color: #999999;font-size: 0.8rem;line-height: 30px;
         padding-left: 10px; float: left;}
-        .dest{font-size: 0.7rem;float: left;line-height: 30px;padding-left: 10px;}
+        .dest{font-size: 0.8rem;float: left;line-height: 30px;padding-left: 10px;}
       }
       .ins_client{
         padding-bottom: 10px;
@@ -557,15 +557,15 @@ export default{
             .info{
               padding-right: 80px;
               .name{
-                font-size: 0.7rem;color: #666666;line-height: 20px;
+                font-size: 0.8rem;color: #666666;line-height: 20px;
                 span{
-                  font-size: 0.7rem;color: #666666;padding-left: 15px;
+                  font-size: 0.8rem;color: #666666;padding-left: 15px;
                 }
               }
               .idnum{font-size: 0.6rem;color: #666666;line-height: 20px;}
             }
             .price{
-              font-size: 0.7rem;
+              font-size: 0.8rem;
               line-height: 40px;
               width: 80px;color: #F95800;
               position: absolute;
@@ -587,12 +587,12 @@ export default{
           background-repeat: no-repeat;
           background-position:right center;
           .name{
-            font-size: 0.7rem;color: #666666;line-height: 20px;
+            font-size: 0.8rem;color: #666666;line-height: 20px;
             span{
-              font-size: 0.7rem;color: #666666;padding-left: 15px;
+              font-size: 0.8rem;color: #666666;padding-left: 15px;
             }
           }
-          .email{font-size: 0.7rem;color: #666666;line-height: 20px;}
+          .email{font-size: 0.8rem;color: #666666;line-height: 20px;}
         }
       }
       .ins_benefit,.ins_destination{padding-bottom: 10px;}
@@ -606,7 +606,7 @@ export default{
     .price{
       float: left;
       line-height: 30px;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       span{
         color: #F55301;font-size: 0.8rem;
       }
@@ -614,7 +614,7 @@ export default{
     .creatBtn{
       background-color: #008BE4;padding: 0 20px;
       line-height: 30px;text-align: center;border-radius: 4px;
-      font-size: 0.7rem;color: #fff;display: inline-block;float: right;
+      font-size: 0.8rem;color: #fff;display: inline-block;float: right;
     }
   }
 }

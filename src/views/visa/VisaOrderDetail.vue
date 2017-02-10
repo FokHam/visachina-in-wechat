@@ -1,22 +1,22 @@
 <template>
 <div class="order-detail" id="order-detail">
-  <div class="orderPage" v-if="pagedata != ''">
+  <div class="orderpage" v-if="orderData != ''">
     <div class="order_tatus">
-      <div class="status">订单状态：<span>待支付</span></div>
+      <div class="status" :class="{paid:orderData.pay_status == 1}">订单状态：<span v-if="orderData.pay_status == 0">待支付</span><span v-else>已支付</span></div>
     </div>
     <div class="basic_info">
-      <dl><dd>订单编号：</dd><dt>{{pagedata.orderno}}</dt></dl>
-      <dl><dd>预定时间：</dd><dt>{{pagedata.cdate}}</dt></dl>
-      <dl><dd>订单金额：</dd><dt><span>￥{{pagedata.totalPrice}}</span></dt></dl>
+      <dl><dd>订单编号：</dd><dt>{{orderData.orderno}}</dt></dl>
+      <dl><dd>预定时间：</dd><dt>{{orderData.cdate}}</dt></dl>
+      <dl><dd>订单金额：</dd><dt><span>￥{{orderData.totalPrice}}</span></dt></dl>
     </div>
     <div class="product_info">
-      <a>
-        <div class="name">{{pagedata.product.name}}</div>
-        <div class="desc"><停留天数{{pagedata.product.info.staydays}}，有效期限{{pagedata.product.info.expirydate}}，{{pagedata.product.info.interview==0?'无需面试':'需要面试'}}></div>
-      </a>
+      <router-link :to="'/visaDetail/'+orderData.product.id">
+        <div class="name">{{orderData.product.name}}</div>
+        <div class="desc">停留天数{{orderData.product.info.staydays}}，有效期限{{orderData.product.info.expirydate}}，{{orderData.product.info.interview==0?'无需面试':'需要面试'}}</div>
+      </router-link>
     </div>
     <div class="order_items">
-      <div class="item">
+      <div class="item" v-for="item in orderData.guest">
         <div class="top">
           <router-link to="/progressDetail">
             <div class="time">2016/12/24 15:00</div>        
@@ -24,7 +24,7 @@
           </router-link>
         </div>
         <div class="center">
-          <div class="name">周方晗</div>
+          <div class="name">{{item.value}}</div>
           <div class="email">（在职）发送所需资料</div>
         </div>
         <div class="bottom">
@@ -32,23 +32,6 @@
           <div class="express" v-if="false">顺丰快递 85463654654</div>
         </div>
       </div>
-      <div class="item">
-        <div class="top">
-          <router-link to="/progressDetail">
-            <div class="time">2016/12/24 15:00</div>        
-            <div class="status">已寄出</div>
-          </router-link>
-        </div>
-        <div class="center">
-          <div class="name">周方晗</div>
-          <div class="email">（在职）发送所需资料</div>
-        </div>
-        <div class="bottom">
-          <div class="refund" v-if="false">退款</div>
-          <div class="express">顺丰快递 85463654654</div>
-        </div>
-      </div>
-      
     </div>
     <div class="receive_address">
       <div class="title">邮寄信息</div>
@@ -61,17 +44,25 @@
     <div class="contact_address">
       <div class="title">联系人信息</div>
       <div class="content">
-        <dl><dd>收件人：</dd><dt><span>周方晗</span><span>15692452605</span></dt></dl>
-        <dl><dd>地址：</dd><dt>深圳市罗湖区迎春路海外联谊大厦2919室</dt></dl>
+        <dl><dd>姓名：</dd><dt>{{orderData.receipt_info.name}}</dt></dl>
+        <dl><dd>电话：</dd><dt>{{orderData.receipt_info.tel}}</dt></dl>
+        <dl><dd>邮箱：</dd><dt>{{orderData.receipt_info.email}}</dt></dl>
       </div>
     </div>
-    <div class="invoce_info">
+    <div class="contact_address">
+      <div class="title">收货地址</div>
+      <div class="content">
+        <dl><dd>收件人：</dd><dt><span>{{orderData.delivery_info.name}}</span><span>{{orderData.delivery_info.phone}}</span></dt></dl>
+        <dl><dd>地址：</dd><dt>{{orderData.delivery_info.province+orderData.delivery_info.city+orderData.delivery_info.zone+orderData.delivery_info.address}}</dt></dl>
+      </div>
+    </div>
+    <div class="invoce_info" v-if="orderData.invoice.header">
       <div class="title">发票信息</div>
-      <div class="name">深圳市途经网络科技有限公司</div>
-      <div class="address">深圳市罗湖区迎春路海外联谊大厦2919室</div>
+      <div class="name">{{orderData.invoice.header}}</div>
+      <div class="address">{{orderData.invoice.province+orderData.invoice.city+orderData.invoice.zone+orderData.invoice.address}}</div>
     </div>
     <div class="creatpay">
-      <div class="price">合计：<span>￥599</span></div>
+      <div class="price">合计：<span>￥{{orderData.totalPrice}}</span></div>
       <div class="creatBtn">立即支付</div>
     </div>
     <div class="buyagain" v-if="false">再次购买</div>
@@ -85,11 +76,11 @@ export default{
   name: 'order-detail',
   created: function () {
     document.title = '订单详情';
-    //this.getData();
+    this.getData();
   },
   data:function(){
     return{
-      pagedata:''
+      orderData:''
     }
   },
   methods:{
@@ -101,7 +92,7 @@ export default{
         var rst = JSON.parse(result.body)
         console.log(result.body)
         if (rst.status == 1) {
-          this.pagedata = rst.data
+          this.orderData = rst.data
         }else {
           console.log(rst.msg)
         }
@@ -132,6 +123,9 @@ export default{
       background-position: left center;
       width: 13rem;
       margin: 0 auto;
+      &.paid{
+        background-image: url('/static/images/visa/icon-pay.png');
+      }
       span{
         color: #fff;   
         font-size: 0.9rem;     

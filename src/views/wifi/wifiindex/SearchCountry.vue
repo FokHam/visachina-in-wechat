@@ -11,7 +11,7 @@
   </div>
   <div class="searchresult" v-show="keyword != ''">
     <ul v-show="searchdata.length != 0">
-      <li v-for="item in searchdata" @click="choseCountry(item.name,item.area_id)">{{item.name}}</li>      
+      <li v-for="item in searchdata" @click="choseCountry(item.name,item.id)">{{item.name}}</li>      
     </ul>
     <div class="backshadow" :class="{white:searchdata.length != 0}" @touchmove="stopscroll"></div>
   </div>
@@ -21,7 +21,7 @@
         <div class="tit">历史搜索</div>
         <div class="namelist">
           <ul>
-            <li v-for="item in historylist" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+            <li v-for="item in historylist" @click="choseCountry(item.name,item.id)"><span>{{item.name}}</span></li>
           </ul>
         </div>
       </div>
@@ -29,17 +29,17 @@
         <div class="tit">热门搜索</div>
         <div class="namelist">
           <ul>
-            <li v-for="item in countryData.hotContries" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
+            <li v-for="(item,index) in hotContries" v-if="index<8" @click="choseCountry(item.name,item.id)"><span>{{item.name}}</span></li>
           </ul>
         </div>
       </div>
     </div>
     <div class="countrylist">
-      <div class="item" v-for="countries in countryData.countries">
+      <div class="item" v-for="countries in countryData">
         <div class="tit">{{countries.name}}</div>
         <div class="namelist">
           <ul>
-            <li v-for="list in countries.list" @click="choseCountry(list.name,list.area_id)"><span>{{list.name}}</span></li>
+            <li v-for="list in countries.list" @click="choseCountry(list.name,list.id)"><span>{{list.name}}</span></li>
           </ul>
         </div>
       </div>
@@ -49,9 +49,10 @@
 
 <script>
 export default {
+  props:['hotlist'],
   created: function () {
-    if (localStorage.visaHistory) {
-      this.historylist = JSON.parse(localStorage.visaHistory)
+    if (localStorage.wifiHistory) {
+      this.historylist = JSON.parse(localStorage.wifiHistory)
     }
     this.getCountryList();
   },
@@ -60,12 +61,13 @@ export default {
       keyword:'',
       searchdata:[],
       countryData:{},
+      hotContries:this.hotlist,
       historylist:[]
     }
   },
   methods:{
     getCountryList:function(){
-      var url = '/api/visa/countries'
+      var url = '/api/wifi/areas'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -79,9 +81,9 @@ export default {
     },
     keywordsChange:function(v){
       if (v != '') {
-        var url = '/api/visa/search_country',send={"name":v}
+        var url = '/api/wifi/areas',send={"keyword":v}
         this.$http.get(url,{params:send}).then(function(result){
-          var rst = JSON.parse(result.body)
+          var rst = JSON.parse(result.body)          
           if (rst.status == 1) {
             if (rst.data) {
               this.searchdata = rst.data
@@ -108,16 +110,16 @@ export default {
       this.$emit('choseCountry',n,id)
     },
     setHistory:function(c,id){
-      var new_rec = {"name":c,"area_id":id}
-      if (!new RegExp(c).test(localStorage.visaHistory)) {
-        if(localStorage.visaHistory){
-          var hisObj = JSON.parse(localStorage.visaHistory)
+      var new_rec = {"name":c,"id":id}
+      if (!new RegExp(c).test(localStorage.wifiHistory)) {
+        if(localStorage.wifiHistory){
+          var hisObj = JSON.parse(localStorage.wifiHistory)
           hisObj.unshift(new_rec)
-          localStorage.visaHistory = JSON.stringify(hisObj.slice(0,4))
+          localStorage.wifiHistory = JSON.stringify(hisObj.slice(0,4))
         }else {
-          localStorage.visaHistory = JSON.stringify([new_rec])
+          localStorage.wifiHistory = JSON.stringify([new_rec])
         }
-        this.historylist = JSON.stringify(localStorage.visaHistory)
+        this.historylist = JSON.stringify(localStorage.wifiHistory)
       }      
     },
     stopscroll:function(e){
