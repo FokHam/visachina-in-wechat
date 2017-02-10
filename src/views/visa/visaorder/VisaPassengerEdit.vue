@@ -44,8 +44,7 @@ export default {
     }
   },
   methods:{
-    typeSet:function(v){
-      if (v=='') {v='在职'}      
+    typeSet:function(v){     
       this.passengerInfo.type = this.typeList.indexOf(v) + 1
       this.typedis = false      
     },

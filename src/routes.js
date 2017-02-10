@@ -4,6 +4,10 @@ import VisaIndex from './views/visa/VisaIndex'
 import VisaDetail from './views/visa/VisaDetail'
 import VisaInformation from './views/visa/VisaInformation'
 import VisaOrder from './views/visa/VisaOrder'
+import VisaOrderDetail from './views/visa/OrderDetail'
+import VisaProgress from './views/visa/VisaProgress'
+import ProgressDetail from './views/visa/ProgressDetail'
+import VisaSuccess from './views/visa/Success'
 import InsuranceIndex from './views/insurance/InsuranceIndex'
 import InsuranceList from './views/insurance/InsuranceList'
 import InsuranceDetail from './views/insurance/InsuranceDetail'
@@ -19,6 +23,7 @@ import WifiList from './views/wifi/WifiList'
 import WifiDetail from './views/wifi/WifiDetail'
 import WifiCounter from './views/wifi/WifiCounter'
 import WifiOrder from './views/wifi/WifiOrder'
+import WifiSuccess from './views/wifi/Success'
 import HotelList from './views/hotel/HotelList'
 import HotelDetail from './views/hotel/HotelDetail'
 import HotelMap from './views/hotel/HotelMap'
@@ -49,6 +54,18 @@ var routes = [{
 },{
   path: "/visaOrder/:id",
   component: VisaOrder
+},{
+  path: "/visaOrderDetail/:id",
+  component: VisaOrderDetail
+},{
+  path: "/visaProgress",
+  component: VisaProgress
+},{
+  path: "/progressDetail",
+  component: ProgressDetail
+},{
+  path: "/visaSuccess",
+  component: VisaSuccess
 },{
   path: "/insurance",
   component: InsuranceIndex
@@ -89,6 +106,9 @@ var routes = [{
   path: "/wifiOrder/:id",
   component: WifiOrder
 },{
+  path: "/wifiSuccess",
+  component: WifiSuccess
+},{
   path: "/hotel",
   component: HotelList
 },{
@@ -121,8 +141,7 @@ var routes = [{
 },{
   path: "/orderList/:status",
   component: OrderList
-},
-{
+},{
   path: "/orderList",
   component: OrderList
 }];

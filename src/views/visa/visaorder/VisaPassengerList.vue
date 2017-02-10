@@ -20,7 +20,7 @@
   v-if="editItem.editdis"
   :passenger="editItem.content"
   @confirm="editPassenger"
-  @close="closePassenger">    
+  @close="closePassenger">
   </visa-passenger-edit>
 </div>
 </template>

@@ -5,53 +5,34 @@
       <div class="pic"><img :src="userInfo.wx_head_img"></div>
       <div class="name">{{userInfo.wx_name}}</div>
     </div>
-    <div class="showtype" @click="openSelect">{{screening}}</div>
+    <div class="showtype" @click="typedis=true">{{screening}}</div>
   </div>
   <div class="listpart">
     <div class="item" v-show="screening=='全部'||screening=='签证'">
       <div class="tit">签证</div>
-      <div class="list">
+      <div class="list" v-if="pageData.visa.length > 0">
         <ul>
-          <li>
-            <a>
+          <li v-for="item in pageData.visa">            
               <div class="pic">
-                <img src="/static/images/usercenter/pic4.png">
+                <img :src="'/static/images/visa/type'+item.visatype+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
               </div>
-              <div class="name">芬兰旅游签证 <停留天数按申请，
-有效期限使馆定，无需面试></div>
-              <div class="funcbtn"></div>
-              <div class="price">￥788</div>
-            </a>
-          </li>
-          <li>
-            <a>
-              <div class="pic">
-                <img src="/static/images/usercenter/pic4.png">
-              </div>
-              <div class="name">芬兰旅游签证 <停留天数按申请，
-有效期限使馆定，无需面试></div>
-              <div class="funcbtn"></div>
-              <div class="price">￥788</div>
-            </a>
+              <router-link :to="'/visaDetail/'+item.products">
+                <div class="name">{{item.name}}</div>
+              </router-link>
+              <div class="funcbtn" @click="unCollect('visa',item.products)"></div>
+              <div class="price">￥{{item.price}}</div>            
           </li>
         </ul>
+      </div>
+      <div class="empty" v-else>
+        暂无相关收藏
       </div>
     </div>
 
     <div class="item" v-show="screening=='全部'||screening=='酒店'">
       <div class="tit">酒店</div>
-      <div class="list">
-        <ul>
-          <li>
-            <a>
-              <div class="pic">
-                <img src="/static/images/usercenter/pic1.png">
-              </div>
-              <div class="name">香港W酒店<span>W Hong Kong</span></div>
-              <div class="funcbtn"></div>
-              <div class="price">￥2788</div>
-            </a>
-          </li>
+      <div class="list" v-if="pageData.hotel.length > 0">
+        <ul>         
           <li>
             <a>
               <div class="pic">
@@ -64,11 +45,14 @@
           </li>
         </ul>
       </div>
+      <div class="empty" v-else>
+        暂无相关收藏
+      </div>
     </div>
 
     <div class="item" v-show="screening=='全部'||screening=='WIFI'">
       <div class="tit">WIFI</div>
-      <div class="list">
+      <div class="list" v-if="pageData.wifi.length > 0">
         <ul>
           <li>
             <a>
@@ -82,10 +66,13 @@
           </li>          
         </ul>
       </div>
+      <div class="empty" v-else>
+        暂无相关收藏
+      </div>
     </div>
     <div class="item" v-show="screening=='全部'||screening=='保险'">
       <div class="tit">保险</div>
-      <div class="list">
+      <div class="list" v-if="pageData.insur.length > 0">
         <ul>
           <li>
             <a>
@@ -100,55 +87,104 @@
           </li>          
         </ul>
       </div>
+      <div class="empty" v-else>
+        暂无相关收藏
+      </div>
     </div>
 
 
 
   </div>
-  <mt-popup
-    v-model="popupVisible"
-    position="bottom"
-    pop-transition="popup-fade">
-    <div class="closepop" @click="openSelect">完成</div>
-    <mt-picker :slots="typeList" @change="onTypeChange"></mt-picker>
-  </mt-popup>
+  <picker
+  v-if="typedis"
+  :listdata="typelist"
+  @confirm="visatypeSet"
+  @close="closeComp">
+  </picker>
 </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
+import Picker from '../../components/Picker'
 export default{
   name:'user-collect',
   beforeCreate(){
     document.title = '我的收藏'
-    Indicator.open('加载中...')
   },
   created: function () {
-    Indicator.close()    
-  },
-  components: {
-    
+    this.getData('visa')
+    this.getData('hotel')
+    this.getData('wifi')
+    this.getData('insurance')
   },
   data:function(){
     return{
       userInfo:JSON.parse(localStorage.userInfo),
       screening:'全部',
-      typeList:[
-        {
-          values: ['全部','签证','酒店','WIFI','保险'],
-          textAlign: 'center'
-        }],
-      popupVisible:false
-      
+      typedis:false,
+      typelist: ['全部','签证','酒店','WIFI','保险'],
+      pageData:{
+        "visa":[],
+        "hotel":[],
+        "wifi":[],
+        "insur":[]
+      }
     }
   },
   methods:{
-    openSelect:function(){
-      this.popupVisible = !this.popupVisible
+    getData:function(type){
+      var url = '/api/member/collect?type=' + type
+      this.$http.get(url).then(function(result){
+        console.log(result.body)
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          var d = []
+          if (rst.data) {
+            d = rst.data
+          }
+          switch (type) {
+            case 'visa':
+            this.pageData.visa = d
+            break;
+            case 'hotel':
+            this.pageData.hotel = d
+            break;
+            case 'wifi':
+            this.pageData.wifi = d
+            break;
+            case 'insurance':
+            this.pageData.insur = d
+            break;            
+          }          
+        }else {
+          console.log(rst.msg)
+        }
+      });
     },
-    onTypeChange:function(picker, values){
-      this.screening = values.toString()
+    unCollect:function(type,id){
+      var url = '/api/member/collect_create?type='+type+'&product_id=' + id
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          Toast('移除收藏成功')
+          this.getData(type)
+        }else {
+          console.log(rst.msg)
+        }
+      });
     },
+    closeComp:function(){
+      this.typedis = false
+    },
+    visatypeSet:function(v){
+      this.typedis = false
+      this.screening = v
+    },
+  },
+  components: {
+    Picker
   }
 }
 </script>
@@ -209,6 +245,13 @@ export default{
             }
           }
         }
+      }
+      .empty {
+        background-color: #fff;
+        text-align: center;
+        font-size: 0.7rem;
+        color: #ccc;
+        line-height: 70px;
       }
     }
   }

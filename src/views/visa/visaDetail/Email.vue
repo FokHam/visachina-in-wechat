@@ -1,5 +1,5 @@
 <template>
-<div v-if="isshow" class="emailDialog">
+<div class="emailDialog">
   <div class="send-email">
     <div class="txt">签证办理手续所需资料将发送到收件人邮箱</div>
     <div class="txtinput">
@@ -8,12 +8,8 @@
       <div class="tara"><textarea rows="3" v-model="emailCon" placeholder="邮件内容"></textarea></div>
     </div>
     <div class="typelist">
-      <span @click="chooseType(0)" :class="{on:sendType == 0}">自由职业者</span>
-      <span class="center" @click="chooseType(1)" :class="{on:sendType == 1}">在职人员</span>
-      <span @click="chooseType(2)" :class="{on:sendType == 2}">在校学生</span>
-      <span @click="chooseType(3)" :class="{on:sendType == 3}">退休人员</span>
-      <span class="center" @click="chooseType(4)" :class="{on:sendType == 4}">学龄前儿童</span>
-      <span @click="chooseType(5)" :class="{on:sendType == 5}">家庭主妇</span>
+      <span v-for="item in typedata" @click="chooseType(item.guest_class)" :class="{on:sendType == item.guest_class}">{{item.guest_class_name}}</span>
+     
     </div>
     <div class="sendbtn" @click="sendEmail">发送</div>
   </div>
@@ -23,16 +19,14 @@
 
 <script>
 import { Toast } from 'mint-ui'
-
 export default {
-  props: ['isshow'],
+  props: ['typedata','proid'],
   data:function(){
     return{
-      sendType:0,
+      sendType:this.typedata[0].guest_class,
       emailAds:'',
       emailName:'',
-      emailCon:'',
-
+      emailCon:''
     }
   },
   methods: {
@@ -40,14 +34,27 @@ export default {
       this.sendType = v
     },
     sendEmail:function(){
-      if (this.emailAds == '') {        
-        Toast('请输入邮件地址')
+      var emailreg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/; 
+      if (this.emailAds == '' || this.emailName == '') {        
+        Toast('请输入邮件地址和发件人名称')
         return false
       }
-      if (this.emailName == '') {        
-        Toast('请输入发件人姓名')
+      if (!emailreg.test(this.emailAds)) {        
+        Toast('请输入正确的邮件地址')
         return false
       }
+      var url = '/api/visa/send_file',send = {product_id:this.proid,type_id:this.sendType,email:this.emailAds,send_user:this.emailName,content:this.emailCon}
+      this.$http.get(url,{params:send}).then(function(result){
+        console.log(result.body)
+        var rst = JSON.parse(result.body)
+        if (rst.data == true) {
+          this.$emit('closePage')
+          Toast('发送成功')
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    
     },
     closePage:function(){
       this.$emit('closePage')
@@ -103,10 +110,7 @@ export default {
         width: 75px;
         text-align: center;
         border-radius: 30px;
-        margin-bottom: 5px;
-        &.center{
-          margin: 0 14px;
-        }
+        margin:4px;
         &.on{
           background-color: #F4EAF8;color: #3c124d;
         }

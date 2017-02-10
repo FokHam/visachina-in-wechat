@@ -58,6 +58,7 @@ export default {
       var url = '/api/hotel/hotcity'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
+        console.log(result.body)
         if (rst.status == 1) {
           this.hotcities = rst.data
         }else {
@@ -69,7 +70,7 @@ export default {
     },
     keywordsChange:function(v){
       if (v != '') {
-        var url = '/api/hotel/searchcity',send={"keyword":v}
+        var url = '/api/hotel/search_city',send={"keyword":v}
         this.$http.get(url,{params:send}).then(function(result){
           var rst = JSON.parse(result.body)
           if (rst.status == 1) {

@@ -21,13 +21,7 @@
               <div class="ipt visatype lastchild">
                 <div class="tit">签证类型</div>
                 <div class="txt" @click="typedis=true">
-                  <span v-if="visacondition.lx==0">不限</span>
-                  <span v-if="visacondition.lx==1">旅游签证</span>
-                  <span v-if="visacondition.lx==2">商务签证</span>
-                  <span v-if="visacondition.lx==3">探亲访友签证</span>
-                  <span v-if="visacondition.lx==4">工作签证</span>
-                  <span v-if="visacondition.lx==5">留学签证</span>
-                  <span v-if="visacondition.lx==6">其他签证</span>
+                  <span>{{typelist[visacondition.lx]}}</span>                  
                 </div>
               </div>
               <div class="s_btn" @click="searchVisa">搜索</div>
@@ -61,9 +55,8 @@
       </div>
       <div class="check-made">
         <img src="/static/images/home/bg-in-bt.png">
-        <router-link class="check" to="">
-          <i>查看签证进度</i>
-          <span>登陆</span>
+        <router-link class="check" to="/visaProgress">
+          <span>查看签证进度 ></span>
         </router-link>
         <router-link class="customized" to="">
           <span>定制行程 ></span>
@@ -192,7 +185,6 @@ export default {
       this.typedis = false
     },
     visatypeSet:function(v){
-      if (v=='') {v='不限'}
       this.typedis = false
       var n = this.typelist.indexOf(v)
       this.visacondition.lx = n
@@ -346,16 +338,12 @@ export default {
     }
     .check{
       left: 0;
-      text-align: center;
-      i{
-        font-size: 0.6rem;color: #fff;
-        font-style: normal;padding: 0.5rem 0 ;
-        display:block;margin: 0 auto;      }
       span{
-        font-size: 0.7rem;color: #fff;
-        display:block;height: 2.8rem;width: 2.8rem;
-        border:2px dashed #fff;border-radius: 2.8rem;
-        line-height: 2.8rem;margin: 0 auto;
+        font-size: 0.6rem;color: #fff;
+        display:block;height: 1.4rem;width: 5.5rem;
+        border:1px solid #fff;
+        line-height:1.4rem;margin: 0 auto;
+        text-align: center;    margin-top: 2.2rem;
       }
     }
     .customized{
@@ -365,7 +353,7 @@ export default {
         display:block;height: 1.4rem;width: 5.5rem;
         border:1px solid #fff;
         line-height:1.4rem;margin: 0 auto;
-        text-align: center;    margin-top: 2rem;
+        text-align: center;    margin-top: 2.2rem;
       }
     }
   }

@@ -10,7 +10,7 @@
         <div class="txt">押金：<i>{{pageData.erp_foregift_price}}</i>元/台</div>
       </div>
       <div class="btm">
-        <div class="txt">覆盖范围：日本全境</div>
+        <div class="txt">覆盖范围：{{pageData.areas_name}}</div>
         <div class="price">
           <i>￥{{pageData.cost_price}}</i><span>&frasl; 天起</span>
         </div>
@@ -35,59 +35,50 @@
           <dl>
             <dd>适用地点：</dd>
             <dt>
-              <p>日本全境（如需去冲绳，北海道，请备注说明）</p>
+              <p>{{descData[0]}}</p>
             </dt>
           </dl>
           <dl>
             <dd>网络情况：</dd>
             <dt>
-              <p>4G网络</p>
+              <p>{{descData[1]}}</p>
             </dt>
           </dl>
           <dl>
             <dd>流量限制：</dd>
             <dt>
-              <p>不限流量（为保证您全程享受4G网速，请关闭 软件备份，避免观看视频电影等；短时间内使 用过多流量将被当地运营商降速或断网）</p>
+              <p>{{descData[2]}}</p>
             </dt>
           </dl>
           <dl>
             <dd>机器性能：</dd>
             <dt>
-              <p>最多连接5台设备，续航时间为4-6小时</p>
+              <p>{{descData[3]}}</p>
             </dt>
           </dl>
           <dl>
             <dd>标准配置：</dd>
             <dt>
-              <p>WiFi机器+数据线+目的地适用插头+设备包</p>
+              <p>{{descData[4]}}</p>
             </dt>
           </dl>
           <dl>
             <dd>注意事项：</dd>
             <dt>
-              <p>1、出行当天预订WiFi无法享受现有优惠价格， 租赁价格以当天柜台价格为准；</p>
-              <p> 2、如您需机场取机，请以您实际取机日期进行 下单；</p>
-              <p> 3、如您符合相关优惠，可在回程后联系环球漫 游客服申请相应优惠退款</p>
+              <p>{{descData[5]}}</p>
             </dt>
           </dl>                  
         </div>
       </div>
       <div class="item">
         <div class="tit">费用说明</div>
-        <div class="con">
-          <p>费用=单价×出行天数×台数+押金</p>
-          <p>出行天数按从取机日期到还机日期计算</p>
-          <p>押金：￥500元/台</p>          
+        <div class="con" v-html="pageData.web_charge">       
         </div>
       </div>
       <div class="item">
         <div class="tit">退货说明</div>
-        <div class="con">
-          <p>该产品支持退改；</p>
-          <p>取消预订：请登录环球漫游账户申请取消；</p>
-          <p>出行日期前1天申请取消，不收取手续费；</p>
-          <p>出行当天申请取消，收取1天的租金作为手续费；</p>
-          <p>更改出行日期：请申请取消后重新预订。</p>
+        <div class="con" v-html="pageData.web_return">
+          
         </div>
       </div>
     </div>
@@ -113,7 +104,7 @@ export default {
   data:function(){
     return{
       pageData:{},
-      descData:{}      
+      descData:[]
     }
   },
   methods:{
@@ -125,11 +116,31 @@ export default {
         console.log(result.body)
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          this.pageData = rst.data          
+          this.pageData = rst.data
+          this.analysisData(rst.data.web_desc)         
         }else {
           console.log(rst.msg)
         }
       });
+    },
+    analysisData:function(str){
+      var htmlstr = this.removeHTMLTag(str)
+      var conditions = ["/适用地点：(\\S*)网络情况：/","/网络情况：(\\S*)流量限制：/","/流量限制：(\\S*)机器性能：/","/机器性能：(\\S*)标准配置：/","/标准配置：(\\S*)注意事项：/","/注意事项：(\\S*)/"];
+      for(var i=0;i<6;i++){
+        var reg = eval(conditions[i])
+        var con = htmlstr.match(reg)[1]
+        this.descData.push(con)
+      }
+      console.log(JSON.stringify(this.descData))
+    },
+    removeHTMLTag:function (str) {
+      str = str.replace(/(\n)+|(\r\n)+/g, "");
+      str = str.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+      str = str.replace(/[ | ]*\n/g,'\n'); //去除行尾空白
+      str=str.replace(/ /ig,'');
+      str=str.replace(/&nbsp;/g,''); 
+      console.log(str)
+      return str;
     }
   }
 }

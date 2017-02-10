@@ -1,21 +1,27 @@
 <template>
-<div class="add-passenger">
+<div class="common-form">
   <div class="field">
-    <div class="item">
+    <div class="item" v-if="formconfig.name">
+      <span>联系人</span>
+      <div class="ipt">
+        <input type="text" v-model="clientinfo.name">
+      </div>      
+    </div>
+    <div class="item" v-if="formconfig.spename">
       <span>中文名字</span>
       <div class="ipt name">
         <input type="text" v-model="clientinfo.surname" placeholder="姓">
         <input type="text" v-model="clientinfo.name" placeholder="名">
       </div>      
     </div>
-    <div class="item">
+    <div class="item" v-if="formconfig.spename">
       <span>英文名字</span>
       <div class="ipt name">
         <input type="text" v-model="clientinfo.spell_surname" placeholder="姓LastName">
         <input type="text" v-model="clientinfo.spell_name" placeholder="名FirstName">
       </div>      
     </div>
-    <div class="item">
+    <div class="item" v-if="formconfig.idnum">
       <span>身份证号</span>
       <div class="ipt" @click="typedis=true">
         <input type="text" v-model="typeList[clientinfo.id_type-1]" readonly placeholder="选择证件类型">
@@ -24,33 +30,45 @@
         <input type="text" v-model="clientinfo.id_number" placeholder="输入证件号码">
       </div>      
     </div>
-    <div class="item select">
+    <div class="item select" v-if="formconfig.birthday">
       <span>出生日期</span>
       <div class="ipt" @click="openDatepicker">
         <input type="text" v-model="clientinfo.birthday" readonly placeholder="与证件保持一致">
       </div> 
     </div>
-    <div class="item radio">
+    <div class="item radio" v-if="formconfig.sex">
       <span>性别</span>
       <div class="ipt">
         <div class="woman" :class="{on:clientinfo.sexual==2}" @click="clientinfo.sexual=2"><i></i>女</div>
         <div class="man" :class="{on:clientinfo.sexual==1}" @click="clientinfo.sexual=1"><i></i>男</div>        
       </div> 
     </div>
-    <div class="item">
+    <div class="item" v-if="formconfig.phone">
       <span>手机号码</span>
       <div class="ipt">
         <input type="text" v-model="clientinfo.phone" placeholder="11位手机号码，选填">
       </div>      
     </div>
-    <div class="item">
+    <div class="item" v-if="formconfig.email">
       <span>电子邮箱</span>
       <div class="ipt">
         <input type="text" v-model="clientinfo.email" placeholder="输入常用邮箱，选填">
       </div>      
     </div>
+    <div class="item" v-if="formconfig.address">
+      <span>所在地区</span>
+      <div class="ipt select" @click="addressDis=true">
+        <div class="txt">{{clientinfo.province +' '+clientinfo.city+' '+clientinfo.zone}}</div>
+      </div> 
+    </div>
+    <div class="item" v-if="formconfig.address">
+      <span>详细地址</span>
+      <div class="ipt street">
+        <input type="text" v-model="clientinfo.address" placeholder="街道、楼牌号等">
+      </div>      
+    </div>
   </div>
-  <div class="save" @click="verifyData">保存</div>
+  <div class="save" @click="confirm">保存</div>
   <mt-datetime-picker
     ref="datepicker"
     type="date"
@@ -67,28 +85,36 @@
   @confirm="typeSet"
   @close="closeComp">
   </picker>
+  <address-picker
+  v-if="addressDis"
+  @confirm="confirmAddress"
+  @close="closeAddress">    
+  </address-picker>
 </div>
 </template>
 
 <script>
 import { DatetimePicker } from 'mint-ui'
 import { Toast } from 'mint-ui'
-import Picker from '../../../components/Picker'
+import Picker from 'components/Picker'
+import AddressPicker from 'components/AddressPicker'
 export default {
-  props: ['info'],
+  props: ['config','eiditdata'],
   created:function(){
-    if (this.info != "") {
-      this.clientinfo = this.info
+    this.formconfig = this.config
+    if (this.eiditdata != "") {
+      this.clientinfo = this.eiditdata
     }
   },
   data:function(){
     return{
+      formconfig:{"name":false,"spename":false,"idnum":false,"birthday":false,"sex":false,"phone":false,"email":false,"address":false},
       startDate:new Date('1930','0','1'),
       initialDate:new Date(),
-      clientinfo:{"surname":"","name":"","spell_surname":"","spell_name":"","id_type":1,"id_number":"","birthday":"","sexual":1,"phone":"","email":""},
-
       typedis:false,  
       typeList:['身份证','护照','出生证','驾照','港澳通行证','军官证','台胞证','警官证'],
+      addressDis:false,
+      clientinfo:{"surname":"","name":"","spell_surname":"","spell_name":"","id_type":1,"id_number":"","birthday":"","sexual":1,"phone":"","email":"","province":"","city":"","zone":"","address":""},      
     }
   },
   methods:{   
@@ -107,40 +133,39 @@ export default {
       this.clientinfo.id_type = this.typeList.indexOf(v)+1
       this.typedis = false      
     },
-    verifyData:function(){      
-      if (this.clientinfo.surname != '' && this.clientinfo.name != '' && this.clientinfo.spell_surname != '' && this.clientinfo.spell_name != '' && this.clientinfo.id_number != '' && this.clientinfo.birthday != '') {
-        this.submitData()
-      }else{
-        Toast('请完善资料后再保存')
-      }      
+    confirmAddress:function(v){
+      this.clientinfo.province = v[0]
+      this.clientinfo.city = v[1]
+      this.clientinfo.zone = v[2]
+      this.addressDis = false
     },
-    submitData:function(){
-      var url = '/api/member/passenger_create',send=this.clientinfo;      
-      this.$http.get(url,{params:send}).then(function(result){
-        console.log(result.body)
-        var rst = JSON.parse(result.body)
-        if (rst.status == 1) {
-          this.$emit('submit','passenger')
-        }else {
-          Toast(rst.msg)
-        }
-      });        
-    }    
+    closeAddress:function(){
+      this.addressDis = false
+    },
+    confirm:function(){
+      var type = 'add'
+      if (this.eiditdata != '') {
+        type = 'edit'
+      }
+      this.$emit('confirm',this.clientinfo,type)
+    }
   },
   components:{
-    Picker
+    Picker,
+    AddressPicker
   }
 }
 </script>
 
 <style lang="less" scoped>
-.add-passenger{
+.common-form{
   position: fixed;
   top: 0;
   width: 100%;
   height: 100%;
   z-index: 1001;
   background-color: #F6F6F6;
+  overflow-y: scroll;
   .field{
     margin: 0 10px;
     background-color: #fff;
@@ -166,6 +191,20 @@ export default {
             width: 50%;
             text-align: right;
             float: left;
+          }
+        }
+        &.select{background-image: url('/static/images/visa/icon-right.png');}
+        .txt{
+          height: 60px;
+          line-height: 60px;
+          text-align: right;
+          font-size: 0.7rem;
+          color: #666666;
+        }
+        &.street{
+          padding: 30px 20px 0 0;
+          input{
+            text-align: left;
           }
         }
       }

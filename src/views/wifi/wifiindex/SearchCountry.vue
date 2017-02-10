@@ -11,7 +11,7 @@
   </div>
   <div class="searchresult" v-show="keyword != ''">
     <ul v-show="searchdata.length != 0">
-      <li v-for="item in searchdata" @click="choseCountry(item.name,item.area_id)">{{item.name}}</li>
+      <li v-for="item in searchdata" @click="choseCountry(item.name,item.area_id)">{{item.name}}</li>      
     </ul>
     <div class="backshadow" :class="{white:searchdata.length != 0}" @touchmove="stopscroll"></div>
   </div>
@@ -87,7 +87,7 @@ export default {
               this.searchdata = rst.data
             }else{
               this.searchdata = []
-            }
+            }            
           }else {
             console.log(rst.msg)
           }
@@ -118,10 +118,10 @@ export default {
           localStorage.visaHistory = JSON.stringify([new_rec])
         }
         this.historylist = JSON.stringify(localStorage.visaHistory)
-      }
+      }      
     },
     stopscroll:function(e){
-      e.preventDefault()
+      e.preventDefault() 
     }
   },
   watch:{
@@ -220,7 +220,7 @@ export default {
       background: #fff;
       padding: 50px 10px 0 10px;
       position: relative;
-      z-index: 99;
+      z-index: 99;      
       li {
         font-size: 0.7rem;
         height: 30px;

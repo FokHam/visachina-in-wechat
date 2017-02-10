@@ -1,5 +1,5 @@
 <template>
-  <div id="visa" class="visa">
+  <div id="visa" class="visa" @touchmove="pagescroll">
     <div class="visaPage" v-show="searchdis == false">
       <div class="part-top">
         <img src="/static/images/visa/banner.png">
@@ -14,7 +14,7 @@
         </div>
         <div class="search_btn" @click="searchdis=true,tabcount=0"><span>搜索国家</span></div>
       </div>
-      <div class="screening">
+      <div class="screening" :class="{pin:screenposition}">
         <div class="tabs">
           <span :class="{on:tabcount == 1}" @click="tapDrop(1)">签证类别</span>
           <span :class="{on:tabcount == 2}" @click="tapDrop(2)">入境期限</span>
@@ -40,7 +40,7 @@
         </div>
         <div class="shadow" v-show="tabcount != 0" @click="tabcount=0"></div>
       </div>
-      <div class="visalist">
+      <div class="visalist" id="prolist">
         <ul v-infinite-scroll="loadMore"
         infinite-scroll-disabled="loading"
         infinite-scroll-distance="40">
@@ -51,9 +51,9 @@
             <div class="visainfo">
               <div class="tit">{{item.name}}</div>
               <div class="type">
-                <span class="p" v-show="item.lx == 0">贴纸签</span>
-                <span class="e" v-show="item.lx == 1">电子签</span>
-                <span class="op" v-show="item.lx == 2">另纸签</span>
+                <span class="p" v-show="item.visatype == 0">贴纸签</span>
+                <span class="e" v-show="item.visatype == 1">电子签</span>
+                <span class="op" v-show="item.visatype == 2">另纸签</span>
               </div>
               <div class="day-price">
                 <span class="day">受理天数：{{item.acceptancedays}}天</span>
@@ -124,6 +124,7 @@ export default {
       provicedis:false,
       screendis:false,
       tabcount:0,
+      screenposition:false,
       loadingtxt:"加载列表中...",
       listdata:[]
     }
@@ -188,6 +189,17 @@ export default {
           console.log(rst.msg)
         }
       });
+    },
+    pagescroll:function(){
+      var obj = document.getElementById('prolist');
+      var t_height = obj.offsetTop;
+      var scroll_height = document.body.scrollTop;
+      var num = t_height-scroll_height;
+      if (num < 40) {
+        this.screenposition = true
+      }else{
+        this.screenposition = false
+      }
     }
   },
   computed: {
@@ -268,6 +280,13 @@ export default {
 }
 .screening{
   position: relative;
+  &.pin{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+  }
   .tabs{
     border-bottom: 1px solid #C0C0C0;
     padding: 0 10px;
