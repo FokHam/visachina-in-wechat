@@ -1,41 +1,41 @@
 <template>
   <div class="hotel-form">
     <div class="plaque">
-      <p class="room-type">标准大床房（Standard double）</p>
-      <span class="room-type-detail">房型详情 <i class="icon-pull-right"></i></span>
-      <p class="info"><span>1间</span><span>每间最多可入住2人</span></p>
-      <p class="info"><span>大床</span><span>全部房间WI-FI免费</span><span>无早</span></p>
+      <p class="room-type">{{ hotelState.hotelDetail.cname }}({{ hotelState.hotelDetail.ename }})</p>
+      <p class="info">
+        <span>{{ hotelState.roomTypeObj.name }}</span>
+      </p>
+      <p class="info">
+        <span>每间最多可入住{{ hotelState.roomTypeObj.max_occupancy }}人</span>
+        <span>{{ hotelState.roomTypeObj.bed }}</span>
+        <span>{{ hotelState.roomTypeObj.breakfast }}</span>
+      </p>
       <p class="info date-info"><span class="date">入住： 12月06日</span><span class="date">离店： 12月12日</span><span>6晚</span></p>
     </div>
     <div class="form wave-btm-bg">
       <div class="item">
         <span class="label">房间数</span>
-        <span>1间</span>
-        <!-- <span class="room-button">仅剩1间<i class="icon-pull-down"></i></span> -->
+        <span>{{ hotelState.roomNum }} 间</span>
       </div>
       <div class="item">
         <span class="label">入住人</span>
         <div class="room-wrap">
-          <div class="room">
-            <p>客房1<span>（至少填1人）</span></p>
+          <div class="room"
+            v-for="(room, index) in room_guest">
+            <p>客房 {{ index + 1 }}</p>
             <div class="person">
-              <input type="text" name="" value="" placeholder="姓 Last Name">
-              <input type="text" name="" value="" placeholder="名 First Name">
-            </div>
-            <div class="person">
-              <input type="text" name="" value="" placeholder="姓 Last Name">
-              <input type="text" name="" value="" placeholder="名 First Name">
-            </div>
-          </div>
-          <div class="room">
-            <p>客房2<span>（至少填1人）</span></p>
-            <div class="person">
-              <input type="text" name="" value="" placeholder="姓 Last Name">
-              <input type="text" name="" value="" placeholder="名 First Name">
-            </div>
-            <div class="person">
-              <input type="text" name="" value="" placeholder="姓 Last Name">
-              <input type="text" name="" value="" placeholder="名 First Name">
+              <div class="input-wrap">
+                <input type="text" v-model="room.last_name" placeholder="姓 Last Name">
+                <i class="icon-delete"
+                  v-if="room.last_name"
+                  @click="room.last_name=''"></i>
+              </div>
+              <div class="input-wrap">
+                <input type="text" v-model="room.first_name" placeholder="名 First Name">
+                <i class="icon-delete"
+                  v-if="room.first_name"
+                  @click="room.first_name=''"></i>
+              </div>
             </div>
           </div>
         </div>
@@ -69,6 +69,25 @@
 
 <script>
   export default {
+    data () {
+      return {
+        room_guest: []
+      };
+    },
+    created () {
+      function Person(fname, lname) {
+        this.first_name = fname;
+        this.last_name = lname;
+      }
+      for (let i = 0; i < this.hotelState.roomNum; i += 1) {
+        this.room_guest.push(new Person);
+      }
+    },
+    computed: {
+      hotelState () {
+        return this.$store.state.hotel;
+      }
+    }
   }
 </script>
 
@@ -113,9 +132,12 @@
       color: #fff;
     }
     .room-type {
-      font-size: 0.8rem;
+      display: inline-block;
+      max-width: 13rem;
       line-height: 1;
       margin-bottom: 1rem;
+      font-size: 0.8rem;
+      word-break: break-all;
     }
     .room-type-detail {
       position: absolute;
@@ -184,6 +206,23 @@
         .person {
           display: flex;
           margin: 0.3rem 0;
+          .input-wrap {
+            position: relative;
+            input {
+              width: 100%;
+            }
+            .icon-delete {
+              position: absolute;
+              top: 0;
+              bottom: 0;
+              right: 1rem;
+              margin: auto;
+              width: 0.5rem;
+              height: 0.5rem;
+              background: url(/static/images/insurance/delete.png) center no-repeat;
+              background-size: contain;
+            }
+          }
         }
       }
     }

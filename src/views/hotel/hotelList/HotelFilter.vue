@@ -1,11 +1,12 @@
 <template lang="html">
   <div class="hotel-filter">
-    <div class="select-list">
-      <div class="select-item"
-        v-for="item in selectType">
+    <ul class="select-list">
+      <li class="select-item"
+        v-for="item in selectType"
+        @click="selectItem(item)">
         {{ item.name }}
-      </div>
-    </div>
+      </li>
+    </ul>
     <div class="mask"
       @touchmove.prevent
       @click="close">
@@ -16,13 +17,15 @@
 <script>
   export default {
     props: [
-      "filtType",
-      "nationList"
+      "filtType"
     ],
     data () {
       return {
         priceList: [
           {
+            name: "不限价格",
+            key: ""
+          },{
             name: "200元以下",
             key: "0-200"
           },{
@@ -61,6 +64,13 @@
     },
     methods: {
       close () {
+        this.$emit("close");
+      },
+      selectItem (obj) {
+        this.$store.commit("setHotelFilt", {
+          type: this.filtType,
+          data: obj
+        });
         this.$emit("close");
       }
     },

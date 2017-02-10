@@ -21,6 +21,7 @@ import WifiCounter from './views/wifi/WifiCounter'
 import WifiOrder from './views/wifi/WifiOrder'
 import HotelList from './views/hotel/HotelList'
 import HotelDetail from './views/hotel/HotelDetail'
+import HotelMap from './views/hotel/HotelMap'
 import HotelIntro from './views/hotel/HotelIntro'
 import HotelForm from './views/hotel/HotelForm'
 import HotelRoomSelect from './views/hotel/HotelRoomSelect'
@@ -102,6 +103,9 @@ var routes = [{
 },{
   path: "/hotelRoomSelect",
   component: HotelRoomSelect
+},{
+  path: "/hotelMap/:id",
+  component: HotelMap
 },{
   path: "/userCenter",
   component: UserCenter

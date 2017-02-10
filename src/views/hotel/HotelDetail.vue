@@ -20,11 +20,13 @@
         </div>
       </div>
       <div class="hotel-more">
+        <!-- <router-link :to="'/hotelMap/' + $route.params.id" class="item"> -->
         <div class="item">
           <span>{{ hotelDetail.address }}</span>
           <span class="location">{{ hotelDetail.ccity }}, {{ hotelDetail.ccountry }}</span>
           <span class="more">地图<i class="icon-more"></i></span>
         </div>
+        <!-- </router-link> -->
         <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
           <span>酒店简介</span>
           <span class="more">详情 <i class="icon-more"></i></span>
@@ -71,18 +73,16 @@
             <p class="price">
               <span class="yuan">¥</span>{{ item.total_price }}
             </p>
-            <router-link :to="'/hotelForm/' + $route.params.id " class="order-btn">预订</router-link>
+            <span class="order-btn"
+              @click.stop="goHotelForm(item)">
+              预订
+            </span>
           </div>
         </div>
       </div>
       <div class="hotel-policy"
         v-if="hDetail.policy.length">
         <p class="title">酒店政策</p>
-        <!-- <div class="item"
-          v-for="item in hDetail.policy">
-          <p class="item-title">{{ item.title }}</p>
-          <p class="item-content">{{ item.content }}</p>
-        </div> -->
         <div v-html="hotelDetail.policy"
           class="policy-content"></div>
       </div>
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-  import roomDetail from "./HotelDetail/RoomDetail"
+  import roomDetail from "./hotelDetail/RoomDetail"
   import calendar from "../../components/Calendar"
   import SearchNation from "../../components/SearchNation"
   import { Indicator } from 'mint-ui'
@@ -213,6 +213,13 @@
       }
     },
     methods: {
+      goHotelForm (roomType) {
+        this.$store.commit("setHotelState", {
+          type: "roomTypeObj",
+          data: roomType
+        });
+        this.$router.push("/hotelForm/" + this.$route.params.id);
+      },
       getDetail () {
         let url = "/api/hotel/info";
         let id = this.$route.params.id;
@@ -295,8 +302,8 @@
           id: this.$route.params.id
         });
         this.getDetail();
-        this.getRoom();
       }
+      this.getRoom();
     },
     components: {
       roomDetail,
@@ -459,7 +466,7 @@
         padding-right: 1rem;
         flex-basis: 75%;
         .name {
-          height: 1.8rem;
+          min-height: 1.8rem;
           line-height: 0.9rem;
           font-size: 0.8rem;
           margin-bottom: 0.2rem;

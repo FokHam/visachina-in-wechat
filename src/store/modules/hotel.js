@@ -10,7 +10,7 @@ let state = {
   productId: 0,
   startDate: startDate,
   endDate: endDate,
-  roomType: 0,
+  roomTypeObj: {},
   adultNum: 2,
   childNum: 0,
   childAge: [],
@@ -22,7 +22,7 @@ let state = {
   hotelFiltSelected: {
     area: "",
     price: "",
-    stars: "",
+    star: "",
     nation: ""
   }
 };
@@ -33,7 +33,7 @@ const mutations = {
       productId: 0,
       startDate: startDate,
       endDate: endDate,
-      roomType: 0,
+      roomType: {},
       adultNum: 2,
       childNum: 0,
       childAge: [],
@@ -58,6 +58,9 @@ const mutations = {
   },
   setHotelState (state, payload) {
     state[payload.type] = payload.data;
+  },
+  setHotelFilt (state, payload) {
+    state.hotelFiltSelected[payload.type] = payload.data;
   },
   setChildAge (state, payload) {
     state.childAge[payload.index] = payload.age;

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-  import SelectPop from "./HotelRoomSelect/SelectPop";
+  import SelectPop from "./hotelRoomSelect/SelectPop";
 
   export default {
     data () {

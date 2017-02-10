@@ -19,17 +19,17 @@
         @click="selectingFilt=true">
         <span class="filter-btn"
           @click="filtType='area'">
-          区域
+          {{ hotelFiltSelected.area.name || "不限区域" }}
           <i class="icon-pulldown"></i>
         </span>
         <span class="filter-btn"
           @click="filtType='price'">
-          价格
+          {{ hotelFiltSelected.price.name || "不限价格" }}
           <i class="icon-pulldown"></i>
         </span>
         <span class="filter-btn"
           @click="filtType='star'">
-          钻级
+          {{ hotelFiltSelected.star.name || "不限钻级" }}
           <i class="icon-pulldown"></i>
         </span>
       </div>
@@ -131,8 +131,9 @@
         searchResult: [],
         pageNum: 1,
         loadingList: false,
-        loadingText: "加载列表中...",
-        filtType: ""
+        loadingText: "",
+        filtType: "",
+        totalPage: ""
       };
     },
     created () {
@@ -145,16 +146,27 @@
         let url = "/api/hotel/list";
         let send = {
           cityname: this.destination,
-          page: this.pageNum
+          page: this.pageNum,
+          area: this.hotelFiltSelected.area.area_id,
+          stars: this.hotelFiltSelected.star.key,
+          price: this.hotelFiltSelected.price.key
         };
         this.loadingList = true;
+        this.loadingText = this.pageNum !== 1 ? "加载酒店数据中.." : "";
         this.$http.get(url, {params: send}).then((response) => {
           console.log(JSON.parse(response.body));
           let body = JSON.parse(response.body);
+          this.totalPage = body.data.totalPage;
           if (this.pageNum !== 1) {
             this.hotelList = this.hotelList.concat(body.data.rows);
-            console.log("当前页数: " + this.pageNum);
+            if (this.totalPage === this.pageNum) {
+              this.loadingText = "已无更多数据";
+            }
+            console.log("pageNum: " + this.pageNum);
           } else {
+            if (body.data.rows.length === 0) {
+              this.loadingText = "没有符合条件酒店";
+            }
             this.hotelList = body.data.rows;
           }
           this.$store.commit("setHotelState", {
@@ -169,11 +181,11 @@
         });
       },
       getMore () {
-        if (this.loadingList === true) { return false; }
-        if (this.hotelList.length !== 0) {
-          this.pageNum += 1;
-          this.getList();
-          console.log("gettingmore")
+        if (!this.loadingList && (this.pageNum < this.totalPage)) {
+          if (this.hotelList.length !== 0) {
+            this.pageNum += 1;
+            this.getList();
+          }
         }
       },
       // getNation () {
@@ -233,6 +245,9 @@
       },
       hotelFiltList () {
         return this.$store.state.hotel.hotelFiltList;
+      },
+      hotelFiltSelected () {
+        return this.$store.state.hotel.hotelFiltSelected;
       }
     },
     watch: {
@@ -253,7 +268,18 @@
         });
       },
       destination () {
+        this.$store.commit("setHotelFilt", {
+          type: "area",
+          data: ""
+        })
         this.pageNum = 1;
+      },
+      hotelFiltSelected: {
+        handler: function () {
+          this.pageNum = 1;
+          this.getList();
+        },
+        deep: true
       }
     },
     components: {
@@ -436,6 +462,7 @@
       text-align: center;
       padding: 0.7rem 0;
       font-size: 0.8rem;
+      white-space: nowrap;
       .icon-pulldown {
         top: 0;
         bottom: 0;

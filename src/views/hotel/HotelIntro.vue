@@ -97,7 +97,7 @@
           "consult", "clock", "child", "park", "allday", "bar", "exchange", "rentcar"
         ],
         facility: [
-          "gym", "bathtub", "laundry", "balcony", "tv", "nosmoke"
+          "gym", "bathtub", "laundry", "balcony", "tv", "nosmoke", "resturaunt", "meettingroom"
         ]
       }
     },

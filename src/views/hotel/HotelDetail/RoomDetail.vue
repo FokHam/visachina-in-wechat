@@ -4,13 +4,12 @@
     @mousedown="hide">
     <div class="room-detail">
       <p class="title">{{ detailObj.name }}</p>
-      <p class="item"><span class="label">面积</span>{{ detailObj.area + "平方米" }}</p>
-      <p class="item"><span class="label">早餐</span>{{ detailObj.breakfast ? "含早餐" : "不含早餐" }}</p>
-      <p class="item" v-if="detailObj.maximum"><span class="label">可住</span>最多可住人数：{{ detailObj.maximum }}</p>
-      <p class="item"><span class="label">宽带</span>{{ detailObj.wifi ? "免费无线上网" : "没得上网" }}</p>
+      <p class="item"><span class="label">床型</span>{{ detailObj.bed }}</p>
+      <p class="item"><span class="label">早餐</span>{{ detailObj.breakfast }}</p>
+      <p class="item"><span class="label">可住</span>最多可住人数：{{ detailObj.max_occupancy + "人" }}</p>
       <div class="cancel-policy">
-        <span class="sign">不可取消</span>
-        <p class="word">预订成功后，订单无法取消。如订单不确认，将 全额退款至您的付款账户，敬请谅解。</p>
+        <span class="sign" :class={active:detailObj.cancel_flag}>{{ detailObj.cancel_flag ? "可以取消" : "不可取消" }}</span>
+        <p class="word">{{ detailObj.cancel_flag ? detailObj.cancel_policy : "预订成功后，订单无法取消。如订单不确认，将全额退款至您的付款账户，敬请谅解。" }}</p>
       </div>
     </div>
   </div>
@@ -75,6 +74,10 @@
           border: 0.05rem solid #FF738D;
           border-radius: 0.1rem;
           top: 0.5rem;
+          &.active {
+            color: green;
+            border-color: green;
+          }
         }
         .word {
           padding-left: 3.3rem;
