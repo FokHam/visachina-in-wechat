@@ -1,57 +1,58 @@
 <template>
   <div class="sp-page">
     <div class="sp-page-wrapper">
-      <div class="tip">最多可选择10个被保人</div>
+      <div class="tip">正在选择{{ selectType === "passenger" ? ("客房入住人") : ("订单联系人") }}</div>
       <div @click="editingPerson=true" class="add-button">
         <i class="icon-addperson-big"></i>
-        <span>添加被保人</span>
+        <span>添加常用旅客</span>
       </div>
       <ul class="person-list wave-btm-bg">
         <li v-for="(person, index) in pList"
-            @click="toggleInsuredPerson(person.id)"
+            @click="confirmPerson(person)"
             class="person-item">
-          <i :class="{ on: selectedPersonIds && (selectedPersonIds.indexOf(person.id) !== -1) }" class="icon-radio"></i>
+          <i :class="{ on: person.id === selectedPolicyHolderId }" class="icon-radio"></i>
           <div class="info-box">
-            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ (person.spell_surname ? person.spell_surname : "") + " " + person.spell_name }}</span></p>
-            <p class="item">{{ idTypeList[person.id_type] }} <span class="detail">{{ person.id_number }}</span></p>
-            <p class="item">出生日期 <span class="detail">{{ person.birthday }}</span></p>
+            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ person.phone }}</span></p>
+            <p class="item">{{ person.email }}</span></p>
           </div>
           <i class="icon-edit"
              @click.stop="editPerson(index)"></i>
         </li>
       </ul>
-      <div class="confirm-button"
-        @click="confirm">
-        确定
-      </div>
+      <edit-person
+        v-if="editingPerson"
+        v-on:confirm="editConfirm"
+        :policyHolderDetail="selectedDetail">
+      </edit-person>
     </div>
-    <edit-insured-person
-      v-if="editingPerson"
-      v-on:confirm="editConfirm"
-      :insuredPersonDetail="selectedDetail">
-    </edit-insured-person>
   </div>
 </template>
 
 <script>
-  import EditInsuredPerson from './InsuranceEditInsuredPerson'
+  import EditPerson from './EditPerson'
   import { Toast } from 'mint-ui'
 
   export default {
     created () {
       this.getList();
     },
+    props: [
+      "selectType"
+    ],
     data: function () {
-      let typeList = ["", "身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
       typeList[99] = "其他";
       return {
         editingPerson: false,
-        idTypeList: typeList,
-        pList: [],
-        selectedDetail: {}
-      }
+        selectedDetail: {},
+        pList: []
+      };
     },
     methods: {
+      editPerson (n) {
+        this.selectedDetail = this.pList[n];
+        this.editingPerson = true;
+      },
       getList () {
         let url = "/api/member/passenger";
         this.$http.get(url).then((response) => {
@@ -68,33 +69,23 @@
         this.getList();
         this.editingPerson = false;
       },
-      confirm () {
-        let arr = [],
-            that = this;
-        that.$store.state.insurance.selectedInsuredPersonIds.map(function (v) {
-          that.pList.map(function (obj) {
-            if (obj.id === v) {
-              arr.push(obj);
-            }
-          });
+      confirmPerson (person) {
+        this.$store.commit("setHotelState", {
+          type: "hotelPerson",
+          data: person
         });
-        that.$store.commit("confirmInsuredPerson", arr);
-        this.$router.go(-1);
-      },
-      toggleInsuredPerson (id) {
-        this.$store.commit("toggleInsuredPerson", id);
-      },
-      editPerson (n) {
-        this.selectedDetail = this.pList[n];
-        this.editingPerson = true;
+        this.$emit("confirm", person);
       }
     },
     components: {
-      EditInsuredPerson
+      EditPerson
     },
     computed: {
-      selectedPersonIds () {
-        return this.$store.state.insurance.selectedInsuredPersonIds;
+      selectedPolicyHolderId () {
+        return this.$store.state.insurance.selectedPolicyHolderId;
+      },
+      hotelState () {
+        return this.$store.state.hotel;
       }
     }
   }

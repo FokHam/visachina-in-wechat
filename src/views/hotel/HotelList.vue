@@ -74,6 +74,11 @@
           </router-link>
         </li>
       </ul>
+      <div class="no-item"
+        v-if="noData">
+        <img src="/static/images/common/no-dtata.png" alt="没有搜索结果">
+        <p>没有符合条件的酒店</p>
+      </div>
       <p class="loading-text">{{ loadingText }}</p>
       <calendar v-if="pickingDate"
         v-on:confirm="setDate"
@@ -133,7 +138,8 @@
         loadingList: false,
         loadingText: "",
         filtType: "",
-        totalPage: ""
+        totalPage: "",
+        noData: false
       };
     },
     created () {
@@ -159,15 +165,18 @@
           this.totalPage = body.data.totalPage;
           if (this.pageNum !== 1) {
             this.hotelList = this.hotelList.concat(body.data.rows);
-            if (this.totalPage === this.pageNum) {
-              this.loadingText = "已无更多数据";
-            }
             console.log("pageNum: " + this.pageNum);
           } else {
             if (body.data.rows.length === 0) {
-              this.loadingText = "没有符合条件酒店";
+              this.loadingText = "";
+              this.noData = true;
+            } else {
+              this.noData = false;
             }
             this.hotelList = body.data.rows;
+          }
+          if (this.totalPage === this.pageNum) {
+            this.loadingText = "已无更多数据";
           }
           this.$store.commit("setHotelState", {
             type: "hotelList",
@@ -318,6 +327,17 @@
     background-size: 11px;
     background-position: center;
     background-repeat: no-repeat;
+  }
+  .no-item {
+    img {
+      width: 50%;
+      margin: 5rem auto 1rem;
+    }
+    p {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #999;
+    }
   }
   .icon-pulldown {
     background: url(/static/images/hotel/pulldown.png) no-repeat center;

@@ -2,8 +2,8 @@
   <div class="isr-o-page">
     <div v-if="!selectingDestination">
       <div class="order-title">
-        <p class="product-name">申根险意外保险 （经典型）</p>
-        <p>适合人群：商务出差人士</p>
+        <p class="product-name">{{ insuranceState.productDetail.name + (insuranceState.productDetail.planName ? ("（" + insuranceState.productDetail.planName + "）") : "") }}</p>
+        <p>适合人群：{{ insuranceState.productDetail.web_position }}</p>
         <p>{{ "投保周期：" + startDate.format("yyyy.MM.dd") + " — " + endDate.format("yyyy.MM.dd") }}</p>
       </div>
       <detail-content></detail-content>
@@ -312,7 +312,7 @@
   .order-title {
     margin: 0.5rem;
     background: url(/static/images/insurance/bg.png) no-repeat;
-    background-size: contain;
+    background-size: cover;
     padding: 1.1rem 0.8rem;
     border-radius: 0.25rem;
     .product-name {

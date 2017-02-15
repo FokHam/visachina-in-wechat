@@ -1,4 +1,5 @@
-<template>
+}"”会议室"餐厅""无烟区""电视"""阳台ay""洗衣房 gnafiyixw"“"浴缸鱼缸""健身房"", :
+:租车"" 兑换外币""酒吧就把""接待小时42""停车场免费""床儿童附加创""唤醒"w""旅游咨询"" :,<template>
   <div class="hotel-intro">
     <p class="title">服务与设施</p>
     <div class="content column-wrapper"
@@ -6,71 +7,23 @@
       <div class="column">
         <p class="title">服务</p>
         <ul class="list">
-          <li>
-            <i class="icon icon-consult"></i>
-            <span>旅游咨询</span>
-          </li>
-          <li>
-            <i class="icon icon-clock"></i>
-            <span>唤醒</span>
-          </li>
-          <li>
-            <i class="icon icon-child"></i>
-            <span>儿童附加床</span>
-          </li>
-          <li>
-            <i class="icon icon-park"></i>
-            <span>免费停车场</span>
-          </li>
-          <li>
-            <i class="icon icon-allday"></i>
-            <span>24小时接待</span>
-          </li>
-          <li>
-            <i class="icon icon-bar"></i>
-            <span>酒吧</span>
-          </li>
-          <li>
-            <i class="icon icon-exchange"></i>
-            <span>外币兑换</span>
-          </li>
-          <li>
-            <i class="icon icon-rentcar"></i>
-            <span>租车</span>
+          <li v-for="item in hotelDetail.equipment">
+            <i class="icon" :class="'icon-'+item"></i>
+            <span>{{ facility[item] }}</span>
           </li>
         </ul>
       </div>
       <div class="column">
         <p class="title">设施</p>
         <ul class="list">
-          <li>
-            <i class="icon icon-gym"></i>
-            <span>健身中心</span>
-          </li>
-          <li>
-            <i class="icon icon-bathtub"></i>
-            <span>浴缸</span>
-          </li>
-          <li>
-            <i class="icon icon-laundry"></i>
-            <span>洗衣间</span>
-          </li>
-          <li>
-            <i class="icon icon-balcony"></i>
-            <span>阳台</span>
-          </li>
-          <li>
-            <i class="icon icon-tv"></i>
-            <span>电视</span>
-          </li>
-          <li>
-            <i class="icon icon-nosmoke"></i>
-            <span>无烟客房</span>
+          <li v-for="item in hotelDetail.service">
+            <i class="icon" :class="'icon-'+item"></i>
+            <span>{{ service[item] }}</span>
           </li>
         </ul>
       </div>
       <p class="view-more"
-        v-if="service.length > 3 || facility.length > 3"
+        v-if="hotelDetail.service.length > 3 || hotelDetail.equipment.length > 3"
         @click="showMore = !showMore">
         {{ showMore ? "收起" : "查看更多"}}
         <i :class="[ showMore ? 'icon-more-up' : 'icon-more-down' ]"></i>
@@ -93,12 +46,26 @@
     data () {
       return {
         showMore: false,
-        service: [
-          "consult", "clock", "child", "park", "allday", "bar", "exchange", "rentcar"
-        ],
-        facility: [
-          "gym", "bathtub", "laundry", "balcony", "tv", "nosmoke", "resturaunt", "meettingroom"
-        ]
+        service: {
+          "consult": "旅游咨询",
+          "clock": "唤醒",
+          "child": "儿童附加床",
+          "park": "免费停车场",
+          "allday": "24小时接待",
+          "bar": "酒吧",
+          "exchange": "外币兑换",
+          "rentcar": "租车"
+        },
+        facility: {
+          "gym": "健身房",
+          "bathtub": "浴缸",
+          "laundry": "洗衣房",
+          "balcony": "阳台",
+          "tv": "电视",
+          "nosmoke": "无烟房",
+          "resturaunt": "餐厅",
+          "meettingroom": "会议室"
+        }
       }
     },
     computed: {
@@ -110,7 +77,6 @@
 </script>
 
 <style lang="less" scoped>
-  .bgi(@imgpath) { background-image: @imgpath; }
   .icon-consult { background-image: url("/static/images/hotel/service-consult.png"); }
   .icon-clock { background-image: url(/static/images/hotel/service-clock.png); }
   .icon-child { background-image: url(/static/images/hotel/service-child.png); }
@@ -125,6 +91,8 @@
   .icon-balcony { background-image: url(/static/images/hotel/facility-balcony.png); }
   .icon-tv { background-image: url(/static/images/hotel/facility-tv.png); }
   .icon-nosmoke { background-image: url(/static/images/hotel/facility-nosmoke.png); }
+  .icon-meettingroom { background-image: url(/static/images/hotel/facility-meetingroom.png); }
+  .icon-resturaunt { background-image: url(/static/images/hotel/facility-resturaunt.png); }
   .icon-more-down {
     display: inline-block;
     margin-left: 0.2rem;
