@@ -29,7 +29,7 @@
         <div class="tit">热门搜索</div>
         <div class="namelist">
           <ul>
-            <li v-for="(item,index) in hotContries" v-if="index<8" @click="choseCountry(item.name,item.id)"><span>{{item.name}}</span></li>
+            <li v-for="(item,index) in hotContries" v-if="index<8" @click="choseCountry(item.name,item.area_id)"><span>{{item.name}}</span></li>
           </ul>
         </div>
       </div>

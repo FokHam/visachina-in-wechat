@@ -1,31 +1,46 @@
 <template>
 <div class="contact-list" id="apply-list">
+  <div class="addbtn" @click="contacter.display=true">添加联系人</div>
   <div class="contactList">
     <ul v-if="contactList.length != 0">
       <li v-for="(item,index) in contactList">
-        <div class="checkbtn" :class="{check:item.check}" @click="checkOne(index)"></div>
-        <div class="info">
+        <div class="info" @click="confirm(item)">
           <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.tel}}</span></div>
           <div class="txt"><span>{{item.email}}</span></div>
         </div>
+        <div class="editbtn" @click="contacter.display=true,contacter.data=item"></div>
       </li>
     </ul>
     <div v-else class="empty">暂无常用联系人</div>
   </div>
-  <div class="confirm" @click="confirm">确定</div>
+  <contact-add 
+  v-if="contacter.display"
+  :info="contacter.data"
+  @submit="closeComponents">
+  </contact-add>
 </div>
 </template>
 
 <script>
+import ContactAdd from './ContactAdd'
 import { Toast } from 'mint-ui'
 export default {
   created: function () {
-     this.getPassenger()
+    const _this = this;
+    var state = {  
+      title: document.title,
+      url: document.location.href  
+    };  
+    window.history.pushState(state,document.title, document.location.href);
+    window.addEventListener("popstate", function(e) {  
+      _this.$emit('close');
+    }, false);
+    this.getPassenger()
   },
   data:function(){
     return{
       contactList:[],
-      chooseItem:{"name":"","tel":"","email":""}
+      contacter:{"display":false,"data":""},
     }
   },
   methods:{
@@ -34,33 +49,22 @@ export default {
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          for (var i=0;i<rst.data.length;i++) {
-            rst.data[i].check = false
-          }
           this.contactList = rst.data
         }else {
           console.log(rst.msg)
         }
       });
+    },    
+    confirm:function(item){
+      this.$emit('confirm',item)
     },
-    checkOne:function(n){
-      for (var i=0; i<this.contactList.length; i++) {
-        if (i==n) {          
-          if (this.contactList[i].check == false) {
-            this.contactList[i].check = true
-            this.chooseItem = this.contactList[i] 
-          }else {
-            this.contactList[i].check = false
-            this.chooseItem = {"check":false,"name":"","tel":"","email":""}
-          }          
-        }else{
-          this.contactList[i].check = false
-        }
-      }                          
-    },
-    confirm:function(){
-      this.$emit('confirm',this.chooseItem)
+    closeComponents:function(){
+      this.getPassenger()
+      this.contacter = {"display":false,"data":""}
     }
+  },
+  components:{
+    ContactAdd
   }
 }
 </script>
@@ -73,6 +77,16 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 1001;
+  .addbtn{
+    height: 45px;line-height: 45px;display: block;
+    padding: 0 20px;background-color: #fff;
+    background-image:url('/static/images/visa/icon-add-1.png');
+    background-repeat: no-repeat;
+    background-position: 20px center;
+    background-size: 21px;
+    font-size: 0.7rem;color: #008be4;text-indent: 27px;
+    margin-bottom: 10px;
+  }
   .contactList{
     margin: 0 10px;
     background-color: #fff;
@@ -88,21 +102,9 @@ export default {
       padding: 5px 10px;
       li{
         border-bottom: 1px solid #c0c0c0;padding: 9px 0 10px;
-        position: relative;
-        .checkbtn{          
-          height: 13px;width: 13px;border: 2px solid #999999;
-          border-radius: 2px;position: absolute;
-          top: 15px;left: 0;
-          &.check{
-            border: 2px solid #008BE4;
-            background-color: #008BE4;
-            background-image: url('/static/images/visa/icon-check.png');
-            background-repeat: no-repeat;background-position: center;
-            background-size: 12px;
-          }
-        }
+        position: relative;        
         .info{
-          padding:0 30px;
+          padding:0 30px 0 10px;
           .name{font-size: 0.7rem;color: #666666;line-height: 30px;overflow: hidden;
             .left{float: left;}
             .right{float: right;}
@@ -114,7 +116,7 @@ export default {
         .editbtn{
           height: 15px;width: 15px;
           border-radius: 2px;position: absolute;
-          top: 15px;right: 0;
+          top: 18px;right: 0;
           background-image: url('/static/images/visa/icon-edit.png');
           background-repeat: no-repeat;background-position: center;
           background-size: 15px;
@@ -122,12 +124,6 @@ export default {
         &:last-child{ border-bottom:none;}     
       }
     }
-  }
-  .confirm{
-    font-size: 0.8rem;color: #fff;
-    line-height: 35px;margin: 25px 10px;
-    text-align: center;background-color: #008be4;
-    border-radius: 4px;
   }
 }
 </style>

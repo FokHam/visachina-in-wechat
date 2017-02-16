@@ -12,7 +12,7 @@
       <div class="btm">
         <div class="txt">覆盖范围：{{pageData.areas_name}}</div>
         <div class="price">
-          <i>￥{{pageData.cost_price}}</i><span>&frasl; 天起</span>
+          <i>￥{{pageData.unitPrice}}</i><span>&frasl; 天起</span>
         </div>
       </div>
     </div>
@@ -20,11 +20,12 @@
   <div class="part-desc">
     <div class="tit">WIFI亮点:</div>
     <div class="con">{{pageData.web_point}}</div>
-    <div class="orderbtn">预定</div>
+    <router-link class="orderbtn" :to="'/wifiOrder/'+$route.params.id">预定</router-link>
   </div>
   <div class="part-locations">
     <div class="tit"><router-link :to="'/wifiCounter/'+$route.params.id">取货网点</router-link></div>
-    <div class="con">1.【北京T1出发】<br>2.【北京T2出发】<br>3.【北京T3出发】</div>
+    <div class="con" v-if="wifiCondition.city == ''">全国取件</div>
+    <div class="con" v-else><p v-for="(item,index) in placeData">{{index+1}}、【{{item.name}}】</p></div>
   </div>
   <div class="part-proinfo">
     <div class="title">预购须知</div>
@@ -84,7 +85,7 @@
     </div>
   </div>
   <div class="booking">
-    <div class="addfev">收藏</div>
+    <div class="addfev" :class="{collect:iscollect==1}" @click="addCollect">收藏</div>
     <div class="bookbtn"><router-link :to="'/wifiOrder/'+$route.params.id">立即预定</router-link></div>
   </div>
 </div>
@@ -92,24 +93,29 @@
 
 <script>
 import { Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
 export default {
   name:"wifi-detail",
   created: function () {
     document.title = '产品详情'
     this.getWifiDetails()
+    this.getWifiPlace()
   },
   components: {
     
   },
   data:function(){
     return{
+      wifiCondition:this.wifiCondition,
       pageData:{},
-      descData:[]
+      descData:[],
+      placeData:[],
+      iscollect:0
     }
   },
   methods:{
     getWifiDetails:function(){      
-      Indicator.open('加载中...')
+      Indicator.open('加载产品信息')
       var url = '/api/wifi/info?id='+this.$route.params.id
       this.$http.get(url).then(function(result){
         Indicator.close()
@@ -117,11 +123,26 @@ export default {
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.pageData = rst.data
-          this.analysisData(rst.data.web_desc)         
+          this.analysisData(rst.data.web_desc)
+          this.isCollect()
         }else {
           console.log(rst.msg)
         }
       });
+    },
+    getWifiPlace:function(){
+      if (this.wifiCondition.city != '') {
+        var url = '/api/wifi/places',send = {cid:this.wifiCondition.city,act:1}
+        this.$http.get(url,{params:send}).then(function(result){
+          console.log(result.body)
+          var rst = JSON.parse(result.body)
+          if (rst.status == 1) {
+            this.placeData = rst.data
+          }else {
+            console.log(rst.msg)
+          }
+        });
+      }      
     },
     analysisData:function(str){
       var htmlstr = this.removeHTMLTag(str)
@@ -141,7 +162,36 @@ export default {
       str=str.replace(/&nbsp;/g,''); 
       console.log(str)
       return str;
+    },
+    addCollect:function(){
+      var url = '/api/member/collect_create?type=wifi&product_id=' + this.$route.params.id
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.isCollect()
+          Toast(rst.msg)
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    isCollect:function(){
+      var url = '/api/member/is_collect?type=wifi&product_id=' + this.$route.params.id
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        console.log(result.body)
+        if (rst.status == 1) {          
+          this.iscollect = rst.data.result
+        }else {
+          console.log(rst.msg)
+        }
+      });
     }
+  },
+  computed: {
+    wifiCondition () {
+      return this.$store.state.wifi.wifiCondition;
+    }    
   }
 }
 
@@ -192,6 +242,7 @@ export default {
     }
     .con{font-size: 0.6rem;color: #666666;}
     .orderbtn{
+      display: block;
       background-color: #008BE4;color: #fff;text-align: center;
       width: 63px;height: 25px;line-height: 25px;font-size: 0.7rem;
       border-radius: 3px;float: right;margin-top: 5px;

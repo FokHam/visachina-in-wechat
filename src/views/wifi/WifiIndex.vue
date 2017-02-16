@@ -3,26 +3,17 @@
   <div class="wifiPage" v-if="searchdis == false">
     <div class="grid_top">
       <div class="search" @click="searchdis=true"><span>你想去哪儿？</span></div>
-      <div class="banner">
-        <img src="/static/images/wifi/banner.png">
-      </div>
+      <banner :pics="pageData.banners"></banner>
       <router-link class="help" to="/WifiHelp">
         <div class="tit">新手攻略</div>
         <div class="txt">如何预定、取还、使用 ></div>
       </router-link>
     </div>
-    <div class="grid_hot">
+    <div class="grid_hot" v-if="pageData.hotCounties">
       <div class="tit">热门目的地WIFI</div>
       <div class="list">
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-1.png"><span>日本</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-2.png"><span>韩国</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-3.png"><span>泰国</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-4.png"><span>香港</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-5.png"><span>欧洲</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-6.png"><span>尼泊尔</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-7.png"><span>法国</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-8.png"><span>德国</span><div class="s"></div></router-link>
-        <router-link :style="{width:hotItemWidth+'px'}" to="/wifiList/1001"><img src="/static/images/wifi/hot-9.png"><span>挪威</span><div class="s"></div></router-link>
+        <div class="ctrs" :style="{width:hotItemWidth+'px'}" v-for="item in pageData.hotCounties" @click="changeCountry(item.name,item.area_id)"><img :src="item.image"><span>{{item.name}}</span><div class="s"></div></div>
+        
       </div>
     </div>
     <div class="grid_suggest">
@@ -52,7 +43,7 @@
 <script>
 import Country from './wifiindex/SearchCountry'
 import { Indicator } from 'mint-ui'
-
+import Banner from '../../components/Banner'
 export default {
   name:"wifi",
   beforeCreate(){
@@ -63,7 +54,8 @@ export default {
     this.setWidth()
   },
   components: {
-    Country
+    Country,
+    Banner
   },
   data:function(){
     return{
@@ -93,6 +85,7 @@ export default {
       this.$http.get(url).then(function(result){
         Indicator.close()
         var rst = JSON.parse(result.body)
+        console.log(result.body)
         if (rst.status == 1) {
           console.log(JSON.stringify(rst))
           this.pageData = rst.data          
@@ -145,7 +138,7 @@ export default {
     .tit{font-size: 0.7rem;color: #008BE4;line-height: 35px;}
     .list{
       overflow: hidden;
-      a{
+      .ctrs{
         margin-right: 7px;float:left;border-radius: 3px;overflow: hidden;
         position: relative;margin-bottom: 7px;display: block;
         img{width: 100%;display: -webkit-box;}

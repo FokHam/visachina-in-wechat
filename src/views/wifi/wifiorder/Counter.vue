@@ -5,19 +5,17 @@
     <div class="cityname" :class="{on:cityListDis}" @click="cityListDis=true">{{currentCity}}</div>
     <div class="list" :class="{on:cityListDis}" :style="{height:listheight+'px'}">
       <ul>
-        <li v-for="item in cityList" @click="cityCheck(item.name)">{{item.name}}</li>
+        <li v-for="item in cityList" @click="cityCheck(item.city_name,item.id)">{{item.city_name}}</li>
       </ul>
     </div>
   </div>
   <div class="counter-list">
-    <div class="item" v-for="(item,index) in listData" :class="{selected:chooseitem==index}" @click="chooseitem=index,chooseAdrs=item.address">
-      <p>{{item.address}}</p>
-      <p>{{item.time}}</p>
+    <div class="item" v-for="(item,index) in listData" :class="{selected:chooseitem==index}" @click="chooseitem=index,chooseAdrs=item.name,chooseAdrsid=item.out_id">
+      <p>【{{item.name}}】{{item.address}}</p>
+      <p>营业时间：{{item.office_hours}}</p>
     </div>
   </div>
   <div class="confirmbtn" @click="comfirm">确定</div>
-
-
 </div>
 </template>
 
@@ -25,15 +23,30 @@
 import { Toast } from 'mint-ui'
 export default{
   props:['id'],
+  created:function(){
+    const _this = this;
+    var state = {  
+      title: document.title,
+      url: document.location.href  
+    };  
+    window.history.pushState(state,document.title, document.location.href);
+    window.addEventListener("popstate", function(e) {  
+      _this.$emit('close');
+    }, false);
+    this.getCitylist()       
+  },
   data:function(){
     return{
-      currentCity:'北京',
+      wifiCondition:this.wifiCondition, 
+      currentCity:'',
+      currentCityid:'',
       cityListDis:false,
       listheight:0,
       chooseitem:-1,
       chooseAdrs:'',
-      listData:[{"time":"周一至周日:08:00-23:00","address":"【白云机场T1】首都机场3号航站楼国际出发中央商业区(过安检后喷泉左侧 紧邻烟酒免税店)出国通讯服务柜台。"},{"time":"周一至周日:08:00-23:00","address":"【白云机场T2】首都机场3号航站楼国际出发中央商业区(过安检后喷泉左侧 紧邻烟酒免税店)出国通讯服务柜台。"},{"time":"周一至周日:08:00-23:00","address":"【白云机场T3】首都机场3号航站楼国际出发中央商业区(过安检后喷泉左侧 紧邻烟酒免税店)出国通讯服务柜台。"}],
-      cityList:[{"name":"北京"},{"name":"天津"},{"name":"河北"},{"name":"山西"},{"name":"内蒙古"},{"name":"辽宁"},{"name":"吉林"},{"name":"黑龙江"},{"name":"上海"},{"name":"江苏"},{"name":"浙江"},{"name":"安徽"},{"name":"福建"},{"name":"江西"},{"name":"山东"},{"name":"河南"},{"name":"湖北"},{"name":"湖南"},{"name":"广东"},{"name":"宁夏"},{"name":"新疆"},{"name":"香港"},{"name":"澳门"}]
+      chooseAdrsid:'',
+      listData:[],
+      cityList:[]
 
     }
   },
@@ -43,22 +56,64 @@ export default{
         Toast('请选择一个服务点')
         return false
       }
-      this.$emit('comfirm',this.chooseAdrs)
+      this.$emit('comfirm',this.chooseAdrs,this.chooseAdrsid)
     },
-    cityCheck:function(n){
+    cityCheck:function(n,id){
       this.currentCity = n
+      this.currentCityid = id
       this.cityListDis = false
+      this.getCounterList()
+    },
+    getCitylist:function(){
+      var url = '/api/wifi/places_cities'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)
+        console.log(result.body)
+        if (rst.status == 1) { 
+          this.cityList = rst.data
+          if (this.wifiCondition.city == '') {
+            this.currentCity = this.cityList[0].city_name
+            this.currentCityid = this.cityList[0].id
+            this.getCounterList()
+          }else{
+            this.currentCity = this.wifiCondition.cityname
+            this.currentCityid = this.wifiCondition.city
+            this.getCounterList()
+          }          
+        }else {
+          console.log(rst.msg)
+        }
+      }, function(result){
+        console.log("请求失败")
+      });
+    },
+    getCounterList:function(){
+      var url = '/api/wifi/places',send = {cid:this.currentCityid,act:1}
+      this.$http.get(url,{params:send}).then(function(result){
+        console.log(result.body)
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.listData = rst.data
+        }else {
+          console.log(rst.msg)
+        }
+      });
     }
   },
   watch:{
     cityListDis:function(status){
       if (status == true) {
-        this.listheight = window.screen.height-48
+        this.listheight = document.documentElement.clientHeight-48
       }else {
         this.listheight = 0
       }
 
     }
+  },
+  computed: {
+    wifiCondition () {
+      return this.$store.state.wifi.wifiCondition;
+    }    
   }
 }
 </script>
@@ -98,7 +153,8 @@ export default{
       padding-top: 15px;top: 33px;left: -120px;overflow: hidden;
       &.on{left: 0;}
       ul{
-        height: 100%;overflow-y: scroll;padding: 0 30px;width: 60px;
+        height: 100%;overflow-y:scroll;
+    overflow-scrolling: touch;-webkit-overflow-scrolling: touch;padding: 0 30px;width: 60px;
         li {
           line-height: 37px;
           border-bottom: 1px solid #EEEEEE;

@@ -62,6 +62,9 @@
           <span>定制行程 ></span>
         </router-link>
       </div>
+      <a href="/api/pay/test">支付测试</a>
+      <router-link to="/visaOrder/2072">支付测试2222</router-link>
+      <router-link to="/visaSuccess/1702143781">支付成功</router-link>
     </div>
     <countrys
     v-if="searchdis"
@@ -135,7 +138,7 @@ export default {
         destination: ''
       },
       typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
-      pics: [{'pic':'/static/images/home/pic1.png','link':'/visa'},{'pic':'/static/images/home/pic1.png','link':'/hotel'},{'pic':'/static/images/home/pic1.png','link':'/hotel'}],
+      pics: [{'img_url':'/static/images/home/pic1.png','link':'/visa'},{'img_url':'/static/images/home/pic1.png','link':'/hotel'},{'img_url':'/static/images/home/pic1.png','link':'/hotel'}],
       //calendar
       minDay:2,
       maxDay:28,

@@ -22,7 +22,7 @@
             </div>
             <div class="co_name">供应商：{{item.company}}</div>
           </div>
-          <div class="price"><i>￥{{item.price}}</i><span>&frasl; 天起</span></div>
+          <div class="price"><i>￥{{item.unitPrice}}</i><span>&frasl; 天起</span></div>
         </router-link>
       </li>      
     </ul>
@@ -61,18 +61,23 @@ export default {
     getData:function(v){
       if (v == 'refresh') {
         this.listData = []
+        this.wifiCondition.page = 1
+        this.pagestatus = true
+      }else{
+        this.wifiCondition.page += 1
       }
       Indicator.open('加载中...');
       var url = '/api/wifi/list',send = this.wifiCondition
       this.$http.get(url,{params:send}).then(function(result){
         Indicator.close()
-        var rst = JSON.parse(result.body)
-        console.log(result.body)
+        var rst = JSON.parse(result.body)        
         if (rst.status == 1) {
           for (var i in rst.data.rows){
-            this.listData.push(rst.data.rows[i])
+            if (rst.data.rows[i].name) {
+              this.listData.push(rst.data.rows[i])
+            }
           }
-          if (wifiCondition.page == rst.data.totalPage) {
+          if (this.wifiCondition.page == rst.data.totalPage) {
             this.pagestatus = false            
           }                  
         }else {
@@ -81,8 +86,7 @@ export default {
       });
     },
     loadMore:function(){
-      console.log('aa')
-      if (this.listData.length != 0) {
+      if (this.listData.length != 0 && this.pagestatus) {
         this.getData()
       }      
     },

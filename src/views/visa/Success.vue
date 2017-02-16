@@ -1,43 +1,54 @@
 <template>
 <div class="order-success" id="order-success">
-  <div class="status">
-    <div class="txt">支付成功</div>
-  </div>
-  <div class="orderinfo">
-    <div class="top"></div>
-    <div class="line"></div>
-    <div class="detail">
-      <div class="proname">法国旅游签证</div>
-      <div class="list">
-        <ul>
-          <li><span class="name">周方晗</span><span class="type">在职</span></li>
-          <li><span class="name">张三</span><span class="type">退休</span></li>
-        </ul>
-      </div>
-      <div class="desc">
-        <span class="txt">申请了法国旅游签证</span>
-        <span class="time">2017-02-07 13:42</span>
+  <div class="successpage" v-if="pagedata != ''">
+    <div class="status">
+      <div class="txt" v-if="pagedata.status == 1">支付成功</div>
+      <div class="txt" v-else>支付失败</div>
+    </div>
+    <div class="orderinfo">
+      <div class="top"></div>
+      <div class="line"></div>
+      <div class="detail">
+        <div class="proname">法国旅游签证</div>
+        <div class="list">
+          <ul>
+            <li><span class="name">周方晗</span><span class="type">在职</span></li>
+            <li><span class="name">张三</span><span class="type">退休</span></li>
+          </ul>
+        </div>
+        <div class="desc">
+          <span class="txt">申请了法国旅游签证</span>
+          <span class="time">2017-02-07 13:42</span>
+        </div>
       </div>
     </div>
   </div>
-  
-  
 </div>
 </template>
 
 <script>
+import { Indicator } from 'mint-ui'
 export default{
   name: 'order-success',
   created: function () {
     document.title = '订单详情'
+    this.getPayResult()
   },
   data:function(){
     return{
-      
+      pagedata:''
     }
   },
   methods:{
-    
+    getPayResult:function(){
+      Indicator.open('获取支付结果');
+      var url = '/api/pay/result',send = {type:"visa",orderno:this.$route.params.id}
+      this.$http.get(url,{params:send}).then(function(result){
+        console.log(result.body)
+        Indicator.close();
+        this.pagedata = JSON.parse(result.body)        
+      });
+    }
 
   }
 }
