@@ -6,12 +6,14 @@ import MintUI from 'mint-ui'
 import Mock from 'mockjs'
 import $ from 'jquery'
 import 'mint-ui/lib/style.css'
+import FastClick from 'fastclick'
 
 import './widget.js'
 import App from './App'
 import routes from './routes.js'
 import store from './store/index.js'
 
+FastClick.attach(document.body);
 Vue.use(VueRouter);
 Vue.use(VueResource);
 Vue.use(MintUI);
