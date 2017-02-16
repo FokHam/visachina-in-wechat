@@ -66,7 +66,7 @@ var routes = [{
   path: "/progressDetail",
   component: ProgressDetail
 },{
-  path: "/visaSuccess",
+  path: "/visaSuccess/:id",
   component: VisaSuccess
 },{
   path: "/insurance",

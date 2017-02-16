@@ -99,8 +99,7 @@ export default {
   beforeCreate(){
     document.title = "签证列表"
   },
-  created: function () {
-    Indicator.close();
+  created: function () {    
     if (this.visaCondition.ct=='') {
       this.$router.push('/home')
     }else{

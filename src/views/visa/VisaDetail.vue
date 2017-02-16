@@ -291,20 +291,14 @@ export default{
       }
       ul{
         position: relative;
-        z-index: 1;
-        -webkit-column-count: 5;
-        -webkit-column-gap: normal;
-        -moz-column-count: 5;
-        column-count: 5;
-        -moz-column-gap: normal;
-        column-gap: normal;
+        z-index: 1;        
         li{
-          padding-top: 35px;
+          padding-top: 1.7rem;
           font-size: 0.6rem;float: left;
           text-align: center;
           background-size: 30px;
-          width: 60px;
-          height: 20px;
+          width: 20%;
+          height: 1rem;
           background-position: top center;
           background-repeat: no-repeat;
           &.i1{background-image: url('/static/images/visa/icon-step1.png')}

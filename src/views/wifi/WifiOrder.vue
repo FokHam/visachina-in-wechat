@@ -2,16 +2,16 @@
 <div class="wifi-order" id="wifi-order">
   <div class="top-part">
     <span class="left"></span><span class="right"></span>
-    <div class="tit">日本旅行WIFI租赁（广州取还）</div>
-    <div class="counter">环球漫游柜台</div>
-    <div class="txt">最小预定3天，最多预定99天</div>
+    <div class="tit">{{pageData.name}}</div>
+    <div class="counter">{{pageData.company}}</div>
+    <div class="txt">最小预定{{pageData.erp_min_days}}天，最多预定90天</div>
   </div>
   <div class="quantity">
-    <div class="tit">预定台数</div>
+    <div class="tit">预定台数<span>(最多可预定5台)</span></div>
     <div class="count">
-      <div class="btn less" :class="{off:quantity==1}" @click="quantityLess"></div>
-      <div class="ipt"><input type="number" v-model="quantity" maxlength="3"></div>
-      <div class="btn plus" @click="quantity+=1"></div>
+      <div class="btn less" :class="{off:quantity==1}" @touchstart="quantityLess"></div>
+      <div class="ipt"><input type="number" readonly="readonly" v-model="quantity" maxlength="3"></div>
+      <div class="btn plus" :class="{off:quantity==5}" @touchstart="quantityAdd"></div>
     </div>
   </div>
   <div class="ordeript">
@@ -25,35 +25,36 @@
     </div>
     <div class="item" @click="counterDis=true,counterType=1">
       <div class="tit">取件点</div>
-      <div class="txt">{{getAddress}}</div>
+      <div class="txt">{{getAddress.name}}</div>
     </div>
     <div class="item" @click="counterDis=true,counterType=2">
       <div class="tit">还件点</div>
-      <div class="txt">{{returnAddress}}</div>
+      <div class="txt">{{returnAddress.name}}</div>
     </div>
   </div>
   <div class="contactinfo">
     <div class="name item">
       <span class="txt">联系人</span>
-      <span class="ipt"><input type="text" placeholder="请填写联系人姓名"></span>
+      <span class="ipt"><input type="text" v-model="contactInfo.info.name" placeholder="请填写联系人姓名"></span>
     </div>
     <div class="phone item">
       <span class="txt">手机号</span>
-      <span class="ipt"><input type="tel" placeholder="接收订单确认信息"></span>
+      <span class="ipt"><input type="tel" v-model="contactInfo.info.tel" placeholder="接收订单确认信息"></span>
     </div>
     <div class="email item">
       <span class="txt">邮&#12288;箱</span>
-      <span class="ipt"><input type="email" placeholder="请填写联系人邮箱"></span>
+      <span class="ipt"><input type="email" v-model="contactInfo.info.email" placeholder="请填写联系人邮箱"></span>
     </div>
-    <div class="icon"></div>
+    <div class="icon" @click="contactInfo.contact = true"></div>
   </div>
   <div class="creatorder">
-    <div class="price">订单金额：<span>￥1250</span></div>
-    <div class="creatBtn">立即支付</div>
+    <div class="price">订单金额：<span>￥{{totalPrice}}</span></div>
+    <div class="creatBtn" @click="verifyData">立即支付</div>
   </div>
   <counter
   v-if="counterDis"
   @comfirm="setCounter"
+  @close="counterDis = false"
   :id="$route.params.id">    
   </counter>
   <calendar
@@ -63,89 +64,169 @@
     type2="还件"
     :multipleDate="multipleDate"
     :pickType ="pickingType"
-    :minDay="minDay"
-    :maxDay="maxDay"
+    :minDay="pageData.erp_min_days"
+    :maxDay="90"
     :day1="startDate"
     :day2="endDate">
   </calendar>
+  <contact-list
+  v-if="contactInfo.contact"
+  @confirm="contactConfirm"
+  @close="contactInfo.contact=false">
+  </contact-list>
 </div>
 </template>
 
 <script>
 import Calendar from "../../components/Calendar.vue";
+import ContactList from "../../components/ContactList.vue";
 import Counter from "./wifiorder/Counter.vue";
 import { Indicator } from 'mint-ui'
 export default {
   name:"wifi-order",
-  beforeCreate(){
-    document.title = '填写订单'
-    Indicator.open('加载中...')
-  },
   created: function () {
-    Indicator.close()
-    
+    document.title = '填写订单'
+    this.getWifiDetails()
   },
   components: {
     Counter,
-    Calendar
+    Calendar,
+    ContactList
   },
-  data:function(){
-    var sTime = new Date(),eTime = new Date(sTime.getTime() + 24*60*60*1000*2)
+  data:function(){    
     return{
+      pageData:{},
       quantity:1,
       getWifiTime:'',
       returnWifiTime:'',
       counterType:1,
       counterDis:false,
-      getAddress:'',
-      returnAddress:'',
-
-
-
-
+      getAddress:{"name":"","id":""},
+      returnAddress:{"name":"","id":""},
+      contactInfo:{"contact":false,"info":{"name":"","tel":"","email":""}},
+      totalPrice:0,
       //calendar
-      minDay:1,
-      maxDay:99,
-      singleTime: 0,
-      startDate: new Date(sTime.getFullYear(),sTime.getMonth(),sTime.getDate()),
-      endDate: new Date(eTime.getFullYear(),eTime.getMonth(),eTime.getDate()),
-      multipleDate: true,
-      pickingType: 1,
-      pickingDate: false      
+      singleTime:0,
+      startDate:'',
+      endDate:'',
+      multipleDate:true,
+      pickingType:1,
+      pickingDate:false      
     }
   },
   methods:{
+    getWifiDetails:function(){      
+      Indicator.open('加载中...')
+      var url = '/api/wifi/info?id='+this.$route.params.id
+      this.$http.get(url).then(function(result){
+        Indicator.close()
+        console.log(result.body)
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.pageData = rst.data
+          this.dateReset()
+        }else {
+          console.log(rst.msg)
+        }
+      });
+    },
+    dateReset:function(){
+      var sTime = new Date();
+      var eTime = new Date(sTime.getTime()+24*60*60*1000*(this.pageData.erp_min_days-1));
+      this.startDate = new Date(sTime.getFullYear(),sTime.getMonth(),sTime.getDate());
+      this.endDate = new Date(eTime.getFullYear(),eTime.getMonth(),eTime.getDate());
+    },
     quantityLess:function(){
       if (this.quantity == 1) {
         return false
       }
       this.quantity -= 1
     },
+    quantityAdd:function(){
+      if (this.quantity == 5) {
+        return false
+      }
+      this.quantity += 1
+    },
     setDate:function(s,e){
       this.pickingDate = false
       this.startDate = s
       this.endDate = e
-      this.getWifiTime = s.getFullYear()+'年'+(s.getMonth()+1)+'月'+s.getDate()+'日'
-      this.returnWifiTime = e.getFullYear()+'年'+(e.getMonth()+1)+'月'+e.getDate()+'日'
+      this.getWifiTime = s.getFullYear()+'-'+(s.getMonth()+1)+'-'+s.getDate()
+      this.returnWifiTime = e.getFullYear()+'-'+(e.getMonth()+1)+'-'+e.getDate()
     },
-    setCounter:function(t){
+    setCounter:function(n,id){
       if (this.counterType == 1) {
-        this.getAddress = t
+        this.getAddress.name = n
+        this.getAddress.id = id
       }
       if (this.counterType == 2) {
-        this.returnAddress = t
+        this.returnAddress.name = n
+        this.returnAddress.id = id
       }
       this.counterDis = false
-
+    },
+    contactConfirm:function(v){
+      this.contactInfo.info=v
+      this.contactInfo.contact=false
+    },
+    DateDiff:function(sDate1,sDate2){//sDate1和sDate2是2006-12-18格式  
+      var aDate,oDate1,oDate2,iDays;
+      aDate = sDate1.split("-");
+      oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]);
+      aDate = sDate2.split("-");
+      oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]); 
+      iDays = parseInt(Math.abs(oDate1-oDate2) / 1000 / 60 / 60 / 24);
+      return  iDays  
+    },
+    verifyData:function(){
+      if (this.returnWifiTime == '') {
+        Toast('请选择取还件日期')
+        return false
+      }else if (this.getAddress.id == '' || this.returnAddress.id == '') {
+        Toast('请选择取还件地点')
+        return false
+      }else if (this.contactInfo.info.name == '' || this.contactInfo.info.tel == '' || this.contactInfo.info.email == '') {
+        Toast('请完善联系人信息')
+        return false
+      }else{
+        this.creatOrder()
+      }
+    },
+    creatOrder:function(){
+      Indicator.open('提交订单');
+      var send = {
+        "productId":this.$router.params.id
+      };
+      let header = {
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      };
+      var url = '/api/visa/create_order';
+      this.$http.post(url,send).then(function(result){
+        Indicator.close();
+        console.log(result.body)
+        var rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.$router.push('/visaOrderDetail/'+rst.data.orderno)
+        }else{
+          Toast(rst.msg)
+        }
+      });
     }
   },
   watch:{
+    returnWifiTime:function(old){
+      var days = this.DateDiff(this.getWifiTime,this.returnWifiTime)
+      var price = this.quantity * (days+1) * this.pageData.unitPrice
+      this.totalPrice = price.toFixed(2)
+    },
     quantity:function(old){
-      if (old < 1) {
-        this.quantity = 1
-      }
-      
-    }
+      if (this.returnWifiTime != '') {
+        var days = this.DateDiff(this.getWifiTime,this.returnWifiTime)
+        var price = old * (days+1) * this.pageData.unitPrice
+        this.totalPrice = price.toFixed(2)
+      }      
+    },
   }
 }
 
@@ -189,6 +270,11 @@ export default {
     background-color: #fff;height: 20px;overflow: hidden;
     .tit{
       float: left;font-size: 0.7rem;line-height: 20px;
+      span{
+        font-size: 0.5rem;
+        color: #999999;
+        padding-left: 0.5rem;
+      }
     }
     .count{
       float: right;

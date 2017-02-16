@@ -56,14 +56,14 @@
         <dl><dd>地址：</dd><dt>{{orderData.delivery_info.province+orderData.delivery_info.city+orderData.delivery_info.zone+orderData.delivery_info.address}}</dt></dl>
       </div>
     </div>
-    <div class="invoce_info" v-if="orderData.invoice.header">
+    <div class="invoce_info" v-if="orderData.invoice">
       <div class="title">发票信息</div>
       <div class="name">{{orderData.invoice.header}}</div>
       <div class="address">{{orderData.invoice.province+orderData.invoice.city+orderData.invoice.zone+orderData.invoice.address}}</div>
     </div>
     <div class="creatpay">
       <div class="price">合计：<span>￥{{orderData.totalPrice}}</span></div>
-      <div class="creatBtn">立即支付</div>
+      <div class="creatBtn" @click="payOrder">立即支付</div>
     </div>
     <div class="buyagain" v-if="false">再次购买</div>
   </div>
@@ -72,6 +72,7 @@
 
 <script>
 import { Indicator } from 'mint-ui'
+import wx from 'weixin-js-sdk'
 export default{
   name: 'order-detail',
   created: function () {
@@ -86,7 +87,7 @@ export default{
   methods:{
     getData:function(){      
       Indicator.open('加载订单详情');
-      var url = "/api/visa/order_detail",send={orderno:"1702083719"}
+      var url = "/api/visa/order_detail",send={orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
         Indicator.close();
         var rst = JSON.parse(result.body)
@@ -97,9 +98,40 @@ export default{
           console.log(rst.msg)
         }
       });
+    },
+    payOrder:function(){
+      Indicator.open('获取支付信息');
+      var url = "/api/pay/index",send = {orderno:this.$route.params.id}
+      this.$http.get(url,{params:send}).then(function(result){
+        Indicator.close();
+        this.invokingWXPay(result.body)                
+      });
+    },
+    invokingWXPay:function(rst){
+      const _this = this
+      wx.config({
+        debug: true,
+        appId: rst.config.appId, // 必填，公众号的唯一标识
+        timestamp: rst.config.timestamp, // 必填，生成签名的时间戳
+        nonceStr: rst.config.nonceStr, // 必填，生成签名的随机串
+        signature: rst.config.signature,// 必填，签名，见附录1
+        jsApiList: ["chooseWXPay"]
+      });
+      wx.ready(function(){
+        wx.chooseWXPay({
+          timestamp: rst.payParams.timeStamp, 
+          nonceStr: rst.payParams.nonceStr, // 支付签名随机串，不长于 32 位
+          package: rst.payParams.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+          signType: rst.payParams.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: rst.payParams.paySign, // 支付签名
+          success: function (res) {
+            if (res.errMsg == 'chooseWXPay:ok') {
+              _this.$router.push('/visaSuccess/' + _this.$route.params.id)  
+            }                       
+          }
+        });
+      });
     }
-    
-
   }
 }
 </script>

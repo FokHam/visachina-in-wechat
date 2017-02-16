@@ -130,8 +130,9 @@
   @confirm="passengerConfirm">
   </visa-passenger-list>
   <contact-list
-  v-show="contactInfo.contact"
-  @confirm="contactConfirm">
+  v-if="contactInfo.contact"
+  @confirm="contactConfirm"
+  @close="contactInfo.contact=false">
   </contact-list>
   <address-list
   v-show="deliveryInfo.delivery"
@@ -167,7 +168,7 @@ import { DatetimePicker } from 'mint-ui'
 import Invoice from './visaorder/Invoice'
 import VisaPassengerList from './visaorder/VisaPassengerList'
 import insurClientList from './visaorder/InsClientList'
-import ContactList from './visaorder/ContactList'
+import ContactList from "../../components/ContactList.vue";
 import AddressList from './visaorder/AddressList'
 import Proposer from './visaorder/Proposer'
 export default{
@@ -278,9 +279,10 @@ export default{
       var url = '/api/visa/create_order';
       this.$http.post(url,send).then(function(result){
         Indicator.close();
+        console.log(result.body)
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          this.$router.push('/visaOrderDetail/'+rst.data.orderID)
+          this.$router.push('/visaOrderDetail/'+rst.data.orderno)
         }else{
           Toast(rst.msg)
         }
