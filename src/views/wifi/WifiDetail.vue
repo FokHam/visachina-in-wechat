@@ -1,9 +1,7 @@
 <template>
 <div class="wifi-detail" id="wifi-detail">
   <div class="part-top">
-    <div class="pic">
-      <img src="/static/images/wifi/hot-item.png">  
-    </div>
+    <div class="pic" :style="{'background-image':'url('+pageData.images+')'}"></div>
     <div class="desc">
       <div class="top">
         <div class="name">{{pageData.name}}</div>
@@ -204,6 +202,9 @@ export default {
     height: 90px;position: relative;
     .pic{
       width: 90px;height: 90px;position: absolute;left: 10px;top: 15px;
+      background-size: auto 90px;
+      background-position: 50%;
+      background-repeat: no-repeat;
     }
     .desc{
       padding-left: 100px;

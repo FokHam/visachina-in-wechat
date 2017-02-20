@@ -22,7 +22,7 @@
 <script>
 import { Toast } from 'mint-ui'
 export default{
-  props:['id'],
+  props:['type'],
   created:function(){
     const _this = this;
     var state = {  
@@ -88,7 +88,7 @@ export default{
       });
     },
     getCounterList:function(){
-      var url = '/api/wifi/places',send = {cid:this.currentCityid,act:1}
+      var url = '/api/wifi/places',send = {cid:this.currentCityid,act:this.type}
       this.$http.get(url,{params:send}).then(function(result){
         console.log(result.body)
         var rst = JSON.parse(result.body)

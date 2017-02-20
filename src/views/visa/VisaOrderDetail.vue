@@ -61,11 +61,11 @@
       <div class="name">{{orderData.invoice.header}}</div>
       <div class="address">{{orderData.invoice.province+orderData.invoice.city+orderData.invoice.zone+orderData.invoice.address}}</div>
     </div>
-    <div class="creatpay">
+    <div class="creatpay" v-if="orderData.pay_status == 0">
       <div class="price">合计：<span>￥{{orderData.totalPrice}}</span></div>
       <div class="creatBtn" @click="payOrder">立即支付</div>
     </div>
-    <div class="buyagain" v-if="false">再次购买</div>
+    <div class="buyagain" v-else>再次购买</div>
   </div>
 </div>
 </template>

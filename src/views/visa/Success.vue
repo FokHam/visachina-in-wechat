@@ -2,8 +2,8 @@
 <div class="order-success" id="order-success">
   <div class="successpage" v-if="pagedata != ''">
     <div class="status">
-      <div class="txt" v-if="pagedata.status == 1">支付成功</div>
-      <div class="txt" v-else>支付失败</div>
+      <div class="txt" v-if="payStatus == true">支付成功</div>
+      <div class="txt fail" v-else>支付失败</div>
     </div>
     <div class="orderinfo">
       <div class="top"></div>
@@ -36,6 +36,7 @@ export default{
   },
   data:function(){
     return{
+      payStatus:false,
       pagedata:''
     }
   },
@@ -44,9 +45,18 @@ export default{
       Indicator.open('获取支付结果');
       var url = '/api/pay/result',send = {type:"visa",orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
-        console.log(result.body)
-        Indicator.close();
-        this.pagedata = JSON.parse(result.body)        
+        this.payStatus = result.body.data
+        var url_ = "/api/visa/order_detail",send_={orderno:this.$route.params.id}
+        this.$http.get(url_,{params:send_}).then(function(result){
+          Indicator.close();
+          var rst = JSON.parse(result.body)
+          if (rst.status == 1) {
+            this.pagedata = rst.data
+          }else {
+            console.log(rst.msg)
+          }
+        });
+        
       });
     }
 
@@ -67,6 +77,9 @@ export default{
       background-position: center 1rem;
       background-size: 3.5rem;
       background-repeat: no-repeat;
+      &.fail{
+        background-image: url('/static/images/visa/icon-fail.png');
+      }
     }
   }
   .orderinfo{

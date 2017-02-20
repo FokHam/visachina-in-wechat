@@ -14,7 +14,7 @@
   <div class="clientname">
     <div class="item-hd">
       <div class="tit">申请人<i class="help">help</i></div>
-      <div class="addbtn" @click="passengerList.passenger=true">添加申请人</div>
+      <div class="addbtn" @click="passengerList.passenger=true,pushHistory()">添加申请人</div>
     </div>
     <div class="namelist" v-if="passengerList.list.length != 0">
       <ul>
@@ -58,63 +58,7 @@
       </div>
     </div>
   </div>
-  <div class="recommend">
-    <div class="title">签证推荐服务</div>
-    <div class="insurance">
-      <div class="tit">保险</div>
-      <div class="pro_info">
-        <div class="checkbox" :class="{check:insuranceCheck}" @click="insuranceCheck=!insuranceCheck"></div>
-        <div class="name">“乐游全球”境外旅行保障计划钻石计划</div>
-        <div class="price"><span>￥69</span>/起</div>
-        <div class="ins_term" v-if="insuranceCheck">
-          <span class="start">起保日期 2016-12-22</span>
-          <span class="end">终保日期 2017-12-22</span>
-          <i class="type">[一年多次]</i>
-        </div>
-      </div>
-      <div class="ins_client" v-if="insuranceCheck">
-        <div class="item-hd">
-          <div class="i_tit">被保人<i class="help">help</i></div>
-          <span class="addbtn" @click="insuranceList.insurance=true" :class="{editbtn:insuranceList.list.length != 0}"></span>
-        </div>
-        <div class="list" v-if="insuranceList.list.length != 0">
-          <ul>
-            <li v-for="item in insuranceList.list">
-                <div class="info">
-                  <div class="name">{{item.name}}<span>{{item.e_name}}</span></div>
-                  <div class="idnum">身份证：{{item.idnum}}</div>
-                </div>
-                <div class="price">￥69</div>
-            </li>
-
-          </ul>
-        </div>
-      </div>
-      <div class="ins_creater" v-if="insuranceCheck">
-        <div class="item-hd">
-          <div class="i_tit">投保人<i class="help">help</i></div>
-          <span class="addbtn" :class="{editbtn:proposerInfo.info.name  != ''}" @click="proposerInfo.proposer=true"></span>
-        </div>
-        <div class="info" v-if="proposerInfo.info.name != ''">
-          <div class="name">{{proposerInfo.info.name}}<span class="phone">{{proposerInfo.info.phone}}</span></div>
-          <div class="email">{{proposerInfo.info.email}}</div>
-        </div>
-      </div>
-      <div class="ins_benefit" v-if="insuranceCheck">
-        <div class="item-hd">
-          <div class="i_tit">受益人<i class="help">help</i></div>
-          <div class="txt">法定继承人</div>
-        </div>
-      </div>
-      <div class="ins_destination" v-if="insuranceCheck">
-        <div class="item-hd">
-          <div class="i_tit">目的地</div>
-          <div class="dest">冰岛</div>
-          <div class="editbtn_p"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  
   <div class="creatorder">
     <div class="price">订单金额：<span>￥{{totalPrice}}</span></div>
     <div class="creatBtn" @click="verifyData">提交订单</div>
@@ -127,7 +71,8 @@
   </invoice>
   <visa-passenger-list
   v-show="passengerList.passenger"
-  @confirm="passengerConfirm">
+  @confirm="passengerConfirm"
+  @close="passengerList.passenger=false">
   </visa-passenger-list>
   <contact-list
   v-if="contactInfo.contact"
@@ -135,42 +80,21 @@
   @close="contactInfo.contact=false">
   </contact-list>
   <address-list
-  v-show="deliveryInfo.delivery"
-  @confirm="deliveryConfirm">
+  v-if="deliveryInfo.delivery"
+  @confirm="deliveryConfirm"
+  @close="deliveryInfo.delivery=false">
   </address-list>
-  <insur-client-list
-  v-if="insuranceList.insurance"
-  :passenger="passengerList.list"
-  @confirm="insuranceConfirm">
-  </insur-client-list>
-  <proposer
-  v-if="proposerInfo.proposer"
-  :proposer="proposerInfo.info"
-  @confirm="setProposer">
-  </proposer>
-  <mt-datetime-picker
-    ref="datepicker"
-    type="date"
-    :startDate="new Date()"
-    v-model="initialDate"
-    year-format="{value} 年"
-    month-format="{value} 月"
-    date-format="{value} 日"
-    @confirm="dateConfirm">
-  </mt-datetime-picker>
+
 </div>
 </template>
 
 <script>
 import { Toast } from 'mint-ui'
 import { Indicator } from 'mint-ui'
-import { DatetimePicker } from 'mint-ui'
 import Invoice from './visaorder/Invoice'
 import VisaPassengerList from './visaorder/VisaPassengerList'
-import insurClientList from './visaorder/InsClientList'
-import ContactList from "../../components/ContactList.vue";
-import AddressList from './visaorder/AddressList'
-import Proposer from './visaorder/Proposer'
+import ContactList from "../../components/ContactList"
+import AddressList from "../../components/AddressList"
 export default{
   name: 'visa-order',
   beforeCreate:function(){
@@ -185,21 +109,11 @@ export default{
       visaInfomation:{},
       totalPrice:0,
       initialDate:new Date(),
-      estimated_date:"",
-      invoiceData:{"invoice":false,"detail":{"need":0,"type":1,"memo":"","header":"","shippingId":"","shippingInfo":{"name":"","phone":"","province":"","city":"","zone":"","address":""}}},
+      estimated_date:"",      
       passengerList:{"passenger":false,"list":[]},
       contactInfo:{"contact":false,"info":{"name":"","tel":"","email":""}},
-      deliveryInfo:{"delivery":false,"info":{"name":"","phone":"","province":"","city":"","zone":"","address":""}},
-
-
-
-
-
-
-      insuranceCheck:false,
-      insuranceList:{"insurance":false,"list":[]},
-      proposerInfo:{"proposer":false,"info":{"name":"","ename":"","idtype":"","idnum":"","birthday":"","phone":"","email":""}},
-
+      invoiceData:{"invoice":false,"detail":{"need":0,"type":1,"memo":"","header":"","shippingId":"","shippingInfo":{"name":"","phone":"","province":"","city":"","zone":"","address":""}}},
+      deliveryInfo:{"delivery":false,"info":{"name":"","phone":"","province":"","city":"","zone":"","address":""}}
     }
   },
   methods:{
@@ -232,10 +146,6 @@ export default{
       this.deliveryInfo.info=v
       this.deliveryInfo.delivery=false
     },
-    insuranceConfirm:function(v){
-      this.insuranceList.list = v
-      this.insuranceList.insurance=false
-    },
     setProposer:function(v){
       this.proposerInfo.info = v
       this.proposerInfo.proposer = false
@@ -243,12 +153,16 @@ export default{
     compClose:function(){
       this.invoiceData.invoice=false
     },
-    openDatepicker:function(){
-      this.$refs.datepicker.open();
-    },
     dateConfirm:function(t){
       var m = t.getMonth()+1
       this.estimated_date = t.getFullYear() +'-'+ m +'-'+ t.getDate()
+    },
+    pushHistory:function(){
+      var state = {  
+        title: document.title,
+        url: document.location.href  
+      };  
+      window.history.pushState(state,document.title, document.location.href);
     },
     verifyData:function(){
       if (this.passengerList.list.length == 0) {
@@ -300,8 +214,6 @@ export default{
   components:{
     Invoice,
     VisaPassengerList,
-    insurClientList,
-    Proposer,
     ContactList,
     AddressList
   }
@@ -312,31 +224,31 @@ export default{
 .visa-order{
   .top-part{
     background-image: url('/static/images/visa/top-bg.png');
-    background-size: 25px;height: 136px;position: relative;
-    margin: 10px;border-radius: 5px;color: #fff;
-    padding: 15px;overflow: hidden;
-    .tit{font-size: 1rem;margin-bottom: 5px;}
+    background-size: 1.25rem;height: 6.8rem;position: relative;
+    margin: 0.5rem;border-radius: 0.25rem;color: #fff;
+    padding: 0.75rem;overflow: hidden;
+    .tit{font-size: 1rem;margin-bottom: 0.25rem;}
     .desc{font-size: 0.8rem;}
     .estimated{
-      width: 100%;height: 48px;
+      width: 100%;height: 2.4rem;
       position: absolute;bottom: 0;left: 0;
       background-color: rgba(0, 0, 0, 0.2);
       background-image: url('/static/images/visa/icon-calerder.png');
-      background-repeat: no-repeat;background-size: 16px;
-      background-position: 15px center;
+      background-repeat: no-repeat;background-size: 0.8rem;
+      background-position: 0.75rem center;
       .inner{
-        margin: 0 15px;height: 48px;
+        margin: 0 0.75rem;height: 2.4rem;
         background-image: url('/static/images/visa/icon-right-white.png');
-        background-repeat: no-repeat;background-size: 10px;
+        background-repeat: no-repeat;background-size: 0.5rem;
         background-position: right center;
         span{
-          font-size: 0.8rem;color: #fff;line-height: 48px;padding-left: 28px;
+          font-size: 0.8rem;color: #fff;line-height: 2.4rem;padding-left: 1.4rem;
           i{
             display: inline-block;color: #008BE4;
             font-size: 0.6rem;background-color: #fff;
-            height: 20px;line-height: 20px;
-            font-style: normal;width: 50px;
-            text-align: center;margin-left: 10px;border-radius: 5px;
+            height: 1rem;line-height: 1rem;
+            font-style: normal;width: 2.5rem;
+            text-align: center;margin-left: 0.5rem;border-radius: 0.25rem;
           }
         }
       }
@@ -344,70 +256,70 @@ export default{
   }
   .help{
     display: inline-block;
-    width: 0.8rem;
+    width: 0.7rem;
     background-image: url('/static/images/visa/icon-help.png');
-    background-size: 0.8rem;
+    background-size: 0.7rem;
     background-position: center;
-    margin: 0px 5px;
-    font-size: 0.8rem;
+    margin: 0 0.25rem;
+    font-size: 0.7rem;
     text-indent: -9999px;
     background-repeat: no-repeat;
   }
   .clientname{
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
     border-bottom: 1px solid #EEEEEE;
     background-color: #fff;
-    padding: 60px 10px 15px;
-    margin-top: -58px;
+    padding: 3rem 0.5rem 0.75rem;
+    margin-top: -2.9rem;
     .item-hd{
       overflow: hidden;
-      .tit{float: left;font-size: 0.8rem;}
-      .addbtn{float: right;font-size: 0.8rem;color: #008BE4;display: block;}
+      .tit{float: left;font-size: 0.7rem;}
+      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
     }
     .namelist{
-    padding-top: 10px;
+    padding-top: 0.5rem;
       ul{
         overflow: hidden;
         li{
           display: inline-block;float: right;
-          width: 45%;margin-bottom: 5px;
+          width: 45%;margin-bottom: 0.25rem;
           background-color: #EEEEEE;
-          height: 30px;line-height: 30px;
+          height: 1.5rem;line-height: 1.5rem;
           overflow: hidden;
-          .name{float: left;font-size: 0.6rem;color: #000000;padding-left: 5px;}
-          .type{float: right;font-size: 0.6rem;color: #999999;padding-right: 5px;}
+          .name{float: left;font-size: 0.6rem;color: #000000;padding-left: 0.25rem;}
+          .type{float: right;font-size: 0.6rem;color: #999999;padding-right: 0.25rem;}
           &.left{float: left;}
         }
       }
     }
   }
   .contactinfo{
-    padding-left: 10px;position: relative;
-    background-color: #fff;margin-bottom: 5px;
+    padding-left: 0.5rem;position: relative;
+    background-color: #fff;margin-bottom: 0.25rem;
     .item{position: relative;
-      height: 40px;line-height: 40px;
+      height: 2rem;line-height: 2rem;
       border-top: 1px solid #CCCCCC;
-      .ipt{padding-left: 60px;
+      .ipt{padding-left: 3rem;
         display: block;
         input{
           border: none;color: #000;
           display: block;
           background-color: #fff;
           width: 100%;
-          line-height: 40px;
+          line-height: 2rem;
         }
       }
       .txt{
-        position: absolute;left: 0;top: 0;line-height: 40px;
-        font-size: 0.8rem;color: #000;padding-right: 5px;width: 60px;
+        position: absolute;left: 0;top: 0;line-height: 2rem;
+        font-size: 0.7rem;color: #000;padding-right: 0.25rem;width: 3rem;
       }
       &:first-child{border-top: none;}
-      &.name,&.phone{margin-right: 55px;border-right: 1px solid #CCCCCC;}
+      &.name,&.phone{margin-right: 2.7rem;border-right: 1px solid #CCCCCC;}
     }
     .icon{
-      height: 80px;width: 55px;
+      height: 4rem;width: 2.7rem;
       background-image: url('/static/images/visa/icon-contact.png');
-      background-size: 22px;
+      background-size: 1rem;
       background-position: center;
       background-repeat: no-repeat;
       position: absolute;
@@ -416,206 +328,65 @@ export default{
   }
   .express {
     background: #fff;
-    padding: 10px;margin-bottom: 5px;
+    padding: 0.5rem;margin-bottom: 0.25rem;
     .item-hd{
       overflow: hidden;
-      .tit{float: left;font-size: 0.8rem;}
-      .addbtn{float: right;font-size: 0.8rem;color: #008BE4;display: block;}
-      .delitype{float: right;font-size: 0.8rem;color: #999999;}
+      .tit{float: left;font-size: 0.7rem;}
+      .addbtn{float: right;font-size: 0.7rem;color: #008BE4;display: block;}
+      .delitype{float: right;font-size: 0.7rem;color: #999999;}
     }
     .addressinfo{
-      padding: 7px 0;
+      padding: 0.3rem 0;
       .item{overflow: hidden;
-        line-height: 25px;position: relative;padding-left: 75px;
-        span{font-size: 0.6rem;line-height: 25px;display: inline-block;float: left}
+        line-height: 1.2rem;position: relative;padding-left: 3.7rem;
+        span{font-size: 0.6rem;line-height: 1.2rem;display: inline-block;float: left}
         .txt{
-          position: absolute;width: 75px;
+          position: absolute;width: 3.7rem;
           left: 0;top: 0;
         }
-        .name{padding-right: 15px;}
+        .name{padding-right: 0.7rem;}
       }
     }
   }
   .invoice{
-    background: #fff;margin-bottom: 5px;padding: 10px;
+    background: #fff;margin-bottom: 0.25rem;padding: 0.5rem;
     position: relative;
     span{
-      display: block;font-size: 0.8rem;
+      display: block;font-size: 0.7rem;
       background-image: url('/static/images/visa/icon-right-gray.png');
       background-repeat: no-repeat;
       background-position: right center;
       background-size: 0.5rem;
     }
     i{
-      display: inline-block;font-size: 0.8rem;
-      position: absolute;    right: 30px;
-    top: 10px;
-    font-style: normal;
-    }
-  }
-  .recommend{
-    background: #fff;padding-left: 10px;padding-bottom: 30px;
-    background-image: url('/static/images/visa/borderbg.png');
-    background-repeat:repeat-x ;background-position:bottom;
-    background-size: 10px;
-    .title{
-      line-height: 40px;font-size: 0.8rem;
-      border-bottom: 1px solid #CCCCCC;
-    }
-    .insurance{
-      padding-right: 10px;
-      .tit{
-        font-size: 0.8rem;color: #008BE4;line-height: 35px;
-        padding-left: 15px;
-        background-image: url('/static/images/visa/icon-insurance.png');
-        background-repeat: no-repeat;background-position: left center;
-        background-size: 10px;
-      }
-      .pro_info{
-        position: relative;
-        padding: 0 0 10px;
-        overflow: hidden;
-        .checkbox{
-          height: 10px;width: 10px;border: 2px solid #008BE4;
-          border-radius: 2px;position: absolute;
-          top: 5px;left: 0;
-          &.check{
-            background-color: #008BE4;
-            background-image: url('/static/images/visa/icon-check.png');
-            background-repeat: no-repeat;background-position: center;
-            background-size: 10px;
-          }
-        }
-        .name{
-          font-size: 0.7rem;line-height: 25px;
-          padding: 0 90px 0 17px;
-        }
-        .price{
-          font-size: 0.8rem;color: #666666;position: absolute;
-          top: 1px;right: 0;width: 90px;text-align: right;
-          span{color: #F95800;font-size: 0.8rem;}
-        }
-        .ins_term{
-          margin: 10px 0;height: 30px;
-          position: relative;
-          span{
-            display: inline-block;
-            width: 50%;color: #666666;
-            float: left;
-            font-size: 0.8rem;
-            line-height: 30px;
-            text-align: center;
-          }
-          i{
-            font-style: normal;color: #008BE4;font-size: 0.6rem;top: 22px;
-            position: absolute;left: 50%;width: 50%;text-align: center;
-          }
-          &:before{
-            content: ' ';left: 50%;top: 0;
-            position: absolute;height: 100%;width: 1px;
-            background-color: #EEEEEE;
-          }
-        }
-      }
-      .item-hd{
-        overflow: hidden;border-bottom: 1px solid #EEEEEE;
-        .i_tit{float: left;font-size: 0.8rem;line-height: 30px;}
-        .addbtn{
-          float: right;
-          height: 30px;width: 30px;
-          background-image: url('/static/images/visa/icon-add.png');
-          background-size: 17px;
-          background-repeat: no-repeat;
-          background-position:right center;display: block;
-        }
-        .editbtn{
-          float: right;
-          height: 30px;width: 30px;
-          background-image: url('/static/images/visa/icon-edit.png');
-          background-size: 17px;
-          background-repeat: no-repeat;
-          background-position:right center;
-        }
-        .editbtn_p{
-          float: right;
-          height: 30px;width: 30px;
-          background-image: url('/static/images/visa/icon-edit-p.png');
-          background-size: 17px;
-          background-repeat: no-repeat;
-          background-position:right center;
-        }
-        .txt{color: #999999;font-size: 0.8rem;line-height: 30px;
-        padding-left: 10px; float: left;}
-        .dest{font-size: 0.8rem;float: left;line-height: 30px;padding-left: 10px;}
-      }
-      .ins_client{
-        padding-bottom: 10px;
-        .list{
-          li{
-            border-bottom: 1px solid #EEEEEE;
-            margin-left: 5px;
-            padding: 10px 0px;
-            position: relative;
-            .info{
-              padding-right: 80px;
-              .name{
-                font-size: 0.8rem;color: #666666;line-height: 20px;
-                span{
-                  font-size: 0.8rem;color: #666666;padding-left: 15px;
-                }
-              }
-              .idnum{font-size: 0.6rem;color: #666666;line-height: 20px;}
-            }
-            .price{
-              font-size: 0.8rem;
-              line-height: 40px;
-              width: 80px;color: #F95800;
-              position: absolute;
-              right: 0;top: 10px;text-align: right;
-            }
-            &:last-child{
-              border-bottom: none;
-            }
-          }
-        }
-      }
-      .ins_creater{
-        padding-bottom: 10px;
-        .info{
-          margin-left: 5px;
-          padding: 10px 0px;
-          background-image: url('/static/images/visa/icon-right-gray.png');
-          background-size: 9px;
-          background-repeat: no-repeat;
-          background-position:right center;
-          .name{
-            font-size: 0.8rem;color: #666666;line-height: 20px;
-            span{
-              font-size: 0.8rem;color: #666666;padding-left: 15px;
-            }
-          }
-          .email{font-size: 0.8rem;color: #666666;line-height: 20px;}
-        }
-      }
-      .ins_benefit,.ins_destination{padding-bottom: 10px;}
+      display: inline-block;font-size: 0.7rem;
+      position: absolute;right: 1.5rem;
+      top: 0.5rem;
+      font-style: normal;
     }
   }
   .creatorder{
-    padding:10px;height: 30px;
+    padding: 0.5rem 0;
+    height: 1.5rem;
     background-color: #fff;
     overflow: hidden;
-    margin-top: 20px;
+    margin-top: 1rem;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
     .price{
+      margin-left: 0.5rem;
       float: left;
-      line-height: 30px;
+      line-height: 1.5rem;
       font-size: 0.8rem;
       span{
         color: #F55301;font-size: 0.8rem;
       }
     }
     .creatBtn{
-      background-color: #008BE4;padding: 0 20px;
-      line-height: 30px;text-align: center;border-radius: 4px;
+      margin-right: 0.5rem;
+      background-color: #008BE4;padding: 0 1rem;
+      line-height: 1.5rem;text-align: center;border-radius: 0.2rem;
       font-size: 0.8rem;color: #fff;display: inline-block;float: right;
     }
   }

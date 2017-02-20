@@ -1,28 +1,28 @@
 <template>
 <div class="contact-list" id="apply-list">
-  <div class="addbtn" @click="contacter.display=true">添加联系人</div>
+  <div class="addbtn" @click="address.display=true">添加地址</div>
   <div class="contactList">
-    <ul v-if="contactList != ''">
-      <li v-for="(item,index) in contactList">
+    <ul v-if="addressList != ''">
+      <li v-for="(item,index) in addressList">
         <div class="info" @click="confirm(item)">
-          <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.tel}}</span></div>
-          <div class="txt"><span>{{item.email}}</span></div>
+          <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.phone}}</span></div>
+          <div class="txt"><span>{{item.province+item.city+item.zone+item.address}}</span></div>
         </div>
-        <div class="editbtn" @click="contacter.display=true,contacter.data=item"></div>
+        <div class="editbtn" @click="address.display=true,address.data=item"></div>
       </li>
     </ul>
-    <div v-else class="empty">暂无常用联系人</div>
+    <div v-else class="empty">暂无常用地址</div>
   </div>
-  <contact-add 
-  v-if="contacter.display"
-  :info="contacter.data"
+  <address-add 
+  v-if="address.display"
+  :info="address.data"
   @submit="closeComponents">
-  </contact-add>
+  </address-add>
 </div>
 </template>
 
 <script>
-import ContactAdd from './ContactAdd'
+import AddressAdd from './AddressAdd'
 import { Toast } from 'mint-ui'
 export default {
   created: function () {
@@ -35,24 +35,24 @@ export default {
     window.addEventListener("popstate", function(e) {  
       _this.$emit('close');
     }, false);
-    this.getPassenger()
+    this.getAddress()
   },
   data:function(){
     return{
-      contactList:'',
-      contacter:{"display":false,"data":""},
+      addressList:'',
+      address:{"display":false,"data":""},
     }
   },
   methods:{
-    getPassenger:function(){
-      var url = '/api/member/contact'
+    getAddress:function(){
+      var url = '/api/member/address'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           if (rst.data) {
-            this.contactList = rst.data
+            this.addressList = rst.data
           }else{
-            this.contactList = ''
+            this.addressList = ''
           }
         }else {
           console.log(rst.msg)
@@ -63,12 +63,12 @@ export default {
       this.$emit('confirm',item)
     },
     closeComponents:function(){
-      this.getPassenger()
-      this.contacter = {"display":false,"data":""}
+      this.getAddress()
+      this.address = {"display":false,"data":""}
     }
   },
   components:{
-    ContactAdd
+    AddressAdd
   }
 }
 </script>

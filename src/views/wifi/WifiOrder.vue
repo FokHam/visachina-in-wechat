@@ -27,7 +27,7 @@
       <div class="tit">取件点</div>
       <div class="txt">{{getAddress.name}}</div>
     </div>
-    <div class="item" @click="counterDis=true,counterType=2">
+    <div class="item" @click="counterDis=true,counterType=0">
       <div class="tit">还件点</div>
       <div class="txt">{{returnAddress.name}}</div>
     </div>
@@ -49,13 +49,13 @@
   </div>
   <div class="creatorder">
     <div class="price">订单金额：<span>￥{{totalPrice}}</span></div>
-    <div class="creatBtn" @click="verifyData">立即支付</div>
+    <div class="creatBtn" @click="verifyData">提交订单</div>
   </div>
   <counter
   v-if="counterDis"
   @comfirm="setCounter"
   @close="counterDis = false"
-  :id="$route.params.id">    
+  :type="counterType">    
   </counter>
   <calendar
     v-if="pickingDate"
@@ -64,8 +64,8 @@
     type2="还件"
     :multipleDate="multipleDate"
     :pickType ="pickingType"
-    :minDay="pageData.erp_min_days"
-    :maxDay="90"
+    :minDay="minday"
+    :maxDay="maxday"
     :day1="startDate"
     :day2="endDate">
   </calendar>
@@ -82,6 +82,7 @@ import Calendar from "../../components/Calendar.vue";
 import ContactList from "../../components/ContactList.vue";
 import Counter from "./wifiorder/Counter.vue";
 import { Indicator } from 'mint-ui'
+import { Toast } from 'mint-ui'
 export default {
   name:"wifi-order",
   created: function () {
@@ -107,6 +108,8 @@ export default {
       totalPrice:0,
       //calendar
       singleTime:0,
+      minday:1,
+      maxday:90,
       startDate:'',
       endDate:'',
       multipleDate:true,
@@ -124,6 +127,7 @@ export default {
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.pageData = rst.data
+          this.minday = parseInt(rst.data.erp_min_days)
           this.dateReset()
         }else {
           console.log(rst.msg)
@@ -131,7 +135,8 @@ export default {
       });
     },
     dateReset:function(){
-      var sTime = new Date();
+      var today = new Date();
+      var sTime = new Date(today.getTime()+24*60*60*1000);
       var eTime = new Date(sTime.getTime()+24*60*60*1000*(this.pageData.erp_min_days-1));
       this.startDate = new Date(sTime.getFullYear(),sTime.getMonth(),sTime.getDate());
       this.endDate = new Date(eTime.getFullYear(),eTime.getMonth(),eTime.getDate());
@@ -160,7 +165,7 @@ export default {
         this.getAddress.name = n
         this.getAddress.id = id
       }
-      if (this.counterType == 2) {
+      if (this.counterType == 0) {
         this.returnAddress.name = n
         this.returnAddress.id = id
       }
@@ -173,9 +178,9 @@ export default {
     DateDiff:function(sDate1,sDate2){//sDate1和sDate2是2006-12-18格式  
       var aDate,oDate1,oDate2,iDays;
       aDate = sDate1.split("-");
-      oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]);
+      oDate1 = new Date(aDate[1] + '/' + aDate[2] + '/' + aDate[0]);
       aDate = sDate2.split("-");
-      oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]); 
+      oDate2 = new Date(aDate[1] + '/' + aDate[2] + '/' + aDate[0]); 
       iDays = parseInt(Math.abs(oDate1-oDate2) / 1000 / 60 / 60 / 24);
       return  iDays  
     },
@@ -196,18 +201,26 @@ export default {
     creatOrder:function(){
       Indicator.open('提交订单');
       var send = {
-        "productId":this.$router.params.id
+        productId:this.$route.params.id,
+        count:this.quantity,
+        useDate:this.getWifiTime,
+        useEndDate:this.returnWifiTime,
+        takeAddress:this.getAddress.id,
+        returnAddress:this.returnAddress.id,
+        contactName:this.contactInfo.info.name,
+        contactMobile:this.contactInfo.info.tel,
+        contactEmail:this.contactInfo.info.email
       };
       let header = {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
       };
-      var url = '/api/visa/create_order';
+      var url = '/api/wifi/create_order';
       this.$http.post(url,send).then(function(result){
         Indicator.close();
         console.log(result.body)
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          this.$router.push('/visaOrderDetail/'+rst.data.orderno)
+          this.$router.push('/wifiOrderDetail/'+rst.data.orderno)
         }else{
           Toast(rst.msg)
         }

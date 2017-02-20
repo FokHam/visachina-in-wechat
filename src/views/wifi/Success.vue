@@ -7,11 +7,12 @@
     <div class="top"></div>
     <div class="line"></div>
     <div class="detail">
-      <div class="proname" @touchstart="tapsuccess">日本WIFI</div>
+      <div class="proname">日本WIFI</div>
       <div class="desc">
         <div class="txt">江思敏购买了日本WIFI</div>
         <div class="date">使用时间：<span>2017/1/30</span>至<span>2017/2/9</span></div>
         <div class="location">取机地点：<span>深圳宝安机场T3国际出发</span></div>
+        <div class="location">还机地点：<span>深圳宝安机场T3国际到达</span></div>
         <div class="time">2017/1/30 21:15</div>
       </div>
     </div>
@@ -31,23 +32,7 @@ export default{
     }
   },
   methods:{
-    tapsuccess:function(){
-      WeixinJSBridge.invoke(
-         'getBrandWCPayRequest', {
-             "appId" : gsfdgfdgsfd,
-             "timeStamp" : dsfgsdfgdsfg,
-             "nonceStr" : nondfsgdfsceStr,
-             "package" : sdfgsdfgsdf,
-             "signType" : "MD5",
-             "paySign" : sign
-         },
-         function(res){
-          console.log(res)
-         });
-                 
-               
-         
-    }
+    
 
   }
 }
@@ -94,6 +79,38 @@ export default{
         font-size: 0.8rem;
         padding-left: 1rem;
         border-bottom: 1px dashed #eeeeee;
+      }
+      .desc{
+        padding:1rem 1rem 0;
+        .txt{
+          font-size: 0.7rem;
+          color: #666666;
+          line-height: 1.3rem;
+        }
+        .date{
+          line-height: 1.3rem;
+          font-size: 0.7rem;
+          color: #999999;
+          span{
+            color: #018be3;
+            font-size: 0.7rem;
+          }
+        }
+        .location{
+          line-height: 1.3rem;
+          font-size: 0.7rem;
+          color: #999999;
+          span{
+            color: #666666;
+            font-size: 0.7rem;
+          }
+        }
+        .time{
+          font-size: 0.7rem;
+          color:#999999;
+          text-align: right;
+          padding: 0.8rem 0 1.2rem;
+        }
       }
       
     }

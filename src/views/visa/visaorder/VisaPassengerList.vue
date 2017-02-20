@@ -7,8 +7,8 @@
       <li v-for="(item,index) in passengerList">
         <div class="checkbtn" :class="{check:item.check}" @click="checkOne(index)"></div>
         <div class="info">
-          <div class="name">{{item.name}}</div>
-          <div class="txt"><span>{{item.type==''?'请选择客户类型':typeList[item.type-1]}}</span></div>
+          <div class="name">{{item.surname+item.name}}</div>
+          <div class="txt"><span>{{item.visa_type==null?'请选择客户类型':typeList[item.visa_type-1]}}</span></div>
         </div>
         <div class="editbtn" @click="editItem.content=item,editItem.editdis=true"></div>
       </li>
@@ -30,7 +30,11 @@ import { Toast } from 'mint-ui'
 import VisaPassengerEdit from './VisaPassengerEdit'
 export default {
   created: function () {
-     this.getPassenger()
+    const _this = this;    
+    window.addEventListener("popstate", function(e) {  
+      _this.$emit('close');
+    }, false);
+    this.getPassenger()
   },
   components:{
     VisaPassengerEdit
@@ -51,9 +55,7 @@ export default {
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           for (var i=0;i<rst.data.length;i++) {
-            rst.data[i].type = ''
             rst.data[i].check = false
-            rst.data[i].icheck = false
           }
           this.passengerList = rst.data
           //this.resolveCheck()
@@ -63,7 +65,7 @@ export default {
       });
     },
     checkOne:function(n){
-      if (this.passengerList[n].type=='') {
+      if (this.passengerList[n].visa_type==null) {
         Toast('请编辑客户类型')
       }else{
         this.passengerList[n].check = !this.passengerList[n].check
@@ -113,6 +115,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 1001;
+  overflow-y: scroll;
   .tips{
     background: -webkit-linear-gradient(left, #F057AD, #BF69EF);
     color: #FFE6EB;text-align: center;

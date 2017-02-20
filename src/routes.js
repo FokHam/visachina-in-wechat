@@ -23,6 +23,7 @@ import WifiList from './views/wifi/WifiList'
 import WifiDetail from './views/wifi/WifiDetail'
 import WifiCounter from './views/wifi/WifiCounter'
 import WifiOrder from './views/wifi/WifiOrder'
+import WifiOrderDetail from './views/wifi/OrderDetail'
 import WifiSuccess from './views/wifi/Success'
 import HotelList from './views/hotel/HotelList'
 import HotelDetail from './views/hotel/HotelDetail'
@@ -106,7 +107,10 @@ var routes = [{
   path: "/wifiOrder/:id",
   component: WifiOrder
 },{
-  path: "/wifiSuccess",
+  path: "/wifiOrderDetail/:id",
+  component: WifiOrderDetail
+},{
+  path: "/wifiSuccess/:id",
   component: WifiSuccess
 },{
   path: "/hotel",

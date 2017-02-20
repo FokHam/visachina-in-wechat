@@ -3,14 +3,15 @@
   <div class="field">
     <div class="item">
       <span>中文名字</span>
-      <div class="ipt">
-        <input type="text" v-model="passengerInfo.name" placeholder="与证件保持一致">
+      <div class="ipt name">
+        <input type="text" v-model="passengerInfo.surname" placeholder="姓">
+        <input type="text" v-model="passengerInfo.name" placeholder="名">
       </div>      
     </div>
     <div class="item select">
       <span>客户类型</span>
       <div class="ipt" @click="typedis=true">
-        <input type="text" v-model="typeList[passengerInfo.type-1]" readonly placeholder="用于接收签证资料">
+        <input type="text" v-model="typeList[passengerInfo.visa_type-1]" readonly placeholder="用于接收签证资料">
       </div>
     </div>
   </div>
@@ -40,12 +41,12 @@ export default {
     return{
       typedis:false,      
       typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
-      passengerInfo:{"name":"","type":"","spell":"","id_type":1,"id_number":"","birthday":"","sexual":1,"phone":"","email":"","check":false,"icheck":false},
+      passengerInfo:{"surname":"","name":"","visa_type":"","check":false},
     }
   },
   methods:{
     typeSet:function(v){     
-      this.passengerInfo.type = this.typeList.indexOf(v) + 1
+      this.passengerInfo.visa_type = this.typeList.indexOf(v) + 1
       this.typedis = false      
     },
     closeComp:function(){
@@ -55,7 +56,8 @@ export default {
       this.$emit('close')
     },
     saveClient:function(){
-      if (this.passengerInfo.name != '' && this.passengerInfo.type != '') {
+      if (this.passengerInfo.name != '' && this.passengerInfo.visa_type != '') {
+        console.log(JSON.stringify(this.passengerInfo))
         var url = '/api/member/passenger_create',send=this.passengerInfo;      
         this.$http.get(url,{params:send}).then(function(result){
           var rst = JSON.parse(result.body)
@@ -107,6 +109,13 @@ export default {
         input{
           height: 60px;border: none;background: #fff;width: 100%;
           font-size: 0.7rem;color: #666666;text-align: right;
+        }
+        &.name{
+          input{
+            width: 50%;
+            text-align: right;
+            float: left;
+          }
         }
       }
       span{
