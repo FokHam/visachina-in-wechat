@@ -18,7 +18,7 @@
       <li class="order-item"
         :class="order.type"
         v-for="order in orderList"
-        v-if="status === 1 || order.status === status">
+        v-if="status === 1 || order.status === orderStatus || order.pay_status === payStatus">
         <!-- hotel -->
         <div class="detail-box" v-if="order.type === 'hotel'">
           <p class="name">{{ order.productName }}</p>
@@ -28,7 +28,7 @@
         <!-- visa -->
         <div class="detail-box" v-if="order.type === 'visa'">
           <p class="name">{{ order.productName }}</p>
-          <p class="date"><span>预计</span>{{ order.date }}<span>出发</span></p>
+          <p class="date">{{ order.cdate }}<span> 共{{ order.quantity }}人</span></p>
         </div>
         <!-- wifi -->
         <div class="detail-box" v-if="order.type === 'wifi'">
@@ -72,7 +72,9 @@
           "2": "已付款"
         },
         orderList: [],
-        status: "0"
+        payStatus: 99,
+        orderStatus: 99,
+        status: 1
       }
     },
     created () {
@@ -92,6 +94,22 @@
       },
       switchStatus (n) {
         this.status = n;
+        switch (n) {
+          case 1:
+            this.orderStatus = 99;
+            this.payStatus = 99;
+            break;
+          case 2:
+            this.orderStatus = 99;
+            this.payStatus = "0";
+            break;
+          case 3:
+            this.orderStatus = 99;
+            this.payStatus = "-2";
+          case 4:
+            this.orderStatus = "-1";
+            this.payStatus = 99;
+        }
       },
       bookAgain (obj) {
         let url = "/" + obj.type + "Detail/" + obj.product;
@@ -100,7 +118,8 @@
     },
     watch: {
       '$route' (to) {
-        this.status = Number(to.params.status) || 1;
+        let num = Number(to.params.status);
+        this.switchStatus(num);
       }
     }
   }
