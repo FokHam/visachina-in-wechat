@@ -17,8 +17,8 @@
     </div>
     <div class="item">
       <span>身份证号</span>
-      <div class="ipt" @click="typedis=true">
-        <input type="text" v-model="typeList[clientinfo.id_type-1]" readonly placeholder="选择证件类型">
+      <div class="ipt" @click="idTypeList.display=true">
+        <input type="text" v-model="idTypeList.list[clientinfo.id_type-1]" readonly placeholder="选择证件类型">
       </div> 
       <div class="idipt">
         <input type="text" v-model="clientinfo.id_number" placeholder="输入证件号码">
@@ -35,6 +35,12 @@
       <div class="ipt">
         <div class="woman" :class="{on:clientinfo.sexual==2}" @click="clientinfo.sexual=2"><i></i>女</div>
         <div class="man" :class="{on:clientinfo.sexual==1}" @click="clientinfo.sexual=1"><i></i>男</div>        
+      </div> 
+    </div>
+    <div class="item select">
+      <span>客户类型</span>
+      <div class="ipt" @click="clientTypeList.display=true">
+        <input type="text" v-model="clientTypeList.list[clientinfo.visa_type-1]" readonly>
       </div> 
     </div>
     <div class="item">
@@ -62,9 +68,15 @@
     @confirm="dateConfirm">
   </mt-datetime-picker>  
   <picker 
-  v-if="typedis"
-  :listdata="typeList"
+  v-if="idTypeList.display"
+  :listdata="idTypeList.list"
   @confirm="typeSet"
+  @close="closeComp">
+  </picker>
+  <picker 
+  v-if="clientTypeList.display"
+  :listdata="clientTypeList.list"
+  @confirm="cttypeSet"
   @close="closeComp">
   </picker>
 </div>
@@ -85,10 +97,11 @@ export default {
     return{
       startDate:new Date('1930','0','1'),
       initialDate:new Date(),
-      clientinfo:{"surname":"","name":"","spell_surname":"","spell_name":"","id_type":1,"id_number":"","birthday":"","sexual":1,"phone":"","email":""},
+      clientinfo:{"surname":"","name":"","spell_surname":"","spell_name":"","id_type":1,"id_number":"","birthday":"","sexual":1,"phone":"","email":"","visa_type":1},
+      idTypeList:{"display":false,"list":["身份证","护照","出生证","驾照","港澳通行证","军官证","台胞证","警官证"]},
+      clientTypeList:{"display":false,"list":["在职","自由职业","在校学生","退休人员","学龄前儿童","家庭主妇"]},
 
-      typedis:false,  
-      typeList:['身份证','护照','出生证','驾照','港澳通行证','军官证','台胞证','警官证'],
+      
     }
   },
   methods:{   
@@ -100,12 +113,16 @@ export default {
       this.clientinfo.birthday = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
     closeComp:function(){
-      this.typedis = false
+      this.idTypeList.display = false
+      this.clientTypeList.display = false
     },
     typeSet:function(v){
-      if (v=='') {v='身份证'}
-      this.clientinfo.id_type = this.typeList.indexOf(v)+1
-      this.typedis = false      
+      this.clientinfo.id_type = this.idTypeList.list.indexOf(v) + 1
+      this.idTypeList.display = false      
+    },
+    cttypeSet:function(v){
+      this.clientinfo.visa_type = this.clientTypeList.list.indexOf(v) + 1
+      this.clientTypeList.display = false      
     },
     verifyData:function(){      
       if (this.clientinfo.surname != '' && this.clientinfo.name != '' && this.clientinfo.spell_surname != '' && this.clientinfo.spell_name != '' && this.clientinfo.id_number != '' && this.clientinfo.birthday != '') {

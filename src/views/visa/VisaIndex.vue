@@ -57,7 +57,7 @@
               </div>
               <div class="day-price">
                 <span class="day">受理天数：{{item.acceptancedays}}天</span>
-                <span class="price"><i>￥</i>{{item.lower_price}}</span>
+                <span class="price"><i>￥</i>{{item.price}}</span>
               </div>
             </div>
           </router-link></li>

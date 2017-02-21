@@ -4,6 +4,7 @@ import VisaIndex from './views/visa/VisaIndex'
 import VisaDetail from './views/visa/VisaDetail'
 import VisaInformation from './views/visa/VisaInformation'
 import VisaOrder from './views/visa/VisaOrder'
+import VisaInvoice from './views/visa/VisaInvoice'
 import VisaOrderDetail from './views/visa/VisaOrderDetail'
 import VisaProgress from './views/visa/VisaProgress'
 import ProgressDetail from './views/visa/ProgressDetail'
@@ -55,6 +56,9 @@ var routes = [{
 },{
   path: "/visaOrder/:id",
   component: VisaOrder
+},{
+  path: "/visaInvoice",
+  component: VisaInvoice
 },{
   path: "/visaOrderDetail/:id",
   component: VisaOrderDetail

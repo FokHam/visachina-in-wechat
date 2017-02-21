@@ -16,16 +16,20 @@
       </router-link>
     </div>
     <div class="order_items">
-      <div class="item" v-for="item in orderData.guest">
-        <div class="top">
+      <div class="item" v-for="item in orderData.guests">
+        <div class="top" v-if="item.guestStatus > -1">
           <router-link to="/progressDetail">
-            <div class="time">2016/12/24 15:00</div>        
-            <div class="status">待确认</div>
+            <div class="time">{{item.cdate}}</div>        
+            <div class="status">{{item.guestStatusName}}</div>
           </router-link>
+        </div>
+        <div class="top" v-else>
+            <div class="time">{{orderData.cdate}}</div>        
+            <div class="status">未支付</div>
         </div>
         <div class="center">
           <div class="name">{{item.value}}</div>
-          <div class="email">（在职）发送所需资料</div>
+          <div class="email">（{{typeList[item.vgroup-1]}}）发送所需资料</div>
         </div>
         <div class="bottom">
           <div class="refund">退款</div>
@@ -81,6 +85,7 @@ export default{
   },
   data:function(){
     return{
+      typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
       orderData:''
     }
   },

@@ -9,16 +9,14 @@
       <div class="top"></div>
       <div class="line"></div>
       <div class="detail">
-        <div class="proname">法国旅游签证</div>
+        <div class="proname">{{pagedata.product.name}}</div>
         <div class="list">
           <ul>
-            <li><span class="name">周方晗</span><span class="type">在职</span></li>
-            <li><span class="name">张三</span><span class="type">退休</span></li>
+            <li v-for="item in pagedata.guest"><span class="name">{{item.value}}</span><span class="type">{{typeList[item.vgroup-1]}}</span></li>
           </ul>
         </div>
         <div class="desc">
-          <span class="txt">申请了法国旅游签证</span>
-          <span class="time">2017-02-07 13:42</span>
+          <span class="time">{{pagedata.pay_time}}</span>
         </div>
       </div>
     </div>
@@ -31,11 +29,12 @@ import { Indicator } from 'mint-ui'
 export default{
   name: 'order-success',
   created: function () {
-    document.title = '订单详情'
+    document.title = '支付结果'
     this.getPayResult()
   },
   data:function(){
     return{
+      typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
       payStatus:false,
       pagedata:''
     }
@@ -45,7 +44,8 @@ export default{
       Indicator.open('获取支付结果');
       var url = '/api/pay/result',send = {type:"visa",orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
-        this.payStatus = result.body.data
+        var rst = JSON.parse(result.body)
+        this.payStatus = rst.data
         var url_ = "/api/visa/order_detail",send_={orderno:this.$route.params.id}
         this.$http.get(url_,{params:send_}).then(function(result){
           Indicator.close();

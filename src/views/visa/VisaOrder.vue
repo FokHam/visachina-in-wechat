@@ -1,9 +1,8 @@
 <template>
 <div class="visa-order" id="visa-order">
-  <div class="top-part">
-    <div class="tit">韩国旅游签证</div>
-    <div class="desc">加急办理2个工作日出签，受理全国护照除新
-疆、西藏外、广州送签</div>
+  <div class="top-part" v-if="visaInfomation != ''">
+    <div class="tit">{{visaInfomation.name}}</div>
+    <div class="desc">停留天数{{visaInfomation.info.staydays}}，有效期限{{visaInfomation.info.expirydate}}，{{visaInfomation.info.interview==0?'无需面试':'需要面试'}}</div>
     <!--<div class="estimated">
       <div class="inner" @click="openDatepicker">
         <span v-if="estimated_date != ''">{{estimated_date}}<i>出行</i></span>
@@ -37,8 +36,8 @@
     </div>
     <div class="icon" @click="contactInfo.contact=true"></div>
   </div>
-  <div class="invoice" @click="invoiceData.invoice=true">
-    <span>发票</span><i>{{invoiceData.detail.header}}</i>
+  <div class="invoice" @click="">
+    <span>发票</span><i>{{invoiceData.header}}</i>
   </div>
   <div class="express">
     <div class="item-hd">
@@ -58,6 +57,7 @@
       </div>
     </div>
   </div>
+  <div class="placehold"></div>
   
   <div class="creatorder">
     <div class="price">订单金额：<span>￥{{totalPrice}}</span></div>
@@ -106,14 +106,12 @@ export default{
   data:function(){
     return{
       typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
-      visaInfomation:{},
-      totalPrice:0,
-      initialDate:new Date(),
-      estimated_date:"",      
+      visaInfomation:'',
+      totalPrice:0,    
       passengerList:{"passenger":false,"list":[]},
-      contactInfo:{"contact":false,"info":{"name":"","tel":"","email":""}},
-      invoiceData:{"invoice":false,"detail":{"need":0,"type":1,"memo":"","header":"","shippingId":"","shippingInfo":{"name":"","phone":"","province":"","city":"","zone":"","address":""}}},
-      deliveryInfo:{"delivery":false,"info":{"name":"","phone":"","province":"","city":"","zone":"","address":""}}
+      contactInfo:{"contact":false,"info":{"name":"","tel":"","email":""}},      
+      deliveryInfo:{"delivery":false,"info":{"name":"","phone":"","province":"","city":"","zone":"","address":""}},
+      invoiceData:'',
     }
   },
   methods:{
@@ -136,14 +134,17 @@ export default{
     },
     passengerConfirm:function(v){
       this.passengerList.list=v
+      history.go(-1)
       this.passengerList.passenger=false
     },
     contactConfirm:function(v){
       this.contactInfo.info=v
+      history.go(-1)
       this.contactInfo.contact=false
     },
     deliveryConfirm:function(v){
       this.deliveryInfo.info=v
+      history.go(-1)
       this.deliveryInfo.delivery=false
     },
     setProposer:function(v){
@@ -185,7 +186,7 @@ export default{
         "customers":this.passengerList.list,
         "contact":this.contactInfo.info,
         "shipping":{"method":1,"shippingId":this.deliveryInfo.info.id},
-        "invoice":this.invoiceData.detail
+        "invoice":this.invoiceData
       };
       let header = {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -328,7 +329,7 @@ export default{
   }
   .express {
     background: #fff;
-    padding: 0.5rem;margin-bottom: 0.25rem;
+    padding: 0.5rem;;
     .item-hd{
       overflow: hidden;
       .tit{float: left;font-size: 0.7rem;}
@@ -347,6 +348,9 @@ export default{
         .name{padding-right: 0.7rem;}
       }
     }
+  }
+  .placehold{
+    height: 3rem;
   }
   .invoice{
     background: #fff;margin-bottom: 0.25rem;padding: 0.5rem;
@@ -371,7 +375,7 @@ export default{
     background-color: #fff;
     overflow: hidden;
     margin-top: 1rem;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
     .price{
