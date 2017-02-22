@@ -18,6 +18,7 @@ import InsuranceSelectInsuredPerson from './views/insurance/InsuranceSelectInsur
 import InsuranceEditInsuredPerson from './views/insurance/InsuranceEditInsuredPerson'
 import InsuranceSelectPolicyHolder from './views/insurance/InsuranceSelectPolicyHolder'
 import InsuranceEditPolicyHolder from './views/insurance/InsuranceEditPolicyHolder'
+import InsuranceOrderDetail from './views/insurance/InsuranceOrderDetail'
 import WifiIndex from './views/wifi/WifiIndex'
 import WifiHelp from './views/wifi/WifiHelp'
 import WifiList from './views/wifi/WifiList'
@@ -32,6 +33,7 @@ import HotelMap from './views/hotel/HotelMap'
 import HotelIntro from './views/hotel/HotelIntro'
 import HotelForm from './views/hotel/HotelForm'
 import HotelRoomSelect from './views/hotel/HotelRoomSelect'
+import HotelOrderDetail from './views/hotel/HotelOrderDetail'
 import UserCenter from './views/usercenter/UserCenter'
 import Collection from './views/usercenter/Collection'
 import CommonInformation from './views/usercenter/CommonInformation'
@@ -94,6 +96,9 @@ var routes = [{
   path: "/InsuranceSelectPolicyHolder/:id",
   component: InsuranceSelectPolicyHolder
 },{
+  path: "/InsuranceOrderDetail/:id",
+  component: InsuranceOrderDetail
+},{
   path: "/wifi",
   component: WifiIndex
 },{
@@ -135,6 +140,9 @@ var routes = [{
 },{
   path: "/hotelMap/:id",
   component: HotelMap
+},{
+  path: "/hotelOrderDetail/:id",
+  component: HotelOrderDetail
 },{
   path: "/userCenter",
   component: UserCenter

@@ -79,9 +79,14 @@
             </span>
           </div>
         </div>
+        <div class="no-item"
+          v-if="noData">
+          <img src="/static/images/common/no-dtata.png" alt="没有搜索结果">
+          <p>没有符合条件的房间</p>
+        </div>
       </div>
       <div class="hotel-policy"
-        v-if="hDetail.policy.length">
+        v-if="hotelDetail.policy">
         <p class="title">酒店政策</p>
         <div v-html="hotelDetail.policy"
           class="policy-content"></div>
@@ -123,56 +128,15 @@
       return {
         maximunDay: 28,
         minimunDay: 2,
-        hDetail: {
-          id: 11,
-          cname: "清迈皇家沛纳海酒店",
-          ename: "Royal Panerai Hotel Chiangmai",
-          star: 5,
-          collect: false,
-          address: "3/9 Assadathorn Road",
-          city: "清迈，泰国",
-          policy: [
-            {
-              title: "入住和离店",
-              content: "入住时间：14:00之后 离店时间：12:00"
-            },
-            {
-              title: "儿童及附加床",
-              content: "不同类型的客房允许儿童入住和加床政策可能不同，请注意查 看客房详细信息。 所提出的任何加床或婴儿床的要求均需获 得酒店的确认。 附加费用不会自动计算在总价中，您需在入 住时另行支付。"
-            }
-          ]
-        },
         roomType: [],
-        roomTypeOld: [
-          {
-            name: "Junior Triple Room, 1 Bedroom",
-            area: 12,
-            detail: "一张双人床",
-            breakfast: false,
-            cancel: false,
-            price: 199,
-            wifi: true,
-            maximun: 5
-          },{
-            name: "Superior Room",
-            area: 21,
-            detail: "一张单人床 不含早餐",
-            cancel: false,
-            price: 299
-          },{
-            name: "Bunk Bed in Mixed Dormitory Room",
-            area: 177,
-            detail: "八张双人床 含早餐",
-            cancel: false,
-            price: 1299
-          }
-        ],
+        roomTypeOld: [],
         nationality: "CN",
         nationalityName: "中国",
         viewingRoomTypeNum: 0,
         viewing: false,
         pickingDate: false,
-        pickingNation: false
+        pickingNation: false,
+        noData: false
       }
     },
     computed: {
@@ -192,6 +156,9 @@
       },
       childNum () {
         return this.$store.state.hotel.childNum;
+      },
+      childAge () {
+        return this.$store.state.hotel.childAge;
       },
       roomNum () {
         return this.$store.state.hotel.roomNum;
@@ -250,11 +217,12 @@
           nationality: this.nationality,
           adult: this.adultNum,
           children: this.childNum,
-          childrenAge: this.childrenAge
+          childrenAge: this.childAge
         };
         this.$http.get(url, {params: send}).then((response) => {
           let data = JSON.parse(response.body).data;
           this.roomType = data.rows;
+          this.noData = data.rows.length === 0 ? true : false;
           Indicator.close();
         }, (response) => {
           Indicator.close();
@@ -284,6 +252,10 @@
         this.nationalityName = name;
         this.nationality = nationality;
         this.pickingNation = false;
+        this.$store.commit("setHotelState", {
+          type: "nationality",
+          data: nationality
+        });
       }
     },
     watch: {
@@ -515,6 +487,20 @@
           color: #fff;
           background-color: #008be4;
         }
+      }
+    }
+    .no-item {
+      padding-bottom: 4rem;
+      background-color: #f6f6f6;
+      img {
+        width: 40%;
+        margin: auto;
+        padding: 5rem 0 1rem;
+      }
+      p {
+        text-align: center;
+        font-size: 0.8rem;
+        color: #999;
       }
     }
   }

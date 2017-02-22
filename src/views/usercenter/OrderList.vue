@@ -18,42 +18,43 @@
       <li class="order-item"
         :class="order.type"
         v-for="order in orderList"
-        v-if="order.status === status">
+        v-if="status === 1 || order.status === orderStatus || order.pay_status === payStatus">
         <!-- hotel -->
         <div class="detail-box" v-if="order.type === 'hotel'">
-          <p class="name">{{ order.cname + (order.ename ? "(" + order.ename + ")" : "") }}</p>
+          <p class="name">{{ order.productName }}</p>
           <p class="address">{{ order.address }}</p>
-          <p class="date">{{ order.startDate }}<span>至</span>{{ order.endDate }}<span>{{ order.nights + "晚/" + order.roomNum + "间"}}</span></p>
+          <p class="date">{{ order.dateRange }}<span>{{ order.quantity }}</span></p>
         </div>
         <!-- visa -->
         <div class="detail-box" v-if="order.type === 'visa'">
-          <p class="name">{{ order.name }}</p>
-          <p class="date"><span>预计</span>{{ order.date }}<span>出发</span></p>
+          <p class="name">{{ order.productName }}</p>
+          <p class="date">{{ order.cdate }}<span> 共{{ order.quantity }}人</span></p>
         </div>
         <!-- wifi -->
         <div class="detail-box" v-if="order.type === 'wifi'">
-          <p class="name">{{ order.name }}</p>
-          <p class="date">{{ order.startDate }}<span>至</span>{{ order.endDate }}<span>{{ order.days + "天/" + order.num + "件"}}</span></p>
+          <p class="name">{{ order.productName }}</p>
+          <p class="date">{{ order.dateRange }}<span>{{ order.quantity }}</span></p>
         </div>
         <!-- insurance -->
         <div class="detail-box" v-if="order.type === 'insurance'">
-          <p class="name">{{ order.name }}</p>
-          <p class="date">{{ order.startDate }}<span>至</span>{{ order.endDate }}<span>{{ order.days + "天/" + order.num + "人"}}</span></p>
+          <p class="name">{{ order.productName }}</p>
+          <p class="date">{{ order.dateRange }}<span>{{ order.quantity }}</span></p>
         </div>
         <!-- verify -->
         <div class="detail-box" v-if="order.type === 'verify'">
-          <p class="name">{{ order.name }}</p>
-          <p class="date"><span>{{ order.peopleNum + "人 / " + order.copyNum + "副本"}}</span></p>
+          <p class="name">{{ order.productName }}</p>
+          <p class="date"><span>{{ order.quantity }}</span></p>
         </div>
         <div class="price-box">
           <p>
-            {{ "¥" + order.amount }}
-            <span class="status">未支付</span>
-            <span class="refund">2人退款</span>
+            {{ "¥" + order.totalPrice }}
+            <span class="status">{{ statusList[order.status] }}</span>
+            <span class="refund"></span>
           </p>
           <div class="btn-wrapper">
             <span class="btn btn-grey">删除</span>
-            <span class="btn">再次预定</span>
+            <span class="btn"
+              @click="bookAgain(order)">再次预定</span>
           </div>
         </div>
       </li>
@@ -63,71 +64,62 @@
 
 <script>
   export default {
-    mounted () {
-      this.status = Number(this.$route.params.status) || 1;
-    },
     data () {
       return {
-        orderList: [
-          {
-            type: "hotel",
-            cname: "北京王府井希尔顿酒店",
-            ename: "Hilton Beijing Wfz",
-            address: "125/4-7 Suvka Lejah Mearz(Lazour)",
-            startDate: "2017/01/20",
-            endDate: "2017/01/22",
-            roomNum: 1,
-            nights: 2,
-            amount: 698,
-            status: 1
-          },
-          {
-            type: "visa",
-            name: "加拿大旅游签证 五年多次简单资料",
-            date: "2017/01/30",
-            amount: 3311,
-            status: 1
-          },
-          {
-            type: "wifi",
-            name: "日本WiFi",
-            startDate: "2017/01/20",
-            endDate: "2017/01/25",
-            num: 2,
-            days: 5,
-            amount: 221,
-            status: 2
-          },
-          {
-            type: "insurance",
-            name: "“乐游全球”境外旅行保障计划（黄金计划）",
-            startDate: "2017/01/20",
-            endDate: "2017/01/25",
-            num: 2,
-            days: 5,
-            amount: 115,
-            status: 1
-          },
-          {
-            type: "verify",
-            name: "出生医学证明",
-            peopleNum: 2,
-            copyNum: 5,
-            amount: 551,
-            status: 1
-          }
-        ],
+        statusList: {
+          "-2": "退款",
+          "0": "未付款",
+          "2": "已付款"
+        },
+        orderList: [],
+        payStatus: 99,
+        orderStatus: 99,
         status: 1
       }
     },
+    created () {
+      this.getList();
+      this.status = Number(this.$route.params.status) || 1;
+    },
     methods: {
+      getList () {
+        let url = "/api/orders/list";
+        this.$http.get(url).then((response) => {
+          console.log(JSON.parse(response.body));
+          let body = JSON.parse(response.body);
+          this.orderList = body.data.rows;
+        }, (response) => {
+          console.log("服务器错误");
+        })
+      },
       switchStatus (n) {
         this.status = n;
+        switch (n) {
+          case 1:
+            this.orderStatus = 99;
+            this.payStatus = 99;
+            break;
+          case 2:
+            this.orderStatus = 99;
+            this.payStatus = "0";
+            break;
+          case 3:
+            this.orderStatus = 99;
+            this.payStatus = "-2";
+          case 4:
+            this.orderStatus = "-1";
+            this.payStatus = 99;
+        }
+      },
+      bookAgain (obj) {
+        let url = "/" + obj.type + "Detail/" + obj.product;
+        this.$router.push(url);
       }
     },
     watch: {
       '$route' (to) {
-        this.status = Number(to.params.status) || 1;
+        let num = Number(to.params.status);
+        this.switchStatus(num);
       }
     }
   }

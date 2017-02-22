@@ -24,7 +24,8 @@ let state = {
     price: "",
     star: "",
     nation: ""
-  }
+  },
+  nationality: "CH"
 };
 
 const mutations = {
@@ -38,7 +39,9 @@ const mutations = {
       childNum: 0,
       childAge: [],
       roomNum: 1,
-      hotelDetail: {}
+      hotelDetail: {},
+      hotelPerson: {},
+      nationality: "CH"
     };
   },
   setNum (state, payload) {
