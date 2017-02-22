@@ -133,9 +133,8 @@
         let send = {
           orderno: this.$route.params.id
         };
-        console.log(send);
         this.$http.get(url, {params: send}).then((response) => {
-          console.log(JSON.parse(response.body));
+          console.log(response.body);
           let body = JSON.parse(response.body);
           this.orderDetail = body.data;
         }, (response) => {
@@ -153,7 +152,7 @@
         return arr[this.orderDetail.tripPurposeId];
       },
       destination () {
-        return this.orderDetail.destination.join("、");
+        //return this.orderDetail.destination.join("、");
       }
     }
   }

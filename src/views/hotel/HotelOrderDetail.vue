@@ -1,113 +1,146 @@
 <template lang="html">
   <div class="hotel-order-detail">
-    <div class="order-info"
-      @click="goHotelDetail">
-      <div class="item">
-        <span class="label">酒店名称：</span>
-        <span class="content">{{ orderDetail.productName }}</span>
+    <div class="page-empty" v-if="orderDetail != ''">
+      <div class="order-info"
+        @click="goHotelDetail">
+        <div class="item">
+          <span class="label">酒店名称：</span>
+          <span class="content">{{ orderDetail.productName }}</span>
+        </div>
+        <div class="item">
+          <span class="label">房型：</span>
+          <span class="content">{{ orderDetail.roomName }}</span>
+        </div>
+        <div class="item">
+          <span class="label">间数/晚数：</span>
+          <span class="content">{{ orderDetail.quantity }}</span>
+        </div>
+        <div class="item">
+          <span class="label">入住时间：</span>
+          <span class="content">{{ orderDetail.dateRange }}</span>
+        </div>
+        <i class="icon-more"></i>
       </div>
-      <div class="item">
-        <span class="label">房型：</span>
-        <span class="content">{{ orderDetail.roomName }}</span>
+      <div class="order-info hotel-address">
+        <div class="item">
+          <span class="label">酒店地址：</span>
+          <span class="content">{{ orderDetail.address }}</span>
+        </div>
       </div>
-      <div class="item">
-        <span class="label">间数/晚数：</span>
-        <span class="content">{{ orderDetail.quantity }}</span>
+      <div class="hotel-link">
+        <span class="link"><i class="icon-address"></i>酒店地图</span>
+        <span class="link" @click="callTel(orderDetail.telephone)"><i class="icon-phone"></i>酒店电话</span>
       </div>
-      <div class="item">
-        <span class="label">入住时间：</span>
-        <span class="content">{{ orderDetail.dateRange }}</span>
+      <div class="order-info">
+        <div class="item">
+          <span class="label">订单状态：</span>
+          <span class="content enhance">{{ orderDetail.booking_status_detail }}</span>
+        </div>
+        <div class="item">
+          <span class="label">订单编号：</span>
+          <span class="content">{{ orderDetail.orderno }}</span>
+        </div>
+        <div class="item">
+          <span class="label">下单时间：</span>
+          <span class="content">{{ orderDetail.cdate }}</span>
+        </div>
+        <div class="item">
+          <span class="label">订单金额：</span>
+          <span class="content enhance">￥{{ orderDetail.totalPrice }}</span>
+        </div>
       </div>
-      <i class="icon-more"></i>
-    </div>
-    <div class="order-info hotel-address">
-      <div class="item">
-        <span class="label">酒店地址：</span>
-        <span class="content">{{ orderDetail.address }}</span>
+      <div class="order-info">
+        <div class="item">
+          <span class="label">最晚到店：</span>
+          <span class="content">{{orderDetail.check_in_end}}</span>
+        </div>
+        <div class="item">
+          <span class="label">入住人：</span>
+          <span class="content"><span v-for="item in orderDetail.guest">{{item.name+' '}}</span></span>
+        </div>
+        <div class="item">
+          <span class="label">联系手机：</span>
+          <span class="content">{{orderDetail.contact.phone}}</span>
+        </div>
       </div>
-    </div>
-    <div class="hotel-link">
-      <span class="link"><i class="icon-address"></i>酒店地图</span>
-      <span class="link"><i class="icon-phone"></i>酒店电话</span>
-    </div>
-    <div class="order-info">
-      <div class="item">
-        <span class="label">订单状态：</span>
-        <span class="content enhance">{{ orderDetail.pay_status }}</span>
+      <div class="order-button">
+        <span class="button cancel-button">取消订单</span>
+        <span class="button pay-button" @click="payOrder">立即支付</span>
       </div>
-      <div class="item">
-        <span class="label">订单编号：</span>
-        <span class="content">{{ orderDetail.id }}</span>
-      </div>
-      <div class="item">
-        <span class="label">下单时间：</span>
-        <span class="content">{{ orderDetail.cdate }}</span>
-      </div>
-      <div class="item">
-        <span class="label">订单金额：</span>
-        <span class="content enhance">￥{{ orderDetail.totalPrice }}</span>
-      </div>
-    </div>
-    <div class="order-info">
-      <div class="item">
-        <span class="label">最晚到店：</span>
-        <span class="content">次日5:00</span>
-      </div>
-      <div class="item">
-        <span class="label">入住人：</span>
-        <span class="content">张三 李四 王五</span>
-      </div>
-      <div class="item">
-        <span class="label">联系手机：</span>
-        <span class="content">12345678912</span>
-      </div>
-    </div>
-    <div class="order-button">
-      <span class="button cancel-button">取消订单</span>
-      <span class="button pay-button">立即支付</span>
     </div>
   </div>
 </template>
 
 <script>
+  import wx from 'weixin-js-sdk'
+  import { Toast } from 'mint-ui'
+  import { Indicator } from 'mint-ui'
   export default {
     data () {
       return {
-        orderDetail: {
-          id: "",
-          totalPrice: "",
-          status: "",
-          pay_status: "",
-          cdate: "",
-          productName: "",
-          quantity: "",
-          dateRange: "",
-          name: "",
-          roomName: ""
-        }
+        orderDetail: ''
       }
     },
     created () {
       this.getOrder();
     },
     methods: {
-      getOrder () {
+      getOrder:function() {
         let url = "/api/orders/detail";
         let send = {
           orderno: this.$route.params.id
         };
-        console.log(send);
         this.$http.get(url, {params: send}).then((response) => {
-          console.log(JSON.parse(response.body));
+          console.log(response.body);
           let body = JSON.parse(response.body);
           this.orderDetail = body.data;
         }, (response) => {
           console.log("服务器错误");
         });
       },
-      goHotelDetail () {
-        let url = "/hotelDetail/"; //todo: 接口返回产品id后跳转
-        this.$router.go(url);
+      goHotelDetail:function() {
+        let url = "/hotelDetail/"+this.orderDetail.product;
+        this.$router.push(url);
+      },
+      callTel:function(num){
+        if (num != '') {
+          window.location.href = 'tel:'+num
+        }else{
+          Toast('暂无酒店电话')
+        }
+      },
+      payOrder:function(){
+        Indicator.open('发起微信支付');
+        var url = "/api/pay/index",send = {orderno:this.$route.params.id}
+        this.$http.get(url,{params:send}).then(function(result){
+          Indicator.close();
+          this.invokingWXPay(result.body)                
+        });
+      },
+      invokingWXPay:function(rst){
+        const _this = this
+        wx.config({
+          debug: true,
+          appId: rst.config.appId, // 必填，公众号的唯一标识
+          timestamp: rst.config.timestamp, // 必填，生成签名的时间戳
+          nonceStr: rst.config.nonceStr, // 必填，生成签名的随机串
+          signature: rst.config.signature,// 必填，签名，见附录1
+          jsApiList: ["chooseWXPay"]
+        });
+        wx.ready(function(){
+          wx.chooseWXPay({
+            timestamp: rst.payParams.timeStamp, 
+            nonceStr: rst.payParams.nonceStr, // 支付签名随机串，不长于 32 位
+            package: rst.payParams.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+            signType: rst.payParams.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+            paySign: rst.payParams.paySign, // 支付签名
+            success: function (res) {
+              if (res.errMsg == 'chooseWXPay:ok') {
+                _this.$router.push('/hotelSuccess/' + _this.$route.params.id)  
+              }
+            }
+          });
+        });
       }
     }
   }

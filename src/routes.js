@@ -34,6 +34,7 @@ import HotelIntro from './views/hotel/HotelIntro'
 import HotelForm from './views/hotel/HotelForm'
 import HotelRoomSelect from './views/hotel/HotelRoomSelect'
 import HotelOrderDetail from './views/hotel/HotelOrderDetail'
+import HotelSuccess from './views/hotel/Success'
 import UserCenter from './views/usercenter/UserCenter'
 import Collection from './views/usercenter/Collection'
 import CommonInformation from './views/usercenter/CommonInformation'
@@ -93,10 +94,10 @@ var routes = [{
   path: "/insuranceSelectInsuredPerson/:id",
   component: InsuranceSelectInsuredPerson
 },{
-  path: "/InsuranceSelectPolicyHolder/:id",
+  path: "/insuranceSelectPolicyHolder/:id",
   component: InsuranceSelectPolicyHolder
 },{
-  path: "/InsuranceOrderDetail/:id",
+  path: "/insuranceOrderDetail/:id",
   component: InsuranceOrderDetail
 },{
   path: "/wifi",
@@ -143,6 +144,9 @@ var routes = [{
 },{
   path: "/hotelOrderDetail/:id",
   component: HotelOrderDetail
+},{
+  path: "/hotelSuccess/:id",
+  component: HotelSuccess
 },{
   path: "/userCenter",
   component: UserCenter

@@ -11,10 +11,10 @@
       <div class="detail">
         <div class="proname">{{pagedata.productName}}</div>
         <div class="desc">
-          <div class="txt">{{pagedata.contactName}}购买了{{pagedata.productName}}</div>
-          <div class="date">使用时间：<span>{{pagedata.useDate}}</span>至<span>{{pagedata.useEndDate}}</span></div>
-          <div class="location">取机地点：<span>{{pagedata.takeAddress.name}}</span></div>
-          <div class="location">还机地点：<span>{{pagedata.returnAddress.name}}</span></div>
+          <div class="txt">共{{pagedata.quantity}}</div>
+          <div class="date">入住日期：<span>{{pagedata.dateRange}}</span></div>
+          <div class="location">酒店地址：<span>{{pagedata.address}}</span></div>
+          <div class="tel">酒店电话：<span @click="callTel(pagedata.telephone)">{{pagedata.telephone}}</span></div>
           <div class="time">{{pagedata.cdate}}</div>
         </div>
       </div>
@@ -40,7 +40,7 @@ export default{
   methods:{
     getPayResult:function(){
       Indicator.open('获取支付结果');
-      var url = '/api/pay/result',send = {type:"wifi",orderno:this.$route.params.id}
+      var url = '/api/pay/result',send = {type:"hotel",orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         this.payStatus = rst.data
@@ -56,8 +56,14 @@ export default{
           }
         });        
       });
+    },
+    callTel:function(num){
+      if (num != '') {
+        window.location.href = 'tel:'+num
+      }else{
+        Toast('暂无酒店电话')
+      }
     }
-
   }
 }
 </script>
@@ -129,6 +135,15 @@ export default{
           color: #999999;
           span{
             color: #666666;
+            font-size: 0.7rem;
+          }
+        }
+        .tel{
+          line-height: 1.3rem;
+          font-size: 0.7rem;
+          color: #999999;
+          span{
+            color: #029600;
             font-size: 0.7rem;
           }
         }

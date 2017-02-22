@@ -62,7 +62,7 @@ export default{
       });
     },
     payOrder:function(){
-      Indicator.open('获取支付信息');
+      Indicator.open('发起微信支付');
       var url = "/api/pay/index",send = {orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
         Indicator.close();

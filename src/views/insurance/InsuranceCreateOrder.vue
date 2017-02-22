@@ -112,6 +112,7 @@
   import Vue from "vue"
 
   import { Toast } from "mint-ui"
+  import { Indicator } from "mint-ui"
 
   export default {
     data: function () {
@@ -225,11 +226,13 @@
             duration: 1500
           });
         } else {
+          Indicator.open('正在创建订单')
           this.$http.post(url, send).then((response) => {
             let body = JSON.parse(response.body);
-            console.log(JSON.parse(response.body));
-            if (body.status !== 1) {
-              Toast(body.msg);
+            console.log(response.body);
+            if (body.status == 1) {
+              Indicator.close()
+              this.$router.push('/insuranceOrderDetail/'+body.data.orderno)
             }
           }, (response) => {
             Toast(body.msg);

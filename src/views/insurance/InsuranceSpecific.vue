@@ -1,12 +1,12 @@
 <template>
   <div class="specific">
     <div class="tab-bar">
-      <span @click="tab(1)" :class="{ active: viewNum === 1 }">产品详情</span>
-      <span @click="tab(2)" :class="{ active: viewNum === 2 }">投保提示</span>
-      <span @click="tab(3)" :class="{ active: viewNum === 3 }">索赔指引</span>
+      <span @click="tab(1)" :class="{ active: viewNum == 1 }">产品详情</span>
+      <span @click="tab(2)" :class="{ active: viewNum == 2 }">投保提示</span>
+      <span @click="tab(3)" :class="{ active: viewNum == 3 }">索赔指引</span>
     </div>
     <div class="tab-container">
-      <div v-if="viewNum === 1" class="product-detail">
+      <div v-show="viewNum == 1" class="product-detail">
         <div class="pd-item">
           <p class="title">
             <i class="icon-feature"></i>产品特色
@@ -28,11 +28,11 @@
           </div>
         </div>
       </div>
-      <div v-if="viewNum === 2"
+      <div v-show="viewNum == 2"
         class="insurance-tips"
         v-html="productDetail.web_tb">
       </div>
-      <div v-if="viewNum === 3"
+      <div v-show="viewNum == 3"
         class="insurance-tips"
         v-html="productDetail.web_sp">
       </div>
@@ -43,41 +43,9 @@
 <script>
   export default {
     data: function () {
-      let plans = [
-        {
-          title: "个人财务及责任",
-          data: [
-            {
-              name: "随身财产",
-              texts: "5000元"
-            },{
-              name: "随身财产",
-              texts: "5000元"
-            },{
-              name: "随身财产",
-              texts: "5000元"
-            }
-          ]
-        },{
-          title: "个人财务及责任",
-          data: [
-            {
-              name: "随身财产",
-              texts: "5000元"
-            },{
-              name: "随身财产",
-              texts: "5000元"
-            },{
-              name: "随身财产",
-              texts: "5000元"
-            }
-          ]
-        }
-      ];
       return {
           viewNum: 1,
-          feature: this.productDetail && this.productDetail.feature,
-          plans: plans
+          productDetail: this.productDetail
         }
       },
     methods: {

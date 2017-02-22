@@ -146,14 +146,9 @@
         };
         Indicator.open("正在提交订单...");
         this.$http.post(url, send).then((response) => {
-          console.log(JSON.parse(response.body));
           let body = JSON.parse(response.body);
           if (body.status === 1) {
-            Toast({
-              message: "下单成功！订单号为：" + body.data.order,
-              position: "middle",
-              duration: 3500
-            });
+            this.$router.push('/hotelOrderDetail/'+body.data.orderno)
           } else {
             Toast({
               message: body.msg,

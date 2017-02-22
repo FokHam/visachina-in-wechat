@@ -88,6 +88,7 @@
           console.log(JSON.parse(response.body));
           let body = JSON.parse(response.body);
           this.orderList = body.data.rows;
+          console.log(JSON.stringify(body.data.rows))
         }, (response) => {
           console.log("服务器错误");
         })
