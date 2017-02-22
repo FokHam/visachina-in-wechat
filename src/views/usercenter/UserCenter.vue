@@ -5,9 +5,9 @@
       <div class="pic"><img :src="userInfo.wx_head_img"></div>
       <div class="name">{{userInfo.wx_name}}</div>
     </div>
-    <a class="message">
+    <!--<a class="message">
       <span class="on"></span>
-    </a>
+    </a>-->
   </div>
   <div class="nav_order">
     <div class="tit">我的订单</div>
@@ -27,10 +27,10 @@
       我的收藏
       <span>有意向的产品</span>
     </router-link>
-    <a class="l3" href="">
+    <router-link to="/insurancePolicy" class="l3">
       我的保单
       <span>已购买的保单</span>
-    </a>
+    </router-link>
   </div>
 </div>
 </template>

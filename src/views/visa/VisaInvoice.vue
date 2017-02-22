@@ -1,61 +1,63 @@
 <template>
   <div class="invoice-form" id="invoice-form">
-    <div class="check" @click="listdata.need=listdata.need==0?1:0">
+    <div class="check" @click="visaOrderData.invoice.need=visaOrderData.invoice.need==0?1:0">
       <span class="txt">需要发票</span>
-      <span class="isneed" :class="{on:listdata.need == 1}"></span>
+      <span class="isneed" :class="{on:visaOrderData.invoice.need == 1}"></span>
     </div>
-    <div class="infolist" v-if="listdata.need == 1">
+    <div class="infolist" v-if="visaOrderData.invoice.need == 1">
       <div class="item">
         <div class="tit">发票类型</div>
         <div class="con radiobtn">
-          <!--<div class="ritem" :class="{on:listdata.type==0}"><span></span>电子发票</div>-->
-          <div class="ritem" :class="{on:listdata.type==1}"><span></span>纸质发票</div>
+          <!--<div class="ritem" :class="{on:visaOrderData.invoice.type==0}"><span></span>电子发票</div>-->
+          <div class="ritem" :class="{on:visaOrderData.invoice.type==1}"><span></span>纸质发票</div>
         </div>
       </div>
       <div class="item">
         <div class="tit">发票明细</div>
         <div class="con txt">
-          <input type="text" v-model="listdata.memo">
+          <input type="text" v-model="visaOrderData.invoice.memo">
         </div>
       </div>
       <div class="item" @click="invoice=true">
         <div class="tit">发票抬头</div>
         <div class="con select">
-          <div class="name">{{listdata.header}}</div>
+          <div class="name">{{visaOrderData.invoice.header}}</div>
         </div>
       </div>
       <div class="item" @click="delivery=true">
         <div class="tit">配送地址</div>
         <div class="con select">
           <div class="address">
-            <div class="t1">{{listdata.shippingInfo.name+' '+listdata.shippingInfo.phone}}</div>
-            <div class="t2">{{listdata.shippingInfo.province+listdata.shippingInfo.city+listdata.shippingInfo.zone+listdata.shippingInfo.address}}</div>
+            <div class="t1">{{visaOrderData.invoice.shippingInfo.name+' '+visaOrderData.invoice.shippingInfo.phone}}</div>
+            <div class="t2">{{visaOrderData.invoice.shippingInfo.province+visaOrderData.invoice.shippingInfo.city+visaOrderData.invoice.shippingInfo.zone+visaOrderData.invoice.shippingInfo.address}}</div>
           </div>
         </div>
       </div>
     </div>
     <div class="confirm" @click="confirm">确定</div>
     <address-list
-    v-show="delivery"
-    @confirm="deliveryConfirm">    
+    v-if="delivery"
+    @confirm="deliveryConfirm"
+    @close="delivery=false">
     </address-list>
     <invoice-list
-    v-show="invoice"
-    @confirm="invoiceConfirm">    
+    v-if="invoice"
+    @confirm="invoiceConfirm"
+    @close="invoice=false">    
     </invoice-list>
   </div>
 </template>
 
 <script>
-import AddressList from './visaorder/AddressList'
-import InvoiceList from './visaorder/InvoiceList'
+import AddressList from "../../components/AddressList"
+import InvoiceList from '../../components/InvoiceList'
 export default {
   name:'invoice-form',
   created:function(){
   },
   data:function(){
     return{
-      listdata:{"need":0,"type":1,"memo":"","header":"","shippingId":"","shippingInfo":{"name":"","phone":"","province":"","city":"","zone":"","address":""}},
+      visaOrderData:this.visaOrderData,
       delivery:false,
       invoice:false
     }
@@ -63,23 +65,33 @@ export default {
   methods: {
     deliveryConfirm:function(v){
       this.delivery = false
-      this.listdata.shippingId = v.id
-      this.listdata.shippingInfo = v
+      this.visaOrderData.invoice.shippingId = v.id
+      this.visaOrderData.invoice.shippingInfo = v
+      history.go(-1)
     },
     invoiceConfirm:function(v){
       this.invoice = false
-      this.listdata.header = v.name
+      this.visaOrderData.invoice.header = v.name
+      if (v.number == null) {
+        this.visaOrderData.invoice.number = ''
+      }else{
+        this.visaOrderData.invoice.number = v.number
+      }
+      history.go(-1)
     },
     confirm:function(){
-      this.$emit('confirm',this.listdata)
-    },
-    closeCom:function(){
-      this.$emit('closeCom')
+      this.$store.commit('orderDataSave',this.visaOrderData);
+      history.go(-1)
     }
   },
   components:{    
     AddressList,
     InvoiceList
+  },
+  computed: {
+    visaOrderData () {
+      return this.$store.state.visa.orderPageData;
+    }
   }
    
 }

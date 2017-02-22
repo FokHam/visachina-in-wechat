@@ -1,43 +1,40 @@
 <template>
-<div class="add-address">
-  <div class="field">
+<div class="add-credential">
+  <div class="tabs">
+    <ul>
+      <li><span :class="{on:clientinfo.type==1}" @click="switchTab(1)">公司</span></li>
+      <li><span :class="{on:clientinfo.type==2}" @click="switchTab(2)">个人</span></li>
+    </ul>
+  </div>
+  <div class="field" v-show="clientinfo.type==1">
     <div class="item">
-      <span>联系人</span>
+      <span>抬头</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.name">
+        <input type="text" v-model="clientinfo.name" placeholder="公司名称">
       </div>      
     </div>
     <div class="item">
-      <span>手机号</span>
+      <span>纳税人识别号</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.phone">
-      </div>      
-    </div>    
-    <div class="item">
-      <span>所在地区</span>
-      <div class="ipt select" @click="addressDis=true">
-        <div class="txt">{{clientinfo.province +' '+clientinfo.city+' '+clientinfo.zone}}</div>
-      </div> 
-    </div>
-    <div class="item">
-      <span>详细地址</span>
-      <div class="ipt street">
-        <input type="text" v-model="clientinfo.address" placeholder="街道、楼牌号等">
+        <input type="text" v-model="clientinfo.number" placeholder="仅增值税发票填写">
       </div>      
     </div>
   </div>
+  <div class="field" v-show="clientinfo.type==2">
+    <div class="item">
+      <span>抬头</span>
+      <div class="ipt">
+        <input type="text" v-model="clientinfo.name" placeholder="个人姓名">
+      </div>      
+    </div>    
+  </div>
   <div class="save" @click="verifyData">保存</div>
-  <address-picker
-  v-if="addressDis"
-  @confirm="confirmAddress"
-  @close="closeAddress">
-  </address-picker>
 </div>
 </template>
 
 <script>
-import { Toast } from 'mint-ui'
-import AddressPicker from './AddressPicker'
+import { Toast } from 'mint-ui';
+import { MessageBox } from 'mint-ui';
 export default {
   props: ['info'],
   created:function(){
@@ -47,32 +44,32 @@ export default {
   },
   data:function(){
     return{
-      clientinfo:{"name":"","phone":"","province":"","city":"","zone":"","address":""},
-      addressDis:false
+      clientinfo:{"name":"","number":"","type":1}           
     }
   },
-  components:{
-    AddressPicker
-  },
   methods:{
-    confirmAddress:function(v){
-      this.clientinfo.province = v[0]
-      this.clientinfo.city = v[1]
-      this.clientinfo.zone = v[2]
-      this.addressDis = false
+    switchTab:function(v){
+      if (this.info == '') {
+        this.clientinfo.type = v
+      }
     },
-    closeAddress:function(){
-      this.addressDis = false
-    },
-    verifyData:function(){      
-      if (this.clientinfo.name != '' && this.clientinfo.phone != '' && this.clientinfo.province != '' && this.clientinfo.address != '') {
-        this.submitData()
-      }else{
-        Toast('请完善资料后再保存')
-      }      
+    verifyData:function(){
+      if (this.clientinfo.type==1) {
+        if (this.clientinfo.name != '' && this.clientinfo.number != '') {
+          this.submitData()
+        }else{
+          Toast('请完善资料后再保存')
+        }
+      }else if (this.clientinfo.type==2) {
+        if (this.clientinfo.name != '') {
+          this.submitData()
+        }else{
+          Toast('请完善资料后再保存')
+        }
+      }
     },
     submitData:function(){
-      var url = '/api/member/address_create',send=this.clientinfo;      
+      var url = '/api/member/invoice_create',send=this.clientinfo;      
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
@@ -81,20 +78,37 @@ export default {
           Toast(rst.msg)
         }
       });        
-    }
-    
+    }    
   }
 }
 </script>
 
 <style lang="less" scoped>
-.add-address{
+.add-credential{
   position: fixed;
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 1001;
+  z-index: 1002;
   background-color: #F6F6F6;
+  .tabs{
+    overflow: hidden;
+    li{
+      width: 50%;float: left;text-align: center;
+      span{
+        display: inline-block;
+        font-size: 0.7rem;
+        line-height: 2rem;
+        height: 1.9rem;
+        padding: 0 0.75rem;
+        border-bottom: 0.1rem solid #f6f6f6;
+        &.on{
+          color: #008BE4;
+          border-bottom: 0.1rem solid #008BE4;
+        }
+      }
+    }
+  }
   .field{
     margin: 0 0.5rem;
     background-color: #fff;
@@ -107,7 +121,7 @@ export default {
       height: 3rem;
       border-bottom: 1px solid #EEEEEE;
       .ipt{
-        padding: 0 1rem 0 3.5rem;        
+        padding: 0 1rem 0 4.5rem;        
         background-repeat:no-repeat;background-position:right center;
         background-size: 0.8rem;
         input{
@@ -140,23 +154,25 @@ export default {
       }
       span{
         font-size: 0.7rem;
-        height: 2.25rem;line-height: 3rem;
+        height: 3rem;line-height: 3rem;
         position: absolute;
-        left: 0;top: 0;width: 3.5rem;
+        left: 0;top: 0;width: 4.5rem;
       }
       &:last-child{border-bottom: none;}
     }
   }
   .save{
     font-size: 0.8rem;color: #fff;
-    line-height: 1.75rem;margin: 2.5rem 0.5rem 1.25rem;
+    line-height: 1.75rem;margin: 2.5rem 0.5rem 0.75rem;
     text-align: center;background-color: #008be4;
     border-radius: 0.2rem;
   }
-  .mint-popup-bottom{width: 100%;}
-  .closepop{
-    font-size: 0.7rem;line-height: 30px;border-bottom: 1px solid #ccc;
-    padding: 0 0.5rem;color: #008BE4;text-align: right;
+  .delete{
+    font-size: 0.8rem;color: #fff;
+    line-height: 1.75rem;margin: 0 0.5rem 1.25rem;
+    text-align: center;background-color: #F95800;
+    border-radius: 0.2rem;
   }
+ 
 }
 </style>

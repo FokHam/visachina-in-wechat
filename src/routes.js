@@ -35,6 +35,7 @@ import HotelRoomSelect from './views/hotel/HotelRoomSelect'
 import UserCenter from './views/usercenter/UserCenter'
 import Collection from './views/usercenter/Collection'
 import CommonInformation from './views/usercenter/CommonInformation'
+import InsurancePolicy from './views/usercenter/InsurancePolicy'
 import BindPhone from './views/usercenter/BindPhone'
 import OrderList from './views/usercenter/OrderList'
 
@@ -143,6 +144,9 @@ var routes = [{
 },{
   path: "/commonInformation",
   component: CommonInformation
+},{
+  path: "/insurancePolicy",
+  component: InsurancePolicy
 },{
   path: "/bindPhone",
   component: BindPhone

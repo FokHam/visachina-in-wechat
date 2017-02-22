@@ -82,34 +82,35 @@ export default {
   height: 100%;
   z-index: 1001;
   .addbtn{
-    height: 45px;line-height: 45px;display: block;
-    padding: 0 20px;background-color: #fff;
+    height: 2.25rem;line-height: 2.25rem;display: block;
+    padding: 0 1rem;background-color: #fff;
     background-image:url('/static/images/visa/icon-add-1.png');
     background-repeat: no-repeat;
-    background-position: 20px center;
-    background-size: 21px;
-    font-size: 0.7rem;color: #008be4;text-indent: 27px;
-    margin-bottom: 10px;
+    background-position: 1rem center;
+    background-size: 0.95rem;
+    font-size: 0.7rem;color: #008be4;text-indent: 1.35rem;
+    margin-bottom: 0.5rem;
   }
   .contactList{
-    margin: 0 10px;
+    margin: 0 0.5rem;
     background-color: #fff;
-    padding-bottom: 30px;
+    padding-bottom: 1.5rem;
     background-image: url('/static/images/visa/borderbg.png');
     background-repeat:repeat-x ;background-position:bottom;
-    background-size: 10px;
-    .empty{    text-align: center;
-    line-height: 80px;
+    background-size: 0.5rem;
+    .empty{    
+    text-align: center;
+    line-height: 4rem;
     font-size: 0.7rem;
     color: #666666;}
     ul{      
-      padding: 5px 10px;
+      padding: 0.25rem 0.5rem;
       li{
-        border-bottom: 1px solid #c0c0c0;padding: 9px 0 10px;
+        border-bottom: 1px solid #c0c0c0;padding: 0.45rem 0 0.5rem;
         position: relative;        
         .info{
-          padding:0 30px 0 10px;
-          .name{font-size: 0.7rem;color: #666666;line-height: 30px;overflow: hidden;
+          padding:0 1.5rem 0 0.5rem;
+          .name{font-size: 0.7rem;color: #666666;line-height: 1.5rem;overflow: hidden;
             .left{float: left;}
             .right{float: right;}
           }
@@ -118,12 +119,12 @@ export default {
           }
         }
         .editbtn{
-          height: 15px;width: 15px;
-          border-radius: 2px;position: absolute;
-          top: 18px;right: 0;
+          height: 0.75rem;width: 0.75rem;
+          border-radius: 0.1rem;position: absolute;
+          top: 0.8rem;right: 0;
           background-image: url('/static/images/visa/icon-edit.png');
           background-repeat: no-repeat;background-position: center;
-          background-size: 15px;
+          background-size: 0.75rem;
         }
         &:last-child{ border-bottom:none;}     
       }

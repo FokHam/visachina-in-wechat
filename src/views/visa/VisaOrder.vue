@@ -13,47 +13,47 @@
   <div class="clientname">
     <div class="item-hd">
       <div class="tit">申请人<i class="help">help</i></div>
-      <div class="addbtn" @click="passengerList.passenger=true,pushHistory()">添加申请人</div>
+      <div class="addbtn" @click="comDisplay.passenger=true,pushHistory()">添加申请人</div>
     </div>
-    <div class="namelist" v-if="passengerList.list.length != 0">
+    <div class="namelist" v-if="visaOrderData.passenger.length != 0">
       <ul>
-        <li v-for="(item, index) in passengerList.list" :class="{left:index % 2 == 0}"><span class="name">{{item.surname+item.name}}</span><span class="type">{{typeList[item.type-1]}}</span></li>
+        <li v-for="(item, index) in visaOrderData.passenger" :class="{left:index % 2 == 0}"><span class="name">{{item.surname+item.name}}</span><span class="type">{{typeList[item.type-1]}}</span></li>
       </ul>
     </div>
   </div>
   <div class="contactinfo">
     <div class="name item">
       <span class="txt">联系人</span>
-      <span class="ipt"><input v-model="contactInfo.info.name" type="text" placeholder="请填写联系人姓名"></span>
+      <span class="ipt"><input v-model="visaOrderData.contact.name" type="text" placeholder="请填写联系人姓名"></span>
     </div>
     <div class="phone item">
       <span class="txt">手机号</span>
-      <span class="ipt"><input v-model="contactInfo.info.tel" type="text" placeholder="接收订单确认信息"></span>
+      <span class="ipt"><input v-model="visaOrderData.contact.tel" type="text" placeholder="接收订单确认信息"></span>
     </div>
     <div class="email item">
       <span class="txt">邮&#12288;箱</span>
-      <span class="ipt"><input v-model="contactInfo.info.email" type="text" placeholder="请填写联系人邮箱"></span>
+      <span class="ipt"><input v-model="visaOrderData.contact.email" type="text" placeholder="请填写联系人邮箱"></span>
     </div>
-    <div class="icon" @click="contactInfo.contact=true"></div>
+    <div class="icon" @click="comDisplay.contact=true"></div>
   </div>
-  <div class="invoice" @click="">
-    <span>发票</span><i>{{invoiceData.header}}</i>
+  <div class="invoice" @click="setInvoice">
+    <span>发票</span><i v-if="visaOrderData.invoice.need == 1">{{visaOrderData.invoice.header}}</i>
   </div>
   <div class="express">
     <div class="item-hd">
       <div class="tit">收货地址</div>
-      <div class="addbtn" v-if="deliveryInfo.info.name == ''" @click="deliveryInfo.delivery=true">添加地址</div>
-      <div class="addbtn" v-else @click="deliveryInfo.delivery=true">修改地址</div>
+      <div class="addbtn" v-if="visaOrderData.express.name == ''" @click="comDisplay.delivery=true">添加地址</div>
+      <div class="addbtn" v-else @click="comDisplay.delivery=true">修改地址</div>
     </div>
-    <div class="addressinfo" v-if="deliveryInfo.info.name != ''">
+    <div class="addressinfo" v-if="visaOrderData.express.name != ''">
       <div class="item">
         <span class="txt">收&#8194;货&#8194;人：</span>
-        <span class="name">{{deliveryInfo.info.name}}</span>
-        <span class="phone">{{deliveryInfo.info.phone}}</span>
+        <span class="name">{{visaOrderData.express.name}}</span>
+        <span class="phone">{{visaOrderData.express.phone}}</span>
       </div>
       <div class="item">
         <span class="txt">收货地址：</span>
-        <span class="adrs">{{deliveryInfo.info.province + deliveryInfo.info.city + deliveryInfo.info.zone + deliveryInfo.info.address}}</span>
+        <span class="adrs">{{visaOrderData.express.province + visaOrderData.express.city + visaOrderData.express.zone + visaOrderData.express.address}}</span>
       </div>
     </div>
   </div>
@@ -63,26 +63,20 @@
     <div class="price">订单金额：<span>￥{{totalPrice}}</span></div>
     <div class="creatBtn" @click="verifyData">提交订单</div>
   </div>
-  <invoice
-  v-if="invoiceData.invoice"
-  :data="invoiceData.detail"
-  @confirm="invoiceConfirm"
-  @closeCom="compClose">
-  </invoice>
   <visa-passenger-list
-  v-show="passengerList.passenger"
+  v-show="comDisplay.passenger"
   @confirm="passengerConfirm"
-  @close="passengerList.passenger=false">
+  @close="comDisplay.passenger=false">
   </visa-passenger-list>
   <contact-list
-  v-if="contactInfo.contact"
+  v-if="comDisplay.contact"
   @confirm="contactConfirm"
-  @close="contactInfo.contact=false">
+  @close="comDisplay.contact=false">
   </contact-list>
   <address-list
-  v-if="deliveryInfo.delivery"
+  v-if="comDisplay.delivery"
   @confirm="deliveryConfirm"
-  @close="deliveryInfo.delivery=false">
+  @close="comDisplay.delivery=false">
   </address-list>
 
 </div>
@@ -91,7 +85,6 @@
 <script>
 import { Toast } from 'mint-ui'
 import { Indicator } from 'mint-ui'
-import Invoice from './visaorder/Invoice'
 import VisaPassengerList from './visaorder/VisaPassengerList'
 import ContactList from "../../components/ContactList"
 import AddressList from "../../components/AddressList"
@@ -105,13 +98,11 @@ export default{
   },
   data:function(){
     return{
+      visaOrderData:this.visaOrderData,
       typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
       visaInfomation:'',
-      totalPrice:0,    
-      passengerList:{"passenger":false,"list":[]},
-      contactInfo:{"contact":false,"info":{"name":"","tel":"","email":""}},      
-      deliveryInfo:{"delivery":false,"info":{"name":"","phone":"","province":"","city":"","zone":"","address":""}},
-      invoiceData:'',
+      totalPrice:0,
+      comDisplay:{"passenger":false,"contact":false,"delivery":false}
     }
   },
   methods:{
@@ -128,35 +119,28 @@ export default{
         }
       });
     },
-    invoiceConfirm:function(v){
-      this.invoiceData.detail=v
-      this.invoiceData.invoice=false
+    setInvoice:function(){
+      this.$store.commit('orderDataSave',this.visaOrderData);
+      this.$router.push('/visaInvoice');
     },
     passengerConfirm:function(v){
-      this.passengerList.list=v
+      this.visaOrderData.passenger=v
       history.go(-1)
-      this.passengerList.passenger=false
+      this.comDisplay.passenger=false
     },
     contactConfirm:function(v){
-      this.contactInfo.info=v
+      this.visaOrderData.contact=v
       history.go(-1)
-      this.contactInfo.contact=false
+      this.comDisplay.contact=false
     },
     deliveryConfirm:function(v){
-      this.deliveryInfo.info=v
+      this.visaOrderData.express=v
       history.go(-1)
-      this.deliveryInfo.delivery=false
+      this.comDisplay.delivery=false
     },
     setProposer:function(v){
       this.proposerInfo.info = v
       this.proposerInfo.proposer = false
-    },
-    compClose:function(){
-      this.invoiceData.invoice=false
-    },
-    dateConfirm:function(t){
-      var m = t.getMonth()+1
-      this.estimated_date = t.getFullYear() +'-'+ m +'-'+ t.getDate()
     },
     pushHistory:function(){
       var state = {  
@@ -166,13 +150,13 @@ export default{
       window.history.pushState(state,document.title, document.location.href);
     },
     verifyData:function(){
-      if (this.passengerList.list.length == 0) {
+      if (this.visaOrderData.passenger.length == 0) {
         Toast('您还未添加签证申请人')
         return false
-      }else if (this.contactInfo.info.name == '' || this.contactInfo.info.tel == '' || this.contactInfo.info.email == '') {
+      }else if (this.visaOrderData.contact.name == '' || this.visaOrderData.contact.tel == '' || this.visaOrderData.contact.email == '') {
         Toast('请选择或完善联系人资料')
         return false
-      }else if (this.deliveryInfo.info.name == '') {
+      }else if (this.visaOrderData.express.name == '') {
         Toast('请选择收件地址')
         return false
       }else{
@@ -183,10 +167,10 @@ export default{
       Indicator.open('提交订单');
       var send = {
         "id":this.$route.params.id,
-        "customers":this.passengerList.list,
-        "contact":this.contactInfo.info,
-        "shipping":{"method":1,"shippingId":this.deliveryInfo.info.id},
-        "invoice":this.invoiceData
+        "customers":this.visaOrderData.passenger,
+        "contact":this.visaOrderData.contact,
+        "shipping":{"method":1,"shippingId":this.visaOrderData.express.id},
+        "invoice":this.visaOrderData.invoice
       };
       let header = {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -197,6 +181,7 @@ export default{
         console.log(result.body)
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
+          this.$store.commit('orderDataClear');
           this.$router.push('/visaOrderDetail/'+rst.data.orderno)
         }else{
           Toast(rst.msg)
@@ -205,18 +190,22 @@ export default{
     }
   },
   watch:{
-    passengerList:{
+    visaOrderData:{
 　　　handler(){
-        this.totalPrice = this.passengerList.list.length * this.visaInfomation.price
+        this.totalPrice = this.visaOrderData.passenger.length * this.visaInfomation.price
 　　　},
 　　　deep:true
 　　}
   },
   components:{
-    Invoice,
     VisaPassengerList,
     ContactList,
     AddressList
+  },
+  computed: {
+    visaOrderData () {
+      return this.$store.state.visa.orderPageData;
+    }
   }
 }
 </script>

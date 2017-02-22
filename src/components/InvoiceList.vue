@@ -1,28 +1,27 @@
 <template>
-<div class="contact-list" id="apply-list">
-  <div class="addbtn" @click="contacter.display=true">添加联系人</div>
-  <div class="contactList">
-    <ul v-if="contactList != ''">
-      <li v-for="(item,index) in contactList">
+<div class="invoice-list" id="invoice-list">
+  <div class="addbtn" @click="invoice.display=true">添加联系人</div>
+  <div class="invoiceList">
+    <ul v-if="invoiceList != ''">
+      <li v-for="item in invoiceList">
         <div class="info" @click="confirm(item)">
-          <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.tel}}</span></div>
-          <div class="txt"><span>{{item.email}}</span></div>
+          <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.number}}</span></div>          
         </div>
-        <div class="editbtn" @click="contacter.display=true,contacter.data=item"></div>
+        <div class="editbtn" @click="invoice.display=true,invoice.data=item"></div>
       </li>
     </ul>
     <div v-else class="empty">暂无常用联系人</div>
   </div>
-  <contact-add 
-  v-if="contacter.display"
-  :info="contacter.data"
-  @submit="closeComponents">
-  </contact-add>
+  <invoice-add
+  v-if="invoice.display"
+  :info="invoice.data"
+  @submit="closeComponents">    
+  </invoice-add>
 </div>
 </template>
 
 <script>
-import ContactAdd from './ContactAdd'
+import InvoiceAdd from './InvoiceAdd'
 import { Toast } from 'mint-ui'
 export default {
   created: function () {
@@ -35,24 +34,24 @@ export default {
     window.addEventListener("popstate", function(e) {  
       _this.$emit('close');
     }, false);
-    this.getPassenger()
+    this.getInvoice()
   },
   data:function(){
     return{
-      contactList:'',
-      contacter:{"display":false,"data":""},
+      invoiceList:'',
+      invoice:{"display":false,"data":""},
     }
   },
   methods:{
-    getPassenger:function(){
-      var url = '/api/member/contact'
+    getInvoice:function(){
+      var url = '/api/member/invoice'
       this.$http.get(url).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           if (rst.data) {
-            this.contactList = rst.data
+            this.invoiceList = rst.data
           }else{
-            this.contactList = ''
+            this.invoiceList = ''
           }
         }else {
           console.log(rst.msg)
@@ -63,18 +62,18 @@ export default {
       this.$emit('confirm',item)
     },
     closeComponents:function(){
-      this.getPassenger()
-      this.contacter = {"display":false,"data":""}
+      this.getInvoice()
+      this.invoice = {"display":false,"data":""}
     }
   },
   components:{
-    ContactAdd
+    InvoiceAdd
   }
 }
 </script>
 
 <style lang="less" scoped>
-.contact-list{
+.invoice-list{
   background-color: #F6F6F6;
   position: fixed;
   top: 0;
@@ -91,7 +90,7 @@ export default {
     font-size: 0.7rem;color: #008be4;text-indent: 1.35rem;
     margin-bottom: 0.5rem;
   }
-  .contactList{
+  .invoiceList{
     margin: 0 0.5rem;
     background-color: #fff;
     padding-bottom: 1.5rem;
@@ -107,7 +106,7 @@ export default {
       padding: 0.25rem 0.5rem;
       li{
         border-bottom: 1px solid #c0c0c0;padding: 0.45rem 0 0.5rem;
-        position: relative;        
+        position: relative;
         .info{
           padding:0 1.5rem 0 0.5rem;
           .name{font-size: 0.7rem;color: #666666;line-height: 1.5rem;overflow: hidden;
