@@ -5,9 +5,9 @@ import Vuex from 'vuex'
 import MintUI from 'mint-ui'
 import Mock from 'mockjs'
 import $ from 'jquery'
+import BaiduMap from 'vue-baidu-map'
 import 'mint-ui/lib/style.css'
 import FastClick from 'fastclick'
-
 import './widget.js'
 import App from './App'
 import routes from './routes.js'
@@ -17,7 +17,9 @@ FastClick.attach(document.body);
 Vue.use(VueRouter);
 Vue.use(VueResource);
 Vue.use(MintUI);
-
+Vue.use(BaiduMap, {
+  ak: '5C6QSyU9skK6QRfrcEbwHRCx'
+})
 
 const resource = "/src/assets";
 const router = new VueRouter({
@@ -31,3 +33,4 @@ const app = new Vue({
   store,
   render: h => h(App)
 });
+

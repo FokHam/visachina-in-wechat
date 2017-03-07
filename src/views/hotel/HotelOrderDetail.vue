@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="hotel-link">
-        <span class="link"><i class="icon-address"></i>酒店地图</span>
+        <router-link :to="'/hotelMap/' + orderDetail.latitude + '/' + orderDetail.longitude" class="link"><i class="icon-address"></i>酒店地图</router-link>
         <span class="link" @click="callTel(orderDetail.telephone)"><i class="icon-phone"></i>酒店电话</span>
       </div>
       <div class="order-info">
@@ -120,7 +120,7 @@
       invokingWXPay:function(rst){
         const _this = this
         wx.config({
-          debug: true,
+          debug: false,
           appId: rst.config.appId, // 必填，公众号的唯一标识
           timestamp: rst.config.timestamp, // 必填，生成签名的时间戳
           nonceStr: rst.config.nonceStr, // 必填，生成签名的随机串
@@ -175,7 +175,6 @@
     color: #aaa;
     display: inline-block;
     width: 4rem;
-    height: 100%;
   }
   .content {
     flex: 1;

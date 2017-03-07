@@ -72,7 +72,7 @@ export default{
     invokingWXPay:function(rst){
       const _this = this
       wx.config({
-        debug: true,
+        debug: false,
         appId: rst.config.appId, // 必填，公众号的唯一标识
         timestamp: rst.config.timestamp, // 必填，生成签名的时间戳
         nonceStr: rst.config.nonceStr, // 必填，生成签名的随机串

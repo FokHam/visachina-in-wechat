@@ -20,13 +20,13 @@
         </div>
       </div>
       <div class="hotel-more">
-        <!-- <router-link :to="'/hotelMap/' + $route.params.id" class="item"> -->
+        <router-link :to="'/hotelMap/' + hotelDetail.latitude + '/' + hotelDetail.longitude" class="item">
         <div class="item">
           <span>{{ hotelDetail.address }}</span>
           <span class="location">{{ hotelDetail.ccity }}, {{ hotelDetail.ccountry }}</span>
           <span class="more">地图<i class="icon-more"></i></span>
         </div>
-        <!-- </router-link> -->
+        </router-link>
         <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
           <span>酒店简介</span>
           <span class="more">详情 <i class="icon-more"></i></span>

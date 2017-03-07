@@ -43,7 +43,7 @@
 <script>
 import Country from './wifiindex/SearchCountry'
 import { Indicator } from 'mint-ui'
-import Banner from '../../components/Banner'
+import Banner from './wifiindex/Banner'
 export default {
   name:"wifi",
   beforeCreate(){

@@ -302,15 +302,16 @@
       align-items: center;
       padding: 0.8rem 0.5rem;
       .label {
-        width: 3rem;
+        width: 4rem;
         margin-right: 0.5rem;
         text-align: justify;
+        line-height: 1rem;
       }
       input {
         width: 100%;
         border: none;
         font-size: 0.7rem;
-        line-height: 1;
+        line-height: 1rem;
       }
       .room-button {
         flex: 1;
@@ -328,7 +329,7 @@
       position: relative;
       input {
         width: 100%;
-        height: 100%;
+        height: 1rem;
         display: block;
       }
       .icon-delete {

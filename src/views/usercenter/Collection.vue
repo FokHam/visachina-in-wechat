@@ -14,7 +14,7 @@
         <ul>
           <li v-for="item in pageData.visa">            
               <div class="pic">
-                <img :src="'/static/images/visa/type'+item.visatype+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
+                <img :src="'/static/images/visa/type'+item.type+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
               </div>
               <router-link :to="'/visaDetail/'+item.products">
                 <div class="name">{{item.name}}</div>
@@ -33,15 +33,15 @@
       <div class="tit">酒店</div>
       <div class="list" v-if="pageData.hotel.length > 0">
         <ul>         
-          <li>
-            <a>
+          <li v-for="item in pageData.hotel">            
               <div class="pic">
-                <img src="/static/images/usercenter/pic1.png">
+                <img :src="item.image">
               </div>
-              <div class="name">香港W酒店<span>W Hong Kong</span></div>
-              <div class="funcbtn"></div>
-              <div class="price">￥2788</div>
-            </a>
+              <router-link :to="'/hotelDetail/'+item.products">
+                <div class="name">{{item.name}}<span></span></div>
+              </router-link>
+              <div class="funcbtn" @click="unCollect('hotel',item.products)"></div>
+              <div class="price">￥{{item.price}}</div>            
           </li>
         </ul>
       </div>
@@ -54,15 +54,15 @@
       <div class="tit">WIFI</div>
       <div class="list" v-if="pageData.wifi.length > 0">
         <ul>
-          <li>
-            <a>
+          <li v-for="item in pageData.wifi">            
               <div class="pic">
-                <img src="/static/images/usercenter/pic3.png">
+                <img :src="item.image">
               </div>
-              <div class="name">日本旅游WIFI</div>
-              <div class="funcbtn"></div>
-              <div class="price">￥88</div>
-            </a>
+              <router-link :to="'/wifiDetail/'+item.products">
+                <div class="name">{{item.name}}</div>
+              </router-link>
+              <div class="funcbtn" @click="unCollect('wifi',item.products)"></div>
+              <div class="price">￥{{item.price}}</div>            
           </li>          
         </ul>
       </div>
@@ -74,16 +74,15 @@
       <div class="tit">保险</div>
       <div class="list" v-if="pageData.insur.length > 0">
         <ul>
-          <li>
-            <a>
+          <li v-for="item in pageData.insur">
               <div class="pic">
-                <img src="/static/images/usercenter/pic2.png">
+                <img :src="item.image">
               </div>
-              <div class="name">“乐游全球”境外旅行保障计划 
- 黄金计划</div>
-              <div class="funcbtn"></div>
-              <div class="price">￥108</div>
-            </a>
+              <router-link :to="'/insuranceDetail/'+item.products">
+                <div class="name">{{item.name}}</div>
+              </router-link>
+              <div class="funcbtn" @click="unCollect('insurance',item.products)"></div>
+              <div class="price">￥{{item.price}}</div>
           </li>          
         </ul>
       </div>
@@ -99,7 +98,7 @@
   v-if="typedis"
   :listdata="typelist"
   @confirm="visatypeSet"
-  @close="closeComp">
+  @close="typedis=false">
   </picker>
 </div>
 </template>
@@ -175,9 +174,6 @@ export default{
         }
       });
     },
-    closeComp:function(){
-      this.typedis = false
-    },
     visatypeSet:function(v){
       this.typedis = false
       this.screening = v
@@ -226,6 +222,7 @@ export default{
             .pic{
               position: absolute;top: 10px;left: 10px;
               height: 3.5rem;width: 5rem;
+              overflow:hidden;
             }
             .name{
               padding-left: 5.5rem;padding-right:2rem;font-size: 0.7rem;

@@ -168,7 +168,7 @@ export default{
       var send = {
         "id":this.$route.params.id,
         "customers":this.visaOrderData.passenger,
-        "contact":this.visaOrderData.contact,
+        "contact":{"name":this.visaOrderData.contact.name,"phone":this.visaOrderData.contact.tel,"email":this.visaOrderData.contact.email},
         "shipping":{"method":1,"shippingId":this.visaOrderData.express.id},
         "invoice":this.visaOrderData.invoice
       };

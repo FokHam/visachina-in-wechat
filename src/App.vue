@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-    
+  <div id="app">    
     <suspend-ball></suspend-ball>
     <router-view></router-view>
   </div>

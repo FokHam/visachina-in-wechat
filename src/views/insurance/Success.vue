@@ -11,10 +11,9 @@
       <div class="detail">
         <div class="proname">{{pagedata.productName}}</div>
         <div class="desc">
-          <div class="txt">{{pagedata.contactName}}购买了{{pagedata.productName}}</div>
-          <div class="date">使用时间：<span>{{pagedata.useDate}}</span>至<span>{{pagedata.useEndDate}}</span></div>
-          <div class="location">取机地点：<span>{{pagedata.takeAddress.name}}</span></div>
-          <div class="location">还机地点：<span>{{pagedata.returnAddress.name}}</span></div>
+          <div class="txt">{{pagedata.policyHolder.surname+pagedata.policyHolder.name}}投了{{pagedata.productName}}</div>
+          <div class="person"><i>被保人：</i><span><p v-for="ip in pagedata.insuredPerson">{{ip.surname+ip.name}}</p></span></div>
+          <div class="date"><i>保障周期：</i><span>{{pagedata.dateRange}}</span></div>          
           <div class="time">{{pagedata.cdate}}</div>
         </div>
       </div>
@@ -40,15 +39,13 @@ export default{
   methods:{
     getPayResult:function(){
       Indicator.open('获取支付结果');
-      var url = '/api/pay/result',send = {type:"wifi",orderno:this.$route.params.id}
+      var url = '/api/pay/result',send = {type:"insurance",orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
-        //alert(result.body)
         var rst = JSON.parse(result.body)
         this.payStatus = rst.data
         var url = "/api/orders/detail",send={orderno:this.$route.params.id}
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
-          //alert(result.body)
           var rst = JSON.parse(result.body)
           console.log(result.body)
           if (rst.status == 1) {
@@ -58,8 +55,14 @@ export default{
           }
         });        
       });
+    },
+    callTel:function(num){
+      if (num != '') {
+        window.location.href = 'tel:'+num
+      }else{
+        Toast('暂无酒店电话')
+      }
     }
-
   }
 }
 </script>
@@ -118,22 +121,41 @@ export default{
         }
         .date{
           line-height: 1.3rem;
-          font-size: 0.7rem;
-          color: #999999;
+          padding-left: 4rem;
+          position: relative;
+          i{
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 0.7rem;
+            color: #999999;
+            line-height: 1.3rem;
+            font-style: normal;
+          }
           span{
             color: #018be3;
             font-size: 0.7rem;
           }
         }
-        .location{
+        .person{
           line-height: 1.3rem;
-          font-size: 0.7rem;
-          color: #999999;
+          padding-left: 4rem;
+          position: relative;
+          i{
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 0.7rem;
+            color: #999999;
+            line-height: 1.3rem;
+            font-style: normal;
+          }
           span{
             color: #666666;
             font-size: 0.7rem;
           }
         }
+        
         .time{
           font-size: 0.7rem;
           color:#999999;

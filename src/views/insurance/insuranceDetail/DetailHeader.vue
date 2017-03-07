@@ -15,6 +15,7 @@
           <span class="label">适用人群：</span><span>境外长途旅行，商务出差人士</span>
         </div>
       </div>
+      <div class="addfev" :class="{collect:iscollect==1}" @click="$emit('collectClick')"></div>
     </div>
   </div>
 </template>
@@ -22,7 +23,8 @@
 <script>
   export default {
     props: [
-      "isrDetail"
+      "isrDetail",
+      "iscollect"
     ]
   }
 </script>
@@ -30,27 +32,30 @@
 <style lang="less" scoped>
   .header {
     background: #fff;
-    padding: 0.8rem 0.6rem;
+    position: relative;
+    padding: 0.8rem 0.6rem 0.8rem 5.5rem;
     .header-left, .header-right {
       display: inline-block;
       vertical-align: top;
     }
     .header-left {
-      width: 25%;
+      position: absolute;
+      top: 0.8rem;
+      left: 0.6rem;
+      width: 4.5rem;
       text-align: center;
       .avator {
         display: block;
       }
     }
     .header-right {
-      width: 75%;
-      padding-left: 0.5rem;
       box-sizing: border-box;
       .name {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         line-height: 0.9rem;
         font-weight: bold;
         margin-bottom: 0.1rem;
+        padding-right: 1.7rem;
       }
       .spec {
         line-height: 0.8rem;
@@ -58,6 +63,23 @@
           font-size: 0.6rem;
           color: #999;
         }
+      }
+    }
+    .addfev{
+      position: absolute;
+      height: 1.5rem;
+      width: 1.5rem;
+      right: 0.6rem;
+      top: 0.9rem;
+      font-size: 0.6rem;
+      text-align: center;
+      background-image: url('/static/images/visa/uncollect.png');
+      background-repeat: no-repeat;
+      background-size: 1.25rem;
+      background-position: center 0.4rem;
+      color: #fe7c98;
+      &.collect{
+        background-image: url('/static/images/visa/collect.png');
       }
     }
   }

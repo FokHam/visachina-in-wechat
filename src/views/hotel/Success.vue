@@ -42,11 +42,13 @@ export default{
       Indicator.open('获取支付结果');
       var url = '/api/pay/result',send = {type:"hotel",orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
+        //alert(result.body)
         var rst = JSON.parse(result.body)
         this.payStatus = rst.data
         var url = "/api/orders/detail",send={orderno:this.$route.params.id}
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
+          //alert(result.body)
           var rst = JSON.parse(result.body)
           console.log(result.body)
           if (rst.status == 1) {

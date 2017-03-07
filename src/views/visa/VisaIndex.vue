@@ -5,7 +5,7 @@
         <img src="/static/images/visa/banner.png">
         <div class="flag">
           <div class="inner">
-            <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'.png'">
+            <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'-1.png'">
           </div>
         </div>
         <div class="location">
@@ -232,11 +232,9 @@ export default {
       height: 60px;width: 60px;border-radius: 60px;overflow: hidden;
     }
     img{
-      height: 75px;
+      height: 60px;
       border-radius: 60px;
-      margin-left: -6px;
-      margin-top: -3px;
-      width: 113px;
+      width: 60px;
     }
   }
   .location{

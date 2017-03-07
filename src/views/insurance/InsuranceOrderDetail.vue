@@ -2,8 +2,8 @@
   <div class="insurance-order-detail">
     <div class="order-status">
       <div class="status"
-        :class="{ paid: orderDetail.pay_status === '1'}">
-        订单状态：<span>{{ orderDetail.pay_status === "0" ? "待支付" : "已支付" }}</span>
+        :class="{ paid: orderDetail.pay_status != 0}">
+        订单状态：<span>{{ orderDetail.pay_status == "0" ? "待支付" : "已支付" }}</span>
       </div>
     </div>
     <div class="order-info"
@@ -107,12 +107,14 @@
     </div>
     <div class="order-button">
       <span class="price">保费：<span class="amount">￥{{ orderDetail.totalPrice }}</span></span>
-      <span class="button pay-button">立即支付</span>
+      <span class="button pay-button" @click="payOrder">立即支付</span>
     </div>
   </div>
 </template>
 
 <script>
+  import wx from 'weixin-js-sdk'
+  import { Indicator } from 'mint-ui'
   export default {
     data () {
       return {
@@ -144,6 +146,39 @@
       goInsuranceDetail () {
         let url = "/insuranceDetail/" + this.orderDetail.product; //todo: 接口返回产品id后跳转
         this.$router.push(url);
+      },
+      payOrder:function(){
+        Indicator.open('发起微信支付');
+        var url = "/api/pay/index",send = {orderno:this.$route.params.id}
+        this.$http.get(url,{params:send}).then(function(result){
+          Indicator.close();
+          this.invokingWXPay(result.body)                
+        });
+      },
+      invokingWXPay:function(rst){
+        const _this = this
+        wx.config({
+          debug: false,
+          appId: rst.config.appId, // 必填，公众号的唯一标识
+          timestamp: rst.config.timestamp, // 必填，生成签名的时间戳
+          nonceStr: rst.config.nonceStr, // 必填，生成签名的随机串
+          signature: rst.config.signature,// 必填，签名，见附录1
+          jsApiList: ["chooseWXPay"]
+        });
+        wx.ready(function(){
+          wx.chooseWXPay({
+            timestamp: rst.payParams.timeStamp, 
+            nonceStr: rst.payParams.nonceStr, // 支付签名随机串，不长于 32 位
+            package: rst.payParams.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+            signType: rst.payParams.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+            paySign: rst.payParams.paySign, // 支付签名
+            success: function (res) {
+              if (res.errMsg == 'chooseWXPay:ok') {
+                _this.$router.push('/insuranceSuccess/' + _this.$route.params.id)  
+              }
+            }
+          });
+        });
       }
     },
     computed: {
@@ -152,7 +187,7 @@
         return arr[this.orderDetail.tripPurposeId];
       },
       destination () {
-        //return this.orderDetail.destination.join("、");
+        return this.orderDetail.destination.join("、");
       }
     }
   }
@@ -223,7 +258,6 @@
     color: #aaa;
     display: inline-block;
     width: 4.5rem;
-    height: 100%;
   }
   .content {
     flex: 1;

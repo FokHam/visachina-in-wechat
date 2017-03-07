@@ -1,10 +1,10 @@
 <template>
 <div class="user-function" :class="{ani:moveAni}" @touchmove="logoMove" :style="{transform:'translate('+logoPositionX+'px,'+logoPositionY+'px)'}" @touchend="logoReposition" @touchstart="moveAni=false" @click="navDis=!navDis">
-  <div class="logo">logo</div>
+  <div class="logo"><img v-if="shopinfo != ''" :src="shopinfo.logo"></div>
   <div class="memu" :class="{active:navDis,left:whichSide=='left',right:whichSide=='right'}">
     <ul>
       <router-link class="n1" to="/home">首页</router-link>
-      <router-link class="n2" to="/home">客服</router-link>
+      <span class="n2" @click="callTel()">客服</span>
       <router-link class="n3" to="/userCenter">我的</router-link>
     </ul>
   </div>
@@ -14,9 +14,11 @@
 <script>
 export default{
   created: function () {
+    this.getShopInfo()
   },
   data:function(){
     return{
+      shopinfo:'',
       whichSide:'right',
       moveAni:false,
       logoPositionX:window.screen.width-54,
@@ -27,6 +29,21 @@ export default{
     }
   },
   methods:{
+    getShopInfo:function(){
+      var url = '/api/home/shop_info'
+      this.$http.get(url).then(function(result){
+        let rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.shopinfo = rst.data
+          document.title = rst.data.name
+        }else{
+          console.log(rst.msg)
+        }      
+      });
+    },
+    callTel:function(){
+      window.location.href = 'tel:'+this.shopinfo.phone
+    },
     logoMove:function(e){
       this.navDis = false
       e.preventDefault()
@@ -83,6 +100,10 @@ export default{
     border-radius: 50px;overflow: hidden;
     background-color: #58a6ea;color: #fff;line-height: 50px;
     font-size: 0.7rem;text-align: center;
+    img {
+      height: 50px;
+      width: 50px;
+    }
   }
   .memu{
     transition: ease-in-out 0.1s;
@@ -97,7 +118,7 @@ export default{
       right: 27px;
       &.active{width: 130px; padding: 0 35px 0 20px;}
     }
-    a{
+    a,span{
       display: block;text-align: center;
       font-size: 12px;color: #fff;
       height: 15px;line-height: 15px; 

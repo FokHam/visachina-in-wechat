@@ -2,6 +2,8 @@
   <div class="isr-d-page">
     <detail-header
       :isrDetail="insuranceDetail"
+      :iscollect="iscollect"
+      @collectClick="addCollect"
     ></detail-header>
     <detail-content
       :isrDetail="insuranceDetail"
@@ -24,13 +26,15 @@
   import DetailDatepicker from "./insuranceDetail/DetailDatepicker"
   import DetailCreate from "./insuranceDetail/DetailCreate"
   import { Indicator } from 'mint-ui'
+  import { Toast } from 'mint-ui'
 
   export default {
     data: function () {
       return {
         type: 0, // 0单次，1一年多次，2一年一次
         minDay: 3,
-        ageSelect: 0
+        ageSelect: 0,
+        iscollect:0
       }
     },
     components: {
@@ -78,10 +82,34 @@
           Indicator.close();
         }
       })
+      this.isCollect()
     },
     methods: {
       changeAge (n) {
         this.ageSelect = n;
+      },
+      addCollect:function(){
+        var url = '/api/member/collect_create?type=insurance&product_id=' + this.$route.params.id
+        this.$http.get(url).then(function(result){
+          var rst = JSON.parse(result.body)
+          if (rst.status == 1) {
+            this.isCollect()
+            Toast(rst.msg)
+          }else {
+            console.log(rst.msg)
+          }
+        });
+      },
+      isCollect:function(){
+        var url = '/api/member/is_collect?type=insurance&product_id=' + this.$route.params.id
+        this.$http.get(url).then(function(result){
+          var rst = JSON.parse(result.body)
+          if (rst.status == 1) {          
+            this.iscollect = rst.data.result
+          }else {
+            console.log(rst.msg)
+          }
+        });
       }
     }
   }

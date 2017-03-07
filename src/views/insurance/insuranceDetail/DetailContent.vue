@@ -83,7 +83,7 @@
     .content-title {
       position: relative;
       .title {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         line-height: 2rem;
       }
       .enter {
@@ -114,7 +114,7 @@
     .age {
       border-top: 1px solid #eee;
       .title {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         line-height: 2rem;
       }
       .value {

@@ -2,7 +2,7 @@
 <div class="order-detail" id="order-detail">
   <div class="orderpage" v-if="orderData != ''">
     <div class="order_tatus">
-      <div class="status" :class="{paid:orderData.pay_status == 1}">订单状态：<span v-if="orderData.pay_status == 0">待支付</span><span v-else>已支付</span></div>
+      <div class="status" :class="{paid:orderData.pay_status != 0}">订单状态：<span v-if="orderData.pay_status == 0">待支付</span><span v-else>已支付</span></div>
     </div>
     <div class="basic_info">
       <dl><dd>订单编号：</dd><dt>{{orderData.orderno}}</dt></dl>
@@ -25,14 +25,15 @@
         </div>
         <div class="top" v-else>
             <div class="time">{{orderData.cdate}}</div>        
-            <div class="status">未支付</div>
+            <div class="status" v-if="orderData.pay_status == 0">未支付</div>
+            <div class="status" v-else>{{statusList[item.guestStatus]}}</div>
         </div>
         <div class="center">
           <div class="name">{{item.value}}</div>
           <div class="email">（{{typeList[item.vgroup-1]}}）发送所需资料</div>
         </div>
-        <div class="bottom">
-          <div class="refund">退款</div>
+        <div class="bottom" v-if="orderData.pay_status!=0">
+          <div class="refund" @click="visaRefund(item.id)" v-if="item.guestStatus>=0&&item.guestStatus<5">退款</div>
           <div class="express" v-if="false">顺丰快递 85463654654</div>
         </div>
       </div>
@@ -69,13 +70,14 @@
       <div class="price">合计：<span>￥{{orderData.totalPrice}}</span></div>
       <div class="creatBtn" @click="payOrder">立即支付</div>
     </div>
-    <div class="buyagain" v-else>再次购买</div>
+    <router-link class="buyagain" v-else :to="'/visaDetail/'+orderData.product.id">再次购买</router-link>
   </div>
 </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
+import { MessageBox } from 'mint-ui'
 import wx from 'weixin-js-sdk'
 export default{
   name: 'order-detail',
@@ -86,6 +88,7 @@ export default{
   data:function(){
     return{
       typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
+      statusList:['待接单','已接单','补资料','资料齐全','已预约','已入馆','已出签','已拒签','已寄出','已完成'],
       orderData:''
     }
   },
@@ -115,7 +118,7 @@ export default{
     invokingWXPay:function(rst){
       const _this = this
       wx.config({
-        debug: true,
+        debug: false,
         appId: rst.config.appId, // 必填，公众号的唯一标识
         timestamp: rst.config.timestamp, // 必填，生成签名的时间戳
         nonceStr: rst.config.nonceStr, // 必填，生成签名的随机串
@@ -134,6 +137,19 @@ export default{
               _this.$router.push('/visaSuccess/' + _this.$route.params.id)  
             }                       
           }
+        });
+      });
+    },
+    visaRefund (gid) {
+      MessageBox.confirm('确定申请退款?').then(action => {
+        var api = "/api/refund/index",send={
+          type:"visa",
+          orderno:this.$route.params.id,
+          guest_ids:gid
+        }
+        this.$http.get(api,{params:send}).then(function(result){
+          var rst = JSON.parse(result.body)
+          alert(result.body)          
         });
       });
     }
@@ -397,6 +413,7 @@ export default{
     }
   }
   .buyagain{
+    display: block;
     background-color: #008BE4;
     line-height: 2.5rem;
     font-size: 0.8rem;

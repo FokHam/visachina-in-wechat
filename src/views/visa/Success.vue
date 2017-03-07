@@ -12,7 +12,7 @@
         <div class="proname">{{pagedata.product.name}}</div>
         <div class="list">
           <ul>
-            <li v-for="item in pagedata.guest"><span class="name">{{item.value}}</span><span class="type">{{typeList[item.vgroup-1]}}</span></li>
+            <li v-for="item in pagedata.guests"><span class="name">{{item.value}}</span><span class="type">{{typeList[item.vgroup-1]}}</span></li>
           </ul>
         </div>
         <div class="desc">

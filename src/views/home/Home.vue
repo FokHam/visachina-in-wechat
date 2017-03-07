@@ -1,7 +1,7 @@
 <template>
   <div id="home" class="home">
     <div class="homePage" v-if="searchdis == false && citydis == false">
-      <banner :pics="pics"></banner>
+      <banner></banner>
       <div class="search">
         <div class="tabs">
           <span v-on:click="searchTap(0)" v-bind:class="{active:isActive == 0}"><i>签证</i></span>
@@ -107,16 +107,13 @@
 import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
 import Calendar from "../../components/Calendar.vue";
-import Banner from '../../components/Banner'
+import Banner from './index/Banner'
 import Countrys from '../../components/SearchCountry'
 import Cities from '../../components/SearchCity'
 import Provice from '../../components/ProviceList'
 import Picker from '../../components/Picker'
 export default {
   name:'home',
-  beforeCreate(){
-    document.title = "众意旅游"
-  },
   data:function(){
     var sTime = new Date(), eTime;
       sTime.setTime(sTime.getTime() + 24 * 3600 * 1000);
@@ -151,48 +148,48 @@ export default {
     }
   },
   methods:{
-    searchTap: function(v){
+    searchTap (v){
       this.isActive = v
     },
-    setDate:function(s,e){
+    setDate (s,e){
       this.pickingDate = false
       this.startDate = s
       this.endDate = e
       this.hotelCondition.startDate = s.getFullYear()+'-'+((s.getMonth()+1).toString().length == 1?'0'+(s.getMonth()+1):(s.getMonth()+1))+'-'+(s.getDate().toString().length == 1?'0'+s.getDate():s.getDate())
       this.hotelCondition.endDate = e.getFullYear()+'-'+((e.getMonth()+1).toString().length == 1?'0'+(e.getMonth()+1):(e.getMonth()+1))+'-'+(e.getDate().toString().length == 1?'0'+e.getDate():e.getDate())
     },
-    openSearch:function(){
+    openSearch () {
       this.searchdis = true
     },
-    changeCountry:function(name,id){
+    changeCountry (name,id) {
       this.searchdis = false
       this.visacondition.ct = id
       this.visacondition.ctname = name
     },
-    changeCity:function(name){
+    changeCity (name) {
       this.citydis = false
       this.hotelCondition.destination = name
     },
-    openProvice:function(){
+    openProvice () {
       this.provicedis = true
     },
-    choseProvice:function(name,id){
+    choseProvice (name,id) {
       this.provicedis = false
       this.visacondition.dq = id
       this.visacondition.dqname = name
     },
-    closeComp:function(){
+    closeComp () {
       this.provicedis = false
       this.citydis = false
       this.searchdis = false
       this.typedis = false
     },
-    visatypeSet:function(v){
+    visatypeSet (v) {
       this.typedis = false
       var n = this.typelist.indexOf(v)
       this.visacondition.lx = n
     },
-    searchVisa:function(){
+    searchVisa () {
       if (this.visacondition.ct != '' && this.visacondition.dq != '') {
         this.$store.commit('searchConditionSave', this.visacondition)
         this.$router.push('/visa')
@@ -200,7 +197,7 @@ export default {
         Toast('请选择目的地和常住地');
       }
     },
-    searchHotel:function(){
+    searchHotel () {
       if (this.hotelCondition.startDate !== '' && this.hotelCondition.endDate !== '' && this.hotelCondition.destination !== '') {
         this.$store.commit('searchHotelConditionSave', this.hotelCondition)
         this.$router.push('/hotel')
