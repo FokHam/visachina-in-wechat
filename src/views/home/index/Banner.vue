@@ -1,6 +1,6 @@
 <template>
   <div class="banner" v-if="bannerpics != ''">
-    <img :src="bannerpics[0].img_url" width="100%">
+    <img src="/static/images/home/banner.png" width="100%">
     <div class="inner">
       <mt-swipe :auto="4000">
         <mt-swipe-item v-for="item in bannerpics">

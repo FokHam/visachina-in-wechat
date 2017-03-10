@@ -8,8 +8,8 @@
       </li>
       <li class="info-item">
         <span class="label">英文名字</span>
-        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓First name" value="">
-        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名Last name" value="">
+        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓：如Zhang" value="">
+        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名：如San" value="">
       </li>
       <li class="info-item">
         <span class="label">证件类型</span>

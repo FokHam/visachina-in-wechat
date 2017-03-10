@@ -49,8 +49,8 @@
         <div class="l_list">
           <router-link class="insurance" to="/insurance"><span>保险</span></router-link>
           <router-link class="wifi" to="/wifi"><span>wifi</span></router-link>
-          <router-link class="notarization" to=""><span>公证认证</span></router-link>
-          <router-link class="line" to=""><span>线路</span></router-link>
+          <!--<router-link class="notarization" to=""><span>公证认证</span></router-link>
+          <router-link class="line" to=""><span>线路</span></router-link>-->
         </div>
       </div>
       <div class="check-made">
@@ -58,13 +58,10 @@
         <router-link class="check" to="/visaProgress">
           <span>查看签证进度 ></span>
         </router-link>
-        <router-link class="customized" to="">
+        <!--<router-link class="customized" to="">
           <span>定制行程 ></span>
-        </router-link>
+        </router-link>-->
       </div>
-      <a href="/api/pay/test">支付测试</a>
-      <router-link to="/visaOrder/2072">支付测试2222</router-link>
-      <router-link to="/visaSuccess/1702143781">支付成功</router-link>
     </div>
     <countrys
     v-if="searchdis"
@@ -99,19 +96,20 @@
     :day1="startDate"
     :day2="endDate"
     :dayDelay="1">
-  </calendar>
+  </calendar>  
   </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
-import Calendar from "../../components/Calendar.vue";
+import Calendar from "../../components/Calendar"
 import Banner from './index/Banner'
 import Countrys from '../../components/SearchCountry'
 import Cities from '../../components/SearchCity'
 import Provice from '../../components/ProviceList'
 import Picker from '../../components/Picker'
+
 export default {
   name:'home',
   data:function(){
@@ -304,13 +302,9 @@ export default {
     padding-bottom: 15px;
     .tit{color: #999999;font-size: 0.6rem; text-align: center;padding: 12px 0;}
     .l_list{
-      padding:0 20px;
-      -webkit-column-count: 4;
-      -webkit-column-gap: normal;
-      column-count: 4;
-      column-gap: normal;
+      text-align: center;
       a{
-        float: left;
+        margin:0 1rem;        
         display: inline-block;width: 3rem;
         height: 3rem;background-color: #fff;
         border-radius: 2px;
@@ -334,7 +328,7 @@ export default {
     position: relative;
     a{
       position: absolute;top: 0;
-      width: 50%;height: 100%;display: block;
+      width: 100%;height: 100%;display: block;
     }
     .check{
       left: 0;

@@ -2,52 +2,52 @@
   <div class="visa-refund" id="visa-refund">
     <div class="step">
       <ul>
-        <li :class="{on:refundstep == 1}"><span>1</span><p>申请<br>退款</p></li>
-        <li :class="{on:refundstep == 2}"><span>2</span><p>商家处<br>理退款</p></li>
-        <li :class="{on:refundstep == 3 || refundstep == 4}"><span>3</span><p>确认退<br>款事项</p></li>
-        <li :class="{on:refundstep == 5}"><span>4</span><p>退还<br>资料</p></li>
-        <li :class="{on:refundstep == 6}"><span>5</span><p>退款<br>完成</p></li>
+        <li :class="{on:pageData == false}"><span>1</span><p>申请<br>退款</p></li>
+        <li :class="{on:pageData.status == 0}"><span>2</span><p>商家处<br>理退款</p></li>
+        <li :class="{on:pageData.status == 1 || pageData.status == 2}"><span>3</span><p>确认退<br>款事项</p></li>
+        <li :class="{on:pageData.status == 3}"><span>4</span><p>退还<br>资料</p></li>
+        <li :class="{on:pageData.status == 4}"><span>5</span><p>退款<br>完成</p></li>
       </ul>
       <div class="line"></div>
     </div>
     <div class="stepcontent">
-      <div class="item" v-if="refundstep == 1">
+      <div class="item" v-if="pageData == false">
         <div class="txt">如果您的行程有变或其他原因可以申请退款，商家将停止办理您的签证。</div>
         <div class="btns">
-          <span class="confirm" @click="refundstep = 2">申请退款</span>
+          <span class="confirm" @click="agreeRefund()">申请退款</span>
           <span class="contact">联系客服</span>
         </div>
       </div>
-      <div class="item" v-if="refundstep == 2">
+      <div class="item" v-if="pageData.status == 0">
         <div class="txt">您已提交了退款申请，等待商家处理。</div>
         <div class="btn">
-          <span class="contact" @click="refundstep = 3">联系客服</span>
+          <span class="contact">联系客服</span>
         </div>
       </div>
-      <div class="item" v-if="refundstep == 3">
+      <div class="item" v-if="pageData.status == 1">
         <div class="txt">同意以下退款事项，请尽快确认。如异议请联系客服。系统将会7天后自动确认</div>
         <div class="btns">
-          <span class="confirm" @click="refundstep = 4">同意退款事项</span>
+          <span class="confirm" @click="agreeMoney()">同意退款事项</span>
           <span class="contact">联系客服</span>
           <span></span>
         </div>
       </div>
-      <div class="item" v-if="refundstep == 4">
+      <div class="item" v-if="pageData.status == 2">
         <div class="txt">如没有需要退还的原件，无需关注物流信息。</div>
         <div class="btn">
-          <span class="contact" @click="refundstep = 5">联系客服</span>
-          <span></span>
-        </div>
-      </div>
-      <div class="item" v-if="refundstep == 5">
-        <div class="txt">如收到退还的原件，请尽快确认。系统将会7天后自动确认退款完成。（如没有原件，无需关注物流信息）</div>
-        <div class="btns">
-          <span class="confirm" @click="refundstep = 6">退款完成</span>
           <span class="contact">联系客服</span>
           <span></span>
         </div>
       </div>
-      <div class="item" v-if="refundstep == 6">
+      <div class="item" v-if="pageData.status == 3">
+        <div class="txt">如收到退还的原件，请尽快确认。系统将会7天后自动确认退款完成。（如没有原件，无需关注物流信息）</div>
+        <div class="btns">
+          <span class="confirm" @click="confirmSuccess()">退款完成</span>
+          <span class="contact">联系客服</span>
+          <span></span>
+        </div>
+      </div>
+      <div class="item" v-if="pageData.status == 4">
         <div class="txt">如收到退还的原件，请尽快确认。系统将会7天后自动确认退款完成。（如没有原件，无需关注物流信息）</div>
         <div class="btn">
           <span class="contact">联系客服</span>
@@ -57,10 +57,10 @@
     </div>
     <div class="stephistory">
       <ul>
-        <li v-if="refundstep >= 6">
-          <p>您于 2016/12/20 15:45:30 确认退款完成。</p>
+        <li v-for="item in pageData.refund_log">
+          <p>{{item.memo}}</p>
         </li>
-        <li v-if="refundstep >= 5">
+        <!--<li v-if="refundstep >= 5">
           <p>商家于 2016/12/20 15:45:30 退还资料。</p>
           <div class="express">顺丰单号：2132131321</div>
         </li>
@@ -79,7 +79,7 @@
         </li>
         <li v-if="refundstep >= 2">
           <p>您于2017-3-3 15:08:55 发起了退款申请</p>
-        </li>
+        </li>-->
 
       </ul>
     </div>
@@ -88,17 +88,72 @@
 </template>
 
 <script>
+  import { Indicator } from 'mint-ui'
+  import { MessageBox } from 'mint-ui'
   export default {
     created () {
-
+      this.getData()
     },
     data () {
       return{
+        pageData:'',
         refundstep:1
       }
     },
     methods:{
-
+      getData () {
+        Indicator.open();
+        let url = '/api/visa/refund_detail',send = {id:this.$route.params.gid};
+        this.$http.get(url,{params:send}).then(function(result){
+          Indicator.close();
+          let rst = JSON.parse(result.body);
+          if (rst.status == 1) {
+            this.pageData = rst.data.refund
+          }else{
+            console.log(rst.msg)
+          }
+        });
+      },
+      agreeRefund () {
+        MessageBox.confirm('确定申请退款?').then(action => {
+          var api = "/api/refund/index",send={
+            orderno:this.$route.params.id,
+            guest_ids:this.$route.params.gid
+          }
+          this.$http.get(api,{params:send}).then(function(result){
+            var rst = JSON.parse(result.body)
+            if (rst.status == 1) {
+              this.getData()
+            }else{
+              alert(rst.msg)
+            }            
+          });
+        });
+      },
+      agreeMoney () {
+        MessageBox.confirm('确认同意退款金额?').then(action => {
+          var api = "/api/refund/confirm_refund",send={id:this.$route.params.gid}
+          this.$http.get(api,{params:send}).then(function(result){
+            var rst = JSON.parse(result.body)
+            if (rst.status == 1) {
+              this.getData()
+            }else{
+              alert(rst.msg)
+            } 
+          });
+        });
+      },
+      confirmSuccess () {
+        var api = "/api/refund/complete_refund",send={id:this.$route.params.gid}
+        this.$http.get(api,{params:send}).then(function(result){
+          var rst = JSON.parse(result.body)
+          if (rst.status == 1) {
+            this.getData()
+          }else{
+            alert(rst.msg)
+          } 
+        });
+      }
     }
 
   }

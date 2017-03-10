@@ -62,7 +62,7 @@
             </div>
           </router-link></li>
         </ul>
-        <p class="page-infinite-loading">{{loadingtxt}}</p>      
+        <p class="page-infinite-loading" v-if="pagestatus">加载更多数据</p>      
       </div>
     </div>
     <countrys
@@ -103,7 +103,7 @@ export default {
     if (this.visaCondition.ct=='') {
       this.$router.push('/home')
     }else{
-      this.getListData()
+      this.getListData('reload')
     }
   },
   components: {
@@ -124,7 +124,7 @@ export default {
       screendis:false,
       tabcount:0,
       screenposition:false,
-      loadingtxt:"加载列表中...",
+      pagestatus:true,
       listdata:[]
     }
   },
@@ -155,35 +155,31 @@ export default {
       this.screendis = false
     },
     loadMore:function(){
-      if (this.listdata.length != 0) {
+      if (this.listdata.length != 0 && this.pagestatus) {
         this.getListData()
-      }
+      } 
     },
     getListData:function(t){
-      if (this.searchdis==true) {
-        return false
-      }
-      Indicator.open('加载中...');
+      if (this.searchdis == true) { return false }      
       if (t=="reload") {
         this.listdata = []
+        this.visaCondition.page = 1
+        this.pagestatus = true
+      }else{
+        this.visaCondition.page += 1
       }
+      Indicator.open('加载中...');
       var url = '/api/visa/index',send=this.visaCondition
       this.$http.get(url,{params:send}).then(function(result){
-        console.log(result)
         Indicator.close()
         var rst = JSON.parse(result.body)
-
         if (rst.status == 1) {
-          if (rst.data.list.length > 0) {
-            for (var i=0; i<rst.data.list.length; i++) {
-              this.listdata.push(rst.data.list[i])
-            }
-            //this.visaCondition.page += 1
-            this.loadingtxt = '加载列表中...'
-          }else {
-            console.log('没有更多数据')
-            this.loadingtxt = '没有更多内容了哦~'
-          }
+          for (var i=0; i<rst.data.list.length; i++) {
+            this.listdata.push(rst.data.list[i])
+          }            
+          if (this.visaCondition.page == rst.data.totalPage) {
+            this.pagestatus = false            
+          }           
         }else {
           console.log(rst.msg)
         }

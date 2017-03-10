@@ -172,18 +172,20 @@ export default {
         }
         .right{
           padding-left: 80px;
-          .name{font-size: 0.7rem;margin-bottom: 10px;}
+          .name{font-size: 0.7rem;margin-bottom: 0.5rem;}
           .tags{
-            height: 16px;overflow: hidden;margin-bottom: 7px;
+            height: 0.8rem;overflow: hidden;margin-bottom: 0.3rem;
+            overflow:hidden;
             span{
-              display: inline-block;
-              padding-left: 20px;color: #91d5fe;
+              display:block; float: left;
+              padding-left: 1rem;color: #91d5fe;
               background-image: url('/static/images/wifi/icon-yes.png');
               background-position: left center;
-              background-size: 16px;
+              background-size: 0.8rem;
               background-repeat: no-repeat;
-              line-height: 16px;
-              margin-right: 10px;
+              line-height: 0.8rem;
+              height: 0.8rem;
+              margin-right: 0.5rem;
               font-size: 0.6rem;
             }
           }

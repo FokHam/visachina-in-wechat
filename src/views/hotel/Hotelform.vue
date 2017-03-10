@@ -27,13 +27,13 @@
           <div class="item">
             <span class="label">入住人</span>
             <div class="input-wrap">
-              <input type="text" v-model="room.last_name" placeholder="姓 Last Name">
+              <input type="text" v-model="room.last_name" placeholder="姓：如Zhang">
               <i class="icon-delete"
                 v-if="room.last_name"
                 @click="room.last_name=''"></i>
             </div>
             <div class="input-wrap">
-              <input type="text" v-model="room.first_name" placeholder="名 First Name">
+              <input type="text" v-model="room.first_name" placeholder="名：如San">
               <i class="icon-delete"
                 v-if="room.first_name"
                 @click="room.first_name=''"></i>
@@ -51,13 +51,13 @@
           <div class="item">
             <span class="label">联系人</span>
             <div class="input-wrap">
-              <input type="text" v-model="contact.last_name" placeholder="姓 Last Name">
+              <input type="text" v-model="contact.last_name" placeholder="姓：如Zhang">
               <i class="icon-delete"
                 v-if="contact.last_name"
                 @click="contact.last_name=''"></i>
             </div>
             <div class="input-wrap">
-              <input type="text" v-model="contact.first_name" placeholder="名 First Name">
+              <input type="text" v-model="contact.first_name" placeholder="名：如San">
               <i class="icon-delete"
                 v-if="contact.first_name"
                 @click="contact.first_name=''"></i>

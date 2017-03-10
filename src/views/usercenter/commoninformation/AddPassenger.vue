@@ -11,8 +11,8 @@
     <div class="item">
       <span>英文名字</span>
       <div class="ipt name">
-        <input type="text" v-model="clientinfo.spell_surname" placeholder="姓LastName">
-        <input type="text" v-model="clientinfo.spell_name" placeholder="名FirstName">
+        <input type="text" v-model="clientinfo.spell_surname" placeholder="姓：如Zhang">
+        <input type="text" v-model="clientinfo.spell_name" placeholder="名：如San">
       </div>      
     </div>
     <div class="item">

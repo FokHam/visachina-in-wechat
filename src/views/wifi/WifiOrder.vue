@@ -4,7 +4,7 @@
     <span class="left"></span><span class="right"></span>
     <div class="tit">{{pageData.name}}</div>
     <div class="counter">{{pageData.company}}</div>
-    <div class="txt">最小预定{{pageData.erp_min_days}}天，最多预定90天</div>
+    <div class="txt">最少预定{{pageData.erp_min_days}}天，最多预定90天</div>
   </div>
   <div class="quantity">
     <div class="tit">预定台数<span>(最多可预定5台)</span></div>

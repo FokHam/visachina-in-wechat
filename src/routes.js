@@ -72,13 +72,13 @@ var routes = [{
   path: "/visaProgress",
   component: VisaProgress
 },{
-  path: "/progressDetail",
+  path: "/progressDetail/:id",
   component: ProgressDetail
 },{
   path: "/visaSuccess/:id",
   component: VisaSuccess
 },{
-  path: "/visaRefund/:id",
+  path: "/visaRefund/:id/:gid",
   component: VisaRefund
 },{
   path: "/insurance",

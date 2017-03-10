@@ -2,7 +2,7 @@
 <div class="order-detail" id="order-detail">
   <div class="orderpage" v-if="orderData != ''">
     <div class="order_tatus">
-      <div class="status" :class="{paid:orderData.pay_status == 1}">订单状态：<span v-if="orderData.pay_status == 0">待支付</span><span v-else>已支付</span></div>
+      <div class="status" :class="{paid:orderData.pay_status != 0}">订单状态：<span>{{ payStatusTxt[orderData.pay_status] }}</div>
     </div>
     <div class="proname">
       <router-link :to="'/wifiDetail/'+orderData.product">{{orderData.productName}}</router-link>
@@ -22,18 +22,32 @@
       <dl><dd>联系电话：</dd><dt>{{orderData.contactMobile}}</dt></dl>
       <dl><dd>电子邮箱：</dd><dt>{{orderData.contactEmail}}</dt></dl>
     </div>
-    
-    <div class="creatpay" v-if="orderData.pay_status == 0">
-      <div class="price">合计：<span>￥{{orderData.totalPrice}}</span></div>
-      <div class="creatBtn" @click="payOrder">立即支付</div>
+    <div class="order-button" v-if="orderData.pay_status == 0">
+      <span class="price">合计：<span class="amount">￥{{ orderData.totalPrice }}</span></span>
+      <span class="button pay-button" @click="payOrder">立即支付</span>
     </div>
-    <div class="buyagain" v-else>再次购买</div>
+    <div class="order-button" v-if="orderData.pay_status == 2&&orderData.refundFlag == 1">
+      <span class="button cancel-button" @click="refundMsg=true">取消策略</span>
+      <span class="button pay-button" @click="refundOrder">申请退款</span>
+    </div>
+    <div class="order-button" v-if="orderData.pay_status == 2&&orderData.refundFlag == 0">
+      <span class="button cancel-button" @click="refundMsg=true">取消策略</span>
+      <span class="button pay-button" @click="goWifiDetail">再次预定</span>
+    </div>
   </div>
+  <message 
+  v-if="refundMsg"
+  @close="refundMsg=false"
+  :text="'取件日期' + orderData.useDate + ' 00:00:00前可以免费取消。逾期不可以取消。'">
+  </message>
 </div>
 </template>
 
 <script>
+import { Toast } from 'mint-ui'
 import { Indicator } from 'mint-ui'
+import { MessageBox } from 'mint-ui'
+import Message from "../../components/Message"
 import wx from 'weixin-js-sdk'
 export default{
   name: 'order-detail',
@@ -43,6 +57,8 @@ export default{
   },
   data:function(){
     return{
+      refundMsg:false,
+      payStatusTxt:{"-2":"已退款","0":"未支付","2":"已支付"},
       orderData:''
     }
   },
@@ -59,6 +75,36 @@ export default{
         }else {
           console.log(rst.msg)
         }
+      });
+    },
+    goWifiDetail () {
+      let url = "/wifiDetail/" + this.orderData.product;
+      this.$router.push(url);
+    },
+    cancelOrder () {
+      MessageBox.confirm('确定取消此订单?').then(action => {
+        let api = "/api/orders/cancel",send={orderno:this.$route.params.id}
+        this.$http.get(api,{params:send}).then(function(result){
+          let rst = JSON.parse(result.body)
+          Toast(rst.msg)
+          if (rst.status == 1) {
+            this.getData();
+          }
+        });
+      });
+    },
+    refundOrder () {
+      MessageBox.confirm('确定申请退款?').then(action => {
+        let api = "/api/refund/index",send={orderno:this.$route.params.id}
+        this.$http.get(api,{params:send}).then(function(result){
+          var rst = JSON.parse(result.body)            
+          if (rst.status == 1) {
+            Toast('退款成功')
+            this.getData();
+          }else{
+            Toast(rst.msg)
+          }
+        });
       });
     },
     payOrder:function(){
@@ -94,7 +140,9 @@ export default{
         });
       });
     }
-
+  },
+  components: {
+    Message
   }
 }
 </script>
@@ -170,51 +218,37 @@ export default{
   .contactinfo{
     margin-top: 1px;
     margin-bottom: 0.5rem;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  .creatpay{height: 2.5rem;
-    background-color: #fff;
-    overflow: hidden;
-    .price{
-      float: left;
-      line-height:2.5rem;
-      font-size: 0.8rem;
+  }  
+  .order-button {
+    font-size: 0;    
+    width: 100%;
+    .button {
+      display: inline-block;
       width: 50%;
-      text-indent: 0.8rem;
-      span{
-        color: #F55301;font-size: 0.9rem;
+      box-sizing: border-box;
+      padding: 0.7rem 0;
+      text-align: center;
+    }
+    .price {
+      display: inline-block;
+      width: 50%;
+      box-sizing: border-box;
+      padding: 0.7rem 0;
+      background-color: #fff;
+      padding-left: 1rem;
+      color: #333;
+      .amount {
+        color: #fc4a4a;
       }
     }
-    .creatBtn{
-      background-color: #008BE4;
-      line-height: 2.5rem;
-      font-size: 0.8rem;
-      color: #fff;
-      display: inline-block;
-      float: right;
-      text-align: center;
-      width: 50%;
+    .cancel-button {
+      background-color: #fff;
+      color: #333;
     }
-  }
-  .buyagain{
-    background-color: #008BE4;
-    line-height: 2.5rem;
-    font-size: 0.8rem;
-    color: #fff;
-    text-align: center;
+    .pay-button {
+      background-color: #58a6ea;
+      color: #fff;
+    }
   }
 }
 </style>

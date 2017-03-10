@@ -228,11 +228,13 @@
         } else {
           Indicator.open('正在创建订单')
           this.$http.post(url, send).then((response) => {
+            Indicator.close()
             let body = JSON.parse(response.body);
             console.log(response.body);
-            if (body.status == 1) {
-              Indicator.close()
+            if (body.status == 1) {              
               this.$router.push('/insuranceOrderDetail/'+body.data.orderno)
+            }else{
+              Toast(body.msg)
             }
           }, (response) => {
             Toast(body.msg);

@@ -3,7 +3,7 @@
     <div class="order-status">
       <div class="status"
         :class="{ paid: orderDetail.pay_status != 0}">
-        订单状态：<span>{{ orderDetail.pay_status == "0" ? "待支付" : "已支付" }}</span>
+        订单状态：<span>{{ payStatusTxt[orderDetail.pay_status] }}</span>
       </div>
     </div>
     <div class="order-info"
@@ -105,19 +105,37 @@
         <span class="content">法定受益人</span>
       </div>
     </div>
-    <div class="order-button">
+    <div class="order-button" v-if="orderDetail.pay_status == 0">
       <span class="price">保费：<span class="amount">￥{{ orderDetail.totalPrice }}</span></span>
       <span class="button pay-button" @click="payOrder">立即支付</span>
     </div>
+    <div class="order-button" v-if="orderDetail.pay_status == 2&&orderDetail.refundFlag == 1">
+      <span class="button cancel-button" @click="refundMsg=true">取消策略</span>
+      <span class="button pay-button" @click="refundOrder">申请退款</span>
+    </div>
+    <div class="order-button" v-if="orderDetail.pay_status == 2&&orderDetail.refundFlag == 0">
+      <span class="button cancel-button" @click="refundMsg=true">取消策略</span>
+      <span class="button pay-button" @click="goInsuranceDetail">再次预定</span>
+    </div>
+    <message 
+    v-if="refundMsg"
+    @close="refundMsg=false"
+    :text="'保险生效日期' + orderDetail.beginDate + ' 00:00:00前可以免费取消。逾期不可以取消。'">
+    </message>
   </div>
 </template>
 
 <script>
   import wx from 'weixin-js-sdk'
+  import { Toast } from 'mint-ui'
   import { Indicator } from 'mint-ui'
+  import { MessageBox } from 'mint-ui'
+  import Message from "../../components/Message"
   export default {
     data () {
       return {
+        refundMsg:false,
+        payStatusTxt:{"-2":"已退款","0":"未支付","2":"已支付"},
         sexualList: ["", "男", "女"],
         idTypeList: ["", "身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"],
         orderDetail: {
@@ -146,6 +164,32 @@
       goInsuranceDetail () {
         let url = "/insuranceDetail/" + this.orderDetail.product; //todo: 接口返回产品id后跳转
         this.$router.push(url);
+      },
+      cancelOrder () {
+        MessageBox.confirm('确定取消此订单?').then(action => {
+          let api = "/api/orders/cancel",send={orderno:this.$route.params.id}
+          this.$http.get(api,{params:send}).then(function(result){
+            let rst = JSON.parse(result.body)
+            Toast(rst.msg)
+            if (rst.status == 1) {
+              this.getOrder();
+            }
+          });
+        });
+      },
+      refundOrder () {
+        MessageBox.confirm('确定申请退款?').then(action => {
+          let api = "/api/refund/index",send={orderno:this.$route.params.id}
+          this.$http.get(api,{params:send}).then(function(result){
+            var rst = JSON.parse(result.body)            
+            if (rst.status == 1) {
+              Toast('退款成功')
+              this.getOrder();
+            }else{
+              Toast(rst.msg)
+            }
+          });
+        });
       },
       payOrder:function(){
         Indicator.open('发起微信支付');
@@ -189,6 +233,9 @@
       destination () {
         return this.orderDetail.destination.join("、");
       }
+    },
+    components: {
+      Message
     }
   }
 </script>

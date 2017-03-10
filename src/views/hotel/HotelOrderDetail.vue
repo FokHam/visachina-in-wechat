@@ -63,11 +63,24 @@
           <span class="content">{{orderDetail.contact.phone}}</span>
         </div>
       </div>
-      <div class="order-button">
-        <span class="button cancel-button">取消订单</span>
+      <div class="order-button" v-if="orderDetail.pay_status == 0">
+        <span class="button cancel-button" @click="cancelOrder">取消订单</span>
         <span class="button pay-button" @click="payOrder">立即支付</span>
       </div>
+      <div class="order-button" v-if="orderDetail.pay_status == 2&&orderDetail.refundFlag == 1">
+        <span class="button cancel-button" @click="refundMsg=true">取消策略</span>
+        <span class="button pay-button" @click="refundOrder">申请退款</span>
+      </div>
+      <div class="order-button" v-if="orderDetail.pay_status == 2&&orderDetail.refundFlag == 0">
+        <span class="button cancel-button" @click="refundMsg=true">取消策略</span>
+        <span class="button pay-button" @click="buyAgain">再次预定</span>
+      </div>
     </div>
+    <message 
+    v-if="refundMsg"
+    @close="refundMsg=false"
+    :text="orderDetail.cancel_policy">
+    </message>
   </div>
 </template>
 
@@ -75,10 +88,13 @@
   import wx from 'weixin-js-sdk'
   import { Toast } from 'mint-ui'
   import { Indicator } from 'mint-ui'
+  import { MessageBox } from 'mint-ui'
+  import Message from "../../components/Message"
   export default {
     data () {
       return {
-        orderDetail: ''
+        orderDetail: '',
+        refundMsg:false
       }
     },
     created () {
@@ -109,9 +125,38 @@
           Toast('暂无酒店电话')
         }
       },
-      payOrder:function(){
+      cancelOrder () {
+        MessageBox.confirm('确定取消此订单?').then(action => {
+          let api = "/api/orders/cancel",send={orderno:this.$route.params.id}
+          this.$http.get(api,{params:send}).then(function(result){
+            let rst = JSON.parse(result.body)
+            Toast(rst.msg)
+            if (rst.status == 1) {
+              this.getOrder();
+            }
+          });
+        });
+      },
+      refundOrder () {
+        MessageBox.confirm('确定申请退款?').then(action => {
+          let api = "/api/refund/index",send={orderno:this.$route.params.id}
+          this.$http.get(api,{params:send}).then(function(result){
+            var rst = JSON.parse(result.body)            
+            if (rst.status == 1) {
+              Toast('退款成功')
+              this.getOrder();
+            }else{
+              Toast(rst.msg)
+            }
+          });
+        });
+      },
+      buyAgain () {
+        this.$router.push('/hotelDetail/'+this.orderDetail.product);
+      },
+      payOrder () {
         Indicator.open('发起微信支付');
-        var url = "/api/pay/index",send = {orderno:this.$route.params.id}
+        let url = "/api/pay/index",send = {orderno:this.$route.params.id}
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
           this.invokingWXPay(result.body)                
@@ -142,6 +187,9 @@
           });
         });
       }
+    },
+    components: {
+      Message
     }
   }
 </script>

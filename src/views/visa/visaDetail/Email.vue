@@ -7,9 +7,11 @@
       <div class="ipt"><input type="text" v-model="emailName" placeholder="发件人"></div>      
       <div class="tara"><textarea rows="3" v-model="emailCon" placeholder="邮件内容"></textarea></div>
     </div>
-    <div class="typelist">
-      <span v-for="item in typedata" @click="chooseType(item.guest_class)" :class="{on:sendType == item.guest_class}">{{item.guest_class_name}}</span>
-     
+    <div class="typelist" v-if="type == 'detail'">
+      <span v-for="item in typedata" @click="chooseType(item.guest_class)" :class="{on:sendType == item.guest_class}">{{item.guest_class_name}}</span>     
+    </div>
+    <div class="typelist" v-if="type == 'order'">
+      <span class="on">{{typeArr[sendType-1]}}</span>     
     </div>
     <div class="sendbtn" @click="sendEmail">发送</div>
   </div>
@@ -20,10 +22,18 @@
 <script>
 import { Toast } from 'mint-ui'
 export default {
-  props: ['typedata','proid'],
+  props: ['type','typedata','proid'],
+  created (){
+    if (this.type == 'detail') {
+      this.sendType = this.typedata[0].guest_class
+    }else if(this.type == 'order') {
+      this.sendType = this.typedata
+    }
+  },
   data:function(){
     return{
-      sendType:this.typedata[0].guest_class,
+      typeArr:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
+      sendType:'',
       emailAds:'',
       emailName:'',
       emailCon:''

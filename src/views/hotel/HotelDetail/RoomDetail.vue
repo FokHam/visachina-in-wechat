@@ -1,7 +1,7 @@
 <template>
   <div class="mask"
     v-if="detailObj"
-    @mousedown="hide">
+    @click="hide">
     <div class="room-detail">
       <p class="title">{{ detailObj.name }}</p>
       <p class="item"><span class="label">床型</span>{{ detailObj.bed }}</p>

@@ -1,68 +1,66 @@
 <template>
 <div class="progress-detail" id="progress-detail">
-  <div class="itemslist">
-    <div class="item">
-      <div class="tit">加拿大旅游签证</div>
+  <div class="itemslist" v-if="orderList.length > 0">
+    <div class="item" v-for="item in orderList">
+      <div class="tit">{{item.product_name}}</div>
       <div class="list">
         <ul>
-          <li>
+          <li v-for="list in item.guest" @click="gotoDetail(list.id)">
             <div class="top">
-              <span class="name">周方晗</span>
-              <span class="date">2017/02/08 17:12</span>
+              <span class="name">{{list.value}}</span>
+              <span class="date" v-if="list.refund == false">{{list.cdate}}</span>
+              <span class="date" v-else>{{list.refund.mdate}}</span>
             </div>
             <div class="bottom">
-              <span class="status">寄出签证</span>
-              <span class="txt">顺丰单号：21231321321</span>
+              <span class="status" v-if="list.refund == false">{{list.guestStatusName}}</span>
+              <span class="status" v-else>{{refundType[list.refund.status]}}</span>
             </div>
-          </li>
-          <li>
-            <div class="top">
-              <span class="name">江思敏</span>
-              <span class="date">2017/02/07 15:32</span>
-            </div>
-            <div class="bottom">
-              <span class="status">签证入馆</span>
-              <span class="txt">等待出签</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="item">
-      <div class="tit">日本旅游签证</div>
-      <div class="list">
-        <ul>
-          <li>
-            <div class="top">
-              <span class="name">周方晗</span>
-              <span class="date">2017/02/08 17:12</span>
-            </div>
-            <div class="bottom">
-              <span class="status">寄出签证</span>
-              <span class="txt">顺丰单号：21231321321</span>
-            </div>
-          </li>
+          </li>          
         </ul>
       </div>
     </div>
   </div>
-  <div class="empty" v-if="false">您当前无代办理的签证</div>
+  <div class="empty" v-else>您当前无代办理的签证</div>
 </div>
 </template>
 
 <script>
+import { Indicator } from 'mint-ui'
 export default{
   name: 'progress-detail',
   created: function () {
     document.title = '签证进度'
+    this.getData();
   },
   data:function(){
     return{
-      
+      orderList:'',
+      refundType:{
+        '0':'申请退款',
+        '1':'待确认退款金额',
+        '2':'等待商家确认退还资料',
+        '3':'资料已退还，待确认',
+        '4':'退款完成'
+      }
     }
   },
   methods:{
-    
+    getData () {
+      Indicator.open('加载中');
+      let url = '/api/visa/progress_list';
+      this.$http.get(url).then(function(result){
+        Indicator.close();
+        let rst = JSON.parse(result.body);
+        if (rst.status == 1) {
+          this.orderList = rst.data
+        }else{
+          console.log(rst.msg)
+        }
+      });
+    },
+    gotoDetail (id) {
+      this.$router.push('/progressDetail/'+id);
+    }
 
   }
 }
@@ -78,7 +76,7 @@ export default{
       border:1px solid #999;
       color: #999999;
       display: inline-block;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       padding: 0 0.5rem;
       margin: 0.8rem 0.8rem 0.5rem;
     }

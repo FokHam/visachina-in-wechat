@@ -85,6 +85,7 @@
     </div>
     <email
     v-if="emailDis"
+    type="detail"
     :typedata="pageData.materials"
     :proid="$route.params.id"
     @closePage="closeSend">      

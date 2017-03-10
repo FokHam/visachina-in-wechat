@@ -1,6 +1,6 @@
 <template>
   <div class="banner">
-    <img :src="pics[0].img_url" width="100%">
+    <img src="/static/images/wifi/banner.png" width="100%">
     <div class="inner">
       <mt-swipe :auto="4000">
         <mt-swipe-item v-for="item in pics"><router-link :to="item.link"><img :src="item.img_url"></router-link></mt-swipe-item>        
