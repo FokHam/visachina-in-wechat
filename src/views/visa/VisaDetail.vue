@@ -1,11 +1,10 @@
 <template>
-  <div class="visa-detail" id="visa-detail" v-if="pageData!=''">
+  <div class="visa-detail" id="visa-detail" v-if="pageData!=''" :class="{hidden:emailDis}">
     <div class="visaname">
       <div class="name">
-      <span>【{{pageData.typename}}】</span>
-      {{pageData.name+'<'}}停留天数{{pageData.info.staydays}}，有效期限{{pageData.info.expirydate}}，{{pageData.info.interview==0?'无需面试':'需要面试'}}></div>
+      {{pageData.name+'<'}}停留天数{{pageData.info.staydays}}，有效期限{{pageData.info.expirydate}}，{{isInterview[pageData.info.interview]}}></div>
       <div class="day-price">
-        <span class="day">受理天数：7-15天</span>
+        <span class="day">签证类型：{{pageData.typename}}</span>
         <span class="price"><i>￥</i>{{pageData.price}}</span>
       </div>
     </div>
@@ -14,9 +13,10 @@
         <div class="tit">签证信息</div>
         <div class="con">
           <ul>
+            <li>受理天数：{{pageData.info.acceptancedays}}</li>
             <li>停留天数：{{pageData.info.staydays}}</li>
             <li>入境次数：{{pageData.info.entrynumber}}</li>
-            <li>是否面试：{{pageData.info.interview==0?'无需面试':'需要面试'}}</li>
+            <li>是否面试：{{isInterview[pageData.info.interview]}}</li>
             <li>有效期限：{{pageData.info.expirydate}}</li>
           </ul>
         </div>
@@ -32,8 +32,11 @@
       <div class="item">
         <div class="tit">受理地区</div>
         <div class="con">
-          <span v-for="item in pageData.info.dq">{{item.name}}</span>
+          <span v-for="(item , index) in pageData.info.dq" v-if="index <= 8">{{item.name}}</span>
+          <span v-if="pageData.info.dq.length > 9&&!dqShowAll">...</span>
+          <span v-for="(item , index) in pageData.info.dq" v-if="index > 8&&dqShowAll">{{item.name}}</span>
         </div>
+        <div class="dq-showall" :class="{hide:dqShowAll}" v-if="pageData.info.dq.length > 8" @click="showAll"></div>
       </div>
     </div>
     <div class="tabs_placeholder">
@@ -64,12 +67,12 @@
           <li v-for="(item,index) in pageData.materials" @click="checkMaterials(index)">{{item.guest_class_name}}</li>
           
         </ul>
-        <div class="sendemail" @click="showSend">发送到邮箱></div>        
+        <div class="sendemail" @click="showSend">发送到邮箱</div>        
       </div>
     </div>
     <div class="tab-cont tips" id="tips">
       <div class="tit">温馨提示</div>
-      <div class="con">
+      <div class="con" v-html="pageData.content + pcontent">
         1、签证属于特殊商品，我司会按使领馆的要求为客人准备 最合适的送签材料，确保您的材料有最高出签可能，但所 申请的签证是否成功，取决于使领馆对资料的审核，若发 生拒签，请申请人自然接受结果，并放弃追究本公司任何 责任的权利。<br>2、在办理签证期间，我司可能会根据您的材料情况要求增 补其他材料、担保金或予以劝退；领馆也可能会针对您的 实际情况，要求增补其他材料，或延长签证受理时间（此 情况由领馆决定，我司无法干预），或要求申请人面试， 或电话调查申请人，领馆也可能因内部原因导致延迟出签。<br> 3、申请人需保证提供材料的真实性，有效性，如因隐瞒曾 有不良记录，或从事非法活动，被相关部门查处或有滞留 倾向拒签，我司不承担责任。请申请人特别注意诚实信用 的原则。<br>4、中国签证网上公布的办理周期、停留时间、签证有效期 等均系基于以往经验的预估时限，并非中国签证网的确定 承诺，准确时限以使领馆实际审批结果为准。获得签证前 切勿先行支付机票、酒店费用，以免因签证问题产生费用 损失，否则损失将由您自行承担；如您提供了机票、酒店 预订单申请签证，请勿在获得签证前取消或修改预订，否 则可能对签证结果产生影响 。<br>5、依据使馆要求，签证申请人在送签或归国后，如被使领 馆要求参加面试或面试销签，签证申请人必须配合使领馆 完成面试工作。如因个人原因未按时参加面试或面试销签， 一切后果由签证申请人自行承担。 <br>6、如果您的护照在办理过程中丢失，每本赔付1000元。
       </div>
     </div>
@@ -120,13 +123,19 @@ export default{
   },
   data:function(){
     return{
+      isInterview:['无需面试','需要面试','抽查'],
+      pcontent:'<p>（由于快递公司原因造成的丢失除外，最终以快递公司的回复为准）</p>',
       pageData:'',
       tabStatus:0,
       emailDis:false,
-      iscollect:0      
+      iscollect:0,
+      dqShowAll:false   
     }
   },
-  methods:{    
+  methods:{   
+    showAll:function(){
+      this.dqShowAll = !this.dqShowAll
+    },
     positionTo:function(v,id){
       var _h = document.getElementById(id).offsetTop;
       this.tabStatus = v
@@ -185,12 +194,18 @@ export default{
 
 <style lang="less" scoped>
 .visa-detail{
+  padding-bottom: 60px;
+  &.hidden{
+    position: absolute;
+    overflow: hidden;
+    height: 100%;
+    top: 0;
+  }
   .visaname{
     border-bottom: 1px solid #C0C0C0;
     padding: 10px;background-color: #fff;
     .name{
       font-size: 0.8rem;
-      span{font-size: 0.8rem;}
     }
     .day-price{
       padding-top: 8px;
@@ -198,6 +213,7 @@ export default{
       .day{
         font-size: 0.6rem;
         float: left;
+        color: #999;
       }
       .price{
         float: right;
@@ -235,11 +251,23 @@ export default{
           }
         }             
         span{
-          background: #f4eaf8;font-size: 0.6rem;color: #999999;
+          background: #eeeeee;font-size: 0.6rem;color: #333333;
           display: inline-block;padding: 0 7px;margin-right: 10px;
           margin-bottom: 5px;border-radius: 2px;
         }      
       }
+      .dq-showall{
+        height: 0.55rem;
+        margin: 0.3rem 0 0;
+        background-image: url('/static/images/visa/icon-showall.png');
+        background-repeat: no-repeat;
+        background-size: auto 0.4rem;
+        background-position: center bottom;
+        &.hide{
+          background-image: url('/static/images/visa/icon-noshowall.png');      
+        }     
+      }
+      
     }
   }
   .tabs_placeholder{height: 40px;}
@@ -270,7 +298,10 @@ export default{
       background-position: left center;
       background-size: 17px;      
     }
-    .con{font-size: 0.6rem;color: #000;line-height: 1rem;}
+    .con{
+      font-size: 0.6rem;color: #000;line-height: 1rem;
+      p{font-size: 0.6rem;color: #000;line-height: 1rem;}
+    }
   }
   .tab-cont.step .tit,.tab-cont.needfile .tit{background-image: url('/static/images/visa/icon-info.png');}
   .tab-cont.tips .tit{background-image: url('/static/images/visa/icon-tips.png');}
@@ -334,7 +365,11 @@ export default{
   }
 
   .booking{
-    position: relative;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    z-index: 2;
     .bookbtn{
       height: 50px;line-height: 50px;margin-left: 55px;
       background-color: #008CE4;text-align: center;font-size: 0.8rem;color: #fff;

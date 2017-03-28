@@ -35,7 +35,7 @@ export default{
         let rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.shopinfo = rst.data
-          document.title = rst.data.name
+          this.$store.commit('shopInfoSave',rst.data)
         }else{
           console.log(rst.msg)
         }      

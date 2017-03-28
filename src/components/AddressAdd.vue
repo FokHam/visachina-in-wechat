@@ -4,13 +4,13 @@
     <div class="item">
       <span>联系人</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.name">
+        <input type="text" v-model="clientinfo.name"  maxlength="5">
       </div>      
     </div>
     <div class="item">
       <span>手机号</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.phone">
+        <input type="tel" v-model="clientinfo.phone" maxlength="11">
       </div>      
     </div>    
     <div class="item">
@@ -22,7 +22,7 @@
     <div class="item">
       <span>详细地址</span>
       <div class="ipt street">
-        <input type="text" v-model="clientinfo.address" placeholder="街道、楼牌号等">
+        <input type="text" v-model="clientinfo.address" placeholder="街道、楼牌号等" maxlength="30">
       </div>      
     </div>
   </div>
@@ -64,9 +64,14 @@ export default {
     closeAddress:function(){
       this.addressDis = false
     },
-    verifyData:function(){      
+    verifyData:function(){ 
+      var reg_phone = /^1(3|4|5|7|8)\d{9}$/; 
       if (this.clientinfo.name != '' && this.clientinfo.phone != '' && this.clientinfo.province != '' && this.clientinfo.address != '') {
-        this.submitData()
+        if(!reg_phone.test(this.clientinfo.phone)){
+          Toast('手机号格式有误')
+        }else{
+          this.submitData()          
+        }
       }else{
         Toast('请完善资料后再保存')
       }      

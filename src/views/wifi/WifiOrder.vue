@@ -55,7 +55,8 @@
   v-if="counterDis"
   @comfirm="setCounter"
   @close="counterDis = false"
-  :type="counterType">    
+  :type="counterType"
+  :cityid="$route.params.city">    
   </counter>
   <calendar
     v-if="pickingDate"
@@ -67,7 +68,8 @@
     :minDay="minday"
     :maxDay="maxday"
     :day1="startDate"
-    :day2="endDate">
+    :day2="endDate"
+    :dayDelay="1">
   </calendar>
   <contact-list
   v-if="contactInfo.contact"
@@ -120,8 +122,8 @@ export default {
   methods:{
     getWifiDetails:function(){      
       Indicator.open('加载中...')
-      var url = '/api/wifi/info?id='+this.$route.params.id
-      this.$http.get(url).then(function(result){
+      var url = '/api/wifi/info',send = {id:this.$route.params.id,city:this.$route.params.city};
+      this.$http.get(url,{params:send}).then(function(result){
         Indicator.close()
         console.log(result.body)
         var rst = JSON.parse(result.body)
@@ -170,10 +172,12 @@ export default {
         this.returnAddress.id = id
       }
       this.counterDis = false
+      history.go(-1)
     },
     contactConfirm:function(v){
       this.contactInfo.info=v
       this.contactInfo.contact=false
+      history.go(-1)
     },
     DateDiff:function(sDate1,sDate2){//sDate1和sDate2是2006-12-18格式  
       var aDate,oDate1,oDate2,iDays;
@@ -185,17 +189,22 @@ export default {
       return  iDays  
     },
     verifyData:function(){
+      var reg_phone = /^1(3|4|5|7|8)\d{9}$/; 
+      var reg_email = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/; 
       if (this.returnWifiTime == '') {
         Toast('请选择取还件日期')
-        return false
       }else if (this.getAddress.id == '' || this.returnAddress.id == '') {
         Toast('请选择取还件地点')
-        return false
       }else if (this.contactInfo.info.name == '' || this.contactInfo.info.tel == '' || this.contactInfo.info.email == '') {
-        Toast('请完善联系人信息')
-        return false
+        Toast('请完善联系人信息')        
       }else{
-        this.creatOrder()
+        if(!reg_phone.test(this.contactInfo.info.tel)){
+          Toast('手机号格式有误')
+        }else if(!reg_email.test(this.contactInfo.info.email)){
+          Toast('邮箱格式有误')
+        }else{
+          this.creatOrder()          
+        }
       }
     },
     creatOrder:function(){

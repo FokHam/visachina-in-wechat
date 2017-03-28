@@ -2,7 +2,7 @@ import { Toast } from 'mint-ui';
 
 let state = {
   productId: 0,
-  productDetail: {},
+  productDetail: '',
   type: "",
   startDate: "",
   endDate: "",

@@ -5,17 +5,9 @@
       <div class="proname">{{progressData.product_name}}</div>
       <div class="name">申请人：{{progressData.guestname}}</div>
     </div>
-    <div class="list" v-if="progressData.refund != false">
+    <div class="list" v-if="progressLog.length > 0">
       <ul>
-        <li v-for="item in progressData.refund.refund_log">
-          <div class="time">{{item.cdate}}</div>
-          <div class="content">{{item.memo}}</div>
-        </li>
-      </ul>
-    </div>
-    <div class="list" v-if="progressData.op_log.length > 0">
-      <ul>
-        <li v-for="item in progressData.op_log">
+        <li v-for="item in progressLog">
           <div class="time">{{item.cdate}}</div>
           <div class="content">{{item.memo}}</div>
         </li>
@@ -35,7 +27,8 @@ export default{
   },
   data:function(){
     return{
-      progressData:''
+      progressData:'',
+      progressLog:''
     }
   },
   methods:{
@@ -46,13 +39,46 @@ export default{
         Indicator.close();
         let rst = JSON.parse(result.body);
         if (rst.status == 1) {
-          this.progressData = rst.data
+          this.progressData = rst.data;
+          let logData = [];
+          if (rst.data.op_log.length > 0) {
+            for (var i = 0; i < rst.data.op_log.length; i++) {
+              let o_date = rst.data.op_log[i].cdate.replace(/-/g,'/');
+              let dateNum = new Date(o_date)
+              rst.data.op_log[i].zindex = dateNum.getTime()
+              logData.push(rst.data.op_log[i])
+            }
+          }
+          if (rst.data.refund != false) {
+            if (rst.data.refund.refund_log.length > 0) {
+              for (var i = 0; i < rst.data.refund.refund_log.length; i++) {
+                let o_date = rst.data.refund.refund_log[i].cdate.replace(/-/g,'/');
+                let dateNum = new Date(o_date);
+                rst.data.refund.refund_log[i].zindex = dateNum.getTime();
+                logData.push(rst.data.refund.refund_log[i]);
+              }
+            }
+          }          
+          this.popCount(logData)
         }else{
           console.log(rst.msg)
         }
       });
     },
-
+    popCount (array) {
+      var len = array.length, i, j, tmp, result;  
+      result = array.slice(0);  
+      for (i = 0; i < len; i++) {  
+        for (j = len - 1; j > i; j--) {  
+          if (result[j].zindex > result[j - 1].zindex) {  
+            tmp = result[j - 1];  
+            result[j - 1] = result[j];  
+            result[j] = tmp;  
+          }  
+        }  
+      }
+      this.progressLog = result;
+    }
   }
 }
 </script>

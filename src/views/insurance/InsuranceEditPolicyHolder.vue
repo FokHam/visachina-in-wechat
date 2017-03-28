@@ -3,17 +3,17 @@
     <ul class="info-list wave-btm-bg">
       <li class="info-item">
         <span class="label">中文名字</span>
-        <input v-model="pDetail.surname" class="info-input surname" type="text" placeholder="姓" value="">
-        <input v-model="pDetail.name" class="info-input name" type="text" placeholder="名" value="">
+        <input v-model="pDetail.surname" class="info-input surname" type="text" placeholder="姓" maxlength="2">
+        <input v-model="pDetail.name" class="info-input name" type="text" placeholder="名" maxlength="2">
       </li>
       <li class="info-item">
         <span class="label">英文名字</span>
-        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓First name" value="">
-        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名Last name" value="">
+        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓First name" maxlength="12">
+        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名Last name" maxlength="12">
       </li>
       <li class="info-item">
-        <span class="label">未选择证件类型</span>
-        <input v-model="pDetail.id_number" type="text" class="number" value="" placeholder="输入正确的证件号">
+        <span class="label">证件类型</span>
+        <input v-model="pDetail.id_number" type="text" class="number" placeholder="输入正确的证件号" maxlength="18">
         <span class="show-more-btn"
           :class="{selected: typeof(pDetail.id_type) === 'number'}"
           @click.stop="idTypeSelecting = true">
@@ -30,15 +30,15 @@
       </li>
       <li class="info-item" @click="openBdatePicker">
         <span class="label">出生日期</span>
-        <input v-model="pDetail.birthday" class="info-input" type="text" placeholder="与证件保持一致" value="">
+        <input v-model="pDetail.birthday" class="info-input" type="text" placeholder="与证件保持一致" readonly="readonly">
       </li>
       <li class="info-item">
         <span class="label">手机号码</span>
-        <input v-model="pDetail.phone" class="info-input" type="text" placeholder="请填写手机号码" value="">
+        <input v-model="pDetail.phone" class="info-input" type="tel" placeholder="请填写手机号码" maxlength="11">
       </li>
       <li class="info-item">
         <span class="label">邮箱</span>
-        <input v-model="pDetail.email" class="info-input" type="text" placeholder="请填写常用邮箱" value="">
+        <input v-model="pDetail.email" class="info-input" type="email" placeholder="请填写常用邮箱" maxlength="30">
       </li>
     </ul>
     <div class="confirm-btn"
@@ -48,6 +48,7 @@
     <mt-datetime-picker
       ref="bdatepicker"
       type="date"
+      v-model="initialDate"
       :startDate="minimunDate"
       :endDate="maximunDate"
       year-format="{value} 年"
@@ -65,6 +66,7 @@
 
 <script>
   import Picker from '../../components/Picker';
+  import { Toast } from 'mint-ui';
 
   export default {
     props: [
@@ -74,7 +76,7 @@
       const minimunDate = new Date(1900, 0, 1);
       const maximunDate = new Date();
       let pHolder = this.policyHolderDetail;
-      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
+      let typeList = ["", "身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
       typeList[99] = "其他";
       return {
         pDetail: {
@@ -90,6 +92,7 @@
           phone: pHolder.phone || "",
           email: pHolder.email || ""
         },
+        initialDate: pHolder.birthday || new Date(),
         minimunDate: minimunDate,
         maximunDate: maximunDate,
         idTypeSlots: typeList,
@@ -100,36 +103,64 @@
       openBdatePicker () {
           this.$refs.bdatepicker.open();
       },
-      confirmBdate (day) {
+      checkBirthday:function(){      
+        var arrB = this.pDetail.birthday.split("-");
+        if(arrB[0]==this.pDetail.id_number.substring(6,10)&&arrB[1]==this.pDetail.id_number.substring(10,12)&&arrB[2]==this.pDetail.id_number.substring(12,14)){
+          return true
+        }else{
+          return false
+        }      
+      },
+      confirmBdate (day) {        
         let m = day.getMonth() > 8 ? day.getMonth() + 1 : "0" + (day.getMonth() + 1),
             d = day.getDate() > 9 ? day.getDate() : "0" + day.getDate();
-        this.birthday = day.getFullYear() + "-" + m + "-" + d;
+        this.pDetail.birthday = day.getFullYear() + "-" + m + "-" + d;
       },
-      idTypeSet () {
-
+      idTypeSet (v) {
+        this.pDetail.id_type = this.idTypeSlots.indexOf(v);
       },
       confirmPerson () {
-        let url = "/api/member/passenger_create";
-        let send = this.pDetail;
-        console.log(send);
-        this.$http.get(url, {params: send}).then((response) => {
-          console.log(JSON.parse(response.body));
-          let body = JSON.parse(response.body);
-          if (body.status === 1) {
-            this.$emit("confirm");
+        if(this.pDetail.name!=''&&this.pDetail.surname!=''&&this.pDetail.spell_name!=''&&this.pDetail.spell_surname!=''&&this.pDetail.id_type!=''&&this.pDetail.id_number!=''&&this.pDetail.birthday!=''&&this.pDetail.phone!=''&&this.pDetail.email!=''){
+          var reg_id = /^\d{6}(18|19|20)?\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/i;   
+          var reg_phone = /^1(3|4|5|7|8)\d{9}$/; 
+          var reg_email = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+          if(this.pDetail.id_type==1&&!reg_id.test(this.pDetail.id_number)){
+            Toast('身份证号格式有误')
+          }else if(!reg_phone.test(this.pDetail.phone)){
+            Toast('手机号格式有误')
+          }else if(!reg_email.test(this.pDetail.email)){
+            Toast('邮箱格式有误')
+          }else{
+            if(this.pDetail.id_type==1&&!this.checkBirthday()){
+              Toast('出生日期与身份证号不一致')
+            }else{
+              let url = "/api/member/passenger_create";
+              let send = this.pDetail;
+              console.log(send);
+              this.$http.get(url, {params: send}).then((response) => {
+                console.log(JSON.parse(response.body));
+                let body = JSON.parse(response.body);
+                if (body.status === 1) {
+                  this.$emit("confirm");
+                }
+              }, (response) => {
+                console.log("服务器错误！");
+              });
+            }
           }
-        }, (response) => {
-          console.log("服务器错误！");
-        });
-      },
-      onIdTypeChange (p, v) {
-        this.idType = this.idTypeSlots[0].values.indexOf(v[0]);
+        }else{
+          Toast('请先完善投保人信息');
+        }
       }
+    },
+    components:{
+      Picker
     }
   }
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-arrow-right {
     display: inline-block;
     width: 0.5rem;
@@ -201,6 +232,8 @@
       }
       .show-more-btn {
         color: #a9a9a9;
+        width: 50%;
+        text-align: right;
         &.selected {
           color: #333;
         }
@@ -213,6 +246,8 @@
         top: 2rem;
         width: 10rem;
         color: #999;
+        left: 0;
+        bottom: 0;
       }
     }
   }

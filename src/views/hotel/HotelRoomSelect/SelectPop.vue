@@ -125,6 +125,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .mask {
     position: fixed;
     top: 0;

@@ -1,6 +1,6 @@
 <template>
 <div class="apply-list" id="apply-list">
-  <div class="tips">最多可选择10个申请人</div>
+  <div class="tips">最多可选择20个申请人</div>
   <div class="addbtn" @click="editItem.content='',editItem.editdis=true">添加申请人</div>
   <div class="contactList">
     <ul v-if="passengerList.length != 0">
@@ -13,7 +13,7 @@
         <div class="editbtn" @click="editItem.content=item,editItem.editdis=true"></div>
       </li>
     </ul>
-    <div v-else class="empty">暂无常用联系人</div>
+    <div v-if="isempty" class="empty">暂无常用联系人</div>
   </div>
   <div class="confirm" @click="confirm">确定</div>
   <visa-passenger-edit
@@ -27,9 +27,11 @@
 
 <script>
 import { Toast } from 'mint-ui'
+import { Indicator } from 'mint-ui'
 import VisaPassengerEdit from './VisaPassengerEdit'
 export default {
   created: function () {
+    Indicator.open('加载中...')
     const _this = this;    
     window.addEventListener("popstate", function(e) {  
       _this.$emit('close');
@@ -44,20 +46,27 @@ export default {
       typeList:['在职','自由职业','在校学生','退休人员','学龄前儿童','家庭主妇'],
       editItem:{"editdis":false,"content":""},
       passengerList:[],
-      choosePassenger:[]
+      choosePassenger:[],
+      isempty:false
     }
   },
   methods:{
-    getPassenger:function(){
+    getPassenger:function(){      
       var url = '/api/member/passenger'
       this.$http.get(url).then(function(result){
-        console.log(result.body)
+        Indicator.close()
         var rst = JSON.parse(result.body)
-        if (rst.status == 1) {
+        if (rst.status == 1) {          
           for (var i=0;i<rst.data.length;i++) {
             rst.data[i].check = false
           }
-          this.passengerList = rst.data
+          this.passengerList = rst.data          
+          if (rst.data.length == 0) {
+            this.isempty = true
+          }else {
+            this.isempty = false
+          }
+          
           //this.resolveCheck()
         }else {
           console.log(rst.msg)
@@ -116,6 +125,7 @@ export default {
   height: 100%;
   z-index: 1001;
   overflow-y: scroll;
+  overflow-scrolling: touch;-webkit-overflow-scrolling: touch;
   .tips{
     background: -webkit-linear-gradient(left, #F057AD, #BF69EF);
     color: #FFE6EB;text-align: center;

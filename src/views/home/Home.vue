@@ -21,7 +21,7 @@
               <div class="ipt visatype lastchild">
                 <div class="tit">签证类型</div>
                 <div class="txt" @click="typedis=true">
-                  <span>{{typelist[visacondition.lx]}}</span>                  
+                  <span>{{typelist[visacondition.ty]}}</span>                  
                 </div>
               </div>
               <div class="s_btn" @click="searchVisa">搜索</div>
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="morelink">
-        <div class="tit">途经更多产品</div>
+        <div class="tit">{{shopinfo.name}}更多产品</div>
         <div class="l_list">
           <router-link class="insurance" to="/insurance"><span>保险</span></router-link>
           <router-link class="wifi" to="/wifi"><span>wifi</span></router-link>
@@ -56,13 +56,17 @@
       <div class="check-made">
         <img src="/static/images/home/bg-in-bt.png">
         <router-link class="check" to="/visaProgress">
-          <span>查看签证进度 ></span>
+          <span>查看签证进度</span>
         </router-link>
         <!--<router-link class="customized" to="">
           <span>定制行程 ></span>
         </router-link>-->
       </div>
     </div>
+    <guide
+    v-if="guideDis"
+    @close="guideDis = false">
+    </guide>
     <countrys
     v-if="searchdis"
     @choseCountry="changeCountry"
@@ -103,8 +107,9 @@
 <script>
 import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
-import Calendar from "../../components/Calendar"
 import Banner from './index/Banner'
+import Guide from './index/Guide'
+import Calendar from "../../components/Calendar"
 import Countrys from '../../components/SearchCountry'
 import Cities from '../../components/SearchCity'
 import Provice from '../../components/ProviceList'
@@ -112,7 +117,15 @@ import Picker from '../../components/Picker'
 
 export default {
   name:'home',
-  data:function(){
+  created:function () {
+    document.title = this.shopinfo.name
+    if (localStorage.guide != 'showed') {
+      this.guideDis = true
+      localStorage.guide = 'showed'
+    }
+    this.getProvinceList();
+  },
+  data:function () {
     var sTime = new Date(), eTime;
       sTime.setTime(sTime.getTime() + 24 * 3600 * 1000);
       sTime.setHours(0);
@@ -121,19 +134,20 @@ export default {
       sTime.setMilliseconds(0);
       eTime = new Date(sTime.getTime() + 24 * 3600 * 1000);
     return {
+      guideDis:false,
+      shopinfo:this.shopinfo,
       isActive: 0,
       searchdis:false,
       citydis:false,
       provicedis:false,
       typedis:false,
-      visacondition:{"ct":"","ctname":"","dq":"","dqname":"","lx":0,"rj":0,"fw":0,"page":1},
+      visacondition:{"ct":"","ctname":"","dq":"","dqname":"","ty":0,"rj":0,"fw":0,"page":1},
       hotelCondition: {
         startDate: '',
         endDate: '',
         destination: ''
       },
       typelist:['不限','旅游签证','商务签证','探亲访友签证','工作签证','留学签证','其他签证'],
-      pics: [{'img_url':'/static/images/home/pic1.png','link':'/visa'},{'img_url':'/static/images/home/pic1.png','link':'/hotel'},{'img_url':'/static/images/home/pic1.png','link':'/hotel'}],
       //calendar
       minDay:2,
       maxDay:28,
@@ -145,7 +159,7 @@ export default {
       pickingDate: false
     }
   },
-  methods:{
+  methods:{    
     searchTap (v){
       this.isActive = v
     },
@@ -185,32 +199,62 @@ export default {
     visatypeSet (v) {
       this.typedis = false
       var n = this.typelist.indexOf(v)
-      this.visacondition.lx = n
+      this.visacondition.ty = n
     },
     searchVisa () {
       if (this.visacondition.ct != '' && this.visacondition.dq != '') {
         this.$store.commit('searchConditionSave', this.visacondition)
         this.$router.push('/visa')
+      }else if(this.visacondition.ct != '' && this.visacondition.dq == '') {
+        Toast('请选择常住地');
+      }else if(this.visacondition.ct == '' && this.visacondition.dq != '') {
+        Toast('请选择国家');
       }else {
-        Toast('请选择目的地和常住地');
+        Toast('请选择国家和常住地');
       }
     },
     searchHotel () {
-      if (this.hotelCondition.startDate !== '' && this.hotelCondition.endDate !== '' && this.hotelCondition.destination !== '') {
+      if (this.hotelCondition.startDate != '' && this.hotelCondition.destination != '') {
         this.$store.commit('searchHotelConditionSave', this.hotelCondition)
         this.$router.push('/hotel')
+      }else if(this.hotelCondition.startDate == '' && this.hotelCondition.destination != ''){
+        Toast('请选择入离店日期');
+      }else if(this.hotelCondition.startDate != '' && this.hotelCondition.destination == ''){
+        Toast('请选择目的地城市');
       }else {
-        Toast('请选择目的地和入离店日期');
+        Toast('请选择目的地城市和入离店日期');
       }
+    },
+    getProvinceList:function(){
+      var url = '/api/visa/province'
+      this.$http.get(url).then(function(result){
+        var rst = JSON.parse(result.body)          
+        if (rst.status == 1) {
+          for (var i = 0;i<rst.data.length;i++) {
+            if (rst.data[i].checked == 1) {
+              this.visacondition.dqname = rst.data[i].name
+              this.visacondition.dq = rst.data[i].area_id
+            }
+          }
+        }else {
+          console.log(rst.msg)
+        }
+      });
     },
   },
   components: {
     Banner,
+    Guide,
     Countrys,
     Cities,
     Provice,
     Picker,
     Calendar
+  },
+  computed: {
+    shopinfo () {
+      return this.$store.state.global.shop_info;
+    }
   }
 }
 </script>
@@ -220,26 +264,26 @@ export default {
     border-bottom: 1px solid #C0C0C0;
     background: #fff;
     .tabs{
-      display: flex;
+      overflow: hidden;
       span{
-        text-align: center;
-        display: inline-block;width: 50%;line-height: 40px;
-        height: 37px;
-        border-bottom: 3px solid #fff;
+        text-align: center;float: left;
+        display: block;width: 50%;line-height: 2rem;
+        height: 1.85rem;
+        border-bottom: 0.1rem solid #fff;
         i{
           display: inline-block;
-          height: 37px;
-          width: 50px;
+          height: 1.85rem;
+          width: 2.5rem;
           font-size: 0.75rem;
           background-repeat: no-repeat;
-          background-size: 21px;
+          background-size: 1.1rem;
           background-position: left center;
-          line-height: 40px;
+          line-height: 2rem;
           font-style: normal;
-          padding-left: 22px;
+          padding-left: 1.1rem;
         }
         &.active{
-          border-bottom: 3px solid #008BE4;
+          border-bottom: 0.1rem solid #008BE4;
           color: #008BE4;
           &:first-child i{
             background-image: url(/static/images/home/icon-visa-check.png);
@@ -259,25 +303,25 @@ export default {
     .search-input{
       overflow: hidden;
       .ipt{
-        border-bottom: 1px solid #C0C0C0;
-        padding: 12px 20px;
-        .tit{font-size: 0.6rem;color: #666666;padding-bottom: 10px;}
+        border-bottom: 1px solid #eeeeee;
+        padding: 0.6rem 1rem;
+        .tit{font-size: 0.6rem;color: #666666;padding-bottom: 0.5rem;}
         .txt{
           input{
             font-size: 0.9rem;
             color: #333333;
-            height: 30px;
+            height: 1.5rem;
             border: none;width: 100%;
-            background-size: auto 17px;
+            background-size: auto 0.85rem;
             background-repeat: no-repeat;
             background-position: right center;
           }
           span{
             font-size: 0.9rem;
             color: #333333;
-            height: 30px;display: block;
+            height: 1.5rem;display: block;
             border: none;width: 100%;
-            background-size: auto 17px;
+            background-size: auto 0.85rem;
             background-repeat: no-repeat;
             background-position: right center;
           }
@@ -290,24 +334,24 @@ export default {
       .ipt.lastchild{border-bottom: none;}
       .s_btn{
         background-color: #09BB07;
-        margin: 15px 20px;
-        height: 38px;font-size: 0.8rem;
-        border-radius: 5px;
-        color: #fff;line-height: 38px;text-align: center;
+        margin: 0.75rem 1rem;
+        height: 1.9rem;font-size: 0.8rem;
+        border-radius: 0.25rem;
+        color: #fff;line-height: 1.9rem;text-align: center;
       }
     }
   }
   input::-webkit-input-placeholder {color: #333 !important;}
   .morelink{
-    padding-bottom: 15px;
-    .tit{color: #999999;font-size: 0.6rem; text-align: center;padding: 12px 0;}
+    padding-bottom: 0.75rem;
+    .tit{color: #999999;font-size: 0.6rem; text-align: center;padding: 0.6rem 0;}
     .l_list{
       text-align: center;
       a{
         margin:0 1rem;        
         display: inline-block;width: 3rem;
         height: 3rem;background-color: #fff;
-        border-radius: 2px;
+        border-radius: 0.1rem;
         background-repeat: no-repeat;
         background-size: 1.5rem;background-position: center 0.3rem;
         &.insurance{background-image: url('/static/images/home/icon-insurance.png');}

@@ -16,6 +16,10 @@
           <div class="location">酒店地址：<span>{{pagedata.address}}</span></div>
           <div class="tel">酒店电话：<span @click="callTel(pagedata.telephone)">{{pagedata.telephone}}</span></div>
           <div class="time">{{pagedata.cdate}}</div>
+          <div class="btns">
+            <div><span @click="checkOrder()">查看订单</span></div>
+            <div><router-link to="/home">返回首页</router-link></div>
+          </div>
         </div>
       </div>
     </div>
@@ -40,15 +44,14 @@ export default{
   methods:{
     getPayResult:function(){
       Indicator.open('获取支付结果');
-      var url = '/api/pay/result',send = {type:"hotel",orderno:this.$route.params.id}
+      let url = '/api/pay/result',send = {type:"hotel",orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
-        var rst = JSON.parse(result.body)
+        let rst = JSON.parse(result.body)
         this.payStatus = rst.data
-        var url = "/api/orders/detail",send={orderno:this.$route.params.id}
+        let url = "/api/orders/detail",send={orderno:this.$route.params.id}
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
-          var rst = JSON.parse(result.body)
-          console.log(result.body)
+          let rst = JSON.parse(result.body)
           if (rst.status == 1) {
             this.pagedata = rst.data
           }else {
@@ -57,12 +60,15 @@ export default{
         });        
       });
     },
-    callTel:function(num){
+    callTel (num) {
       if (num != '') {
         window.location.href = 'tel:'+num
       }else{
         Toast('暂无酒店电话')
       }
+    },
+    checkOrder () {
+      history.go(-1)
     }
   }
 }
@@ -152,6 +158,26 @@ export default{
           color:#999999;
           text-align: right;
           padding: 0.8rem 0 1.2rem;
+        }
+        .btns{
+          padding: 0 0 1.2rem;
+          overflow: hidden;
+          div{
+            display: block;
+            width: 50%;
+            float: left;
+            text-align: center;
+            a,span{
+              display: inline-block;
+              height: 1rem;
+              border: 1px solid #028DE4;
+              color: #028DE4;
+              padding: 0.1rem 0.7rem;
+              font-size: 0.6rem;
+              line-height: 1rem;
+              border-radius: 1rem;
+            }
+          }
         }
       }
       

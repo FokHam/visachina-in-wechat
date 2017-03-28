@@ -5,7 +5,7 @@
       <router-link :to="'/insuranceDetail/' + item.id"
         v-for="(item, index) in hotInsuranceList">
         <li class="hot-item clearfix">
-          <img :src="imgPath[index]" alt="热销推荐产品图">
+          <img :src="item.image" alt="热销推荐产品图">
           <div class="item-detail">
             <p class="title">
               {{ item.companyName ? (item.companyName + " - ") : "" }}
@@ -25,32 +25,12 @@
   export default {
     props: [
       "hotInsuranceList"
-    ],
-    data () {
-      return {
-        imgPath: [
-          "/static/images/insurance/hot1.png",
-          "/static/images/insurance/hot2.png",
-          "/static/images/insurance/hot3.jpg",
-          "/static/images/insurance/hot1.png",
-          "/static/images/insurance/hot2.png",
-          "/static/images/insurance/hot3.jpg",
-          "/static/images/insurance/hot1.png",
-          "/static/images/insurance/hot2.png",
-          "/static/images/insurance/hot3.jpg",
-          "/static/images/insurance/hot1.png",
-          "/static/images/insurance/hot2.png",
-          "/static/images/insurance/hot3.jpg",
-          "/static/images/insurance/hot1.png",
-          "/static/images/insurance/hot2.png",
-          "/static/images/insurance/hot3.jpg"
-        ]
-      };
-    }
+    ]
   }
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .hot-list-wrapper {
     padding: 0 0.6rem;
   }

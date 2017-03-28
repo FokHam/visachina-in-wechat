@@ -9,10 +9,10 @@
     <ul class="right-list"
       v-if="isrDetail">
       <li class="right clearfix"
-        v-for="plan in isrDetail.plans"
+        v-for="plan in isrDetail.plans[0].data"
         v-if="plan">
         <span class="name">{{ plan.name }}</span>
-        <span class="amount">{{ plan.text }}</span>
+        <span class="amount">{{ plan.texts }}</span>
       </li>
     </ul>
     <div v-if="withAge" class="age">
@@ -36,18 +36,11 @@
 
 <script>
   export default {
-    props: {
-      isrDetail: {
-        type: Object
-      },
-      withAge: {
-        type: Boolean,
-        default: false
-      },
-      ageSelect: {
-        type: Number
-      }
-    },
+    props: [
+      "isrDetail",
+      "withAge",
+      "ageSelect"
+    ],
     data: function () {
       return {
         showAge: 0
@@ -62,6 +55,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .content {
     .icon-arrow-right {
       display: inline-block;

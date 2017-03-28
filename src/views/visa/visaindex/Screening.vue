@@ -11,7 +11,7 @@
       <div class="tit">签证类别</div>
       <div class="list type">
         <ul>
-          <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>
+          <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.ty=index">{{item}}</li>
         </ul>
       </div>
     </div>

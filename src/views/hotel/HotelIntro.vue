@@ -77,6 +77,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-consult { background-image: url("/static/images/hotel/service-consult.png"); }
   .icon-clock { background-image: url(/static/images/hotel/service-clock.png); }
   .icon-child { background-image: url(/static/images/hotel/service-child.png); }

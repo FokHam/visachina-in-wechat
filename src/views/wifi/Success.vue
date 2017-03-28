@@ -16,6 +16,10 @@
           <div class="location">取机地点：<span>{{pagedata.takeAddress.name}}</span></div>
           <div class="location">还机地点：<span>{{pagedata.returnAddress.name}}</span></div>
           <div class="time">{{pagedata.cdate}}</div>
+          <div class="btns">
+            <div><span @click="checkOrder()">查看订单</span></div>
+            <div><router-link to="/home">返回首页</router-link></div>
+          </div>
         </div>
       </div>
     </div>
@@ -58,6 +62,9 @@ export default{
           }
         });        
       });
+    },
+    checkOrder () {
+      history.go(-1)
     }
 
   }
@@ -139,6 +146,26 @@ export default{
           color:#999999;
           text-align: right;
           padding: 0.8rem 0 1.2rem;
+        }
+        .btns{
+          padding: 0 0 1.2rem;
+          overflow: hidden;
+          div{
+            display: block;
+            width: 50%;
+            float: left;
+            text-align: center;
+            a,span{
+              display: inline-block;
+              height: 1rem;
+              border: 1px solid #028DE4;
+              color: #028DE4;
+              padding: 0.1rem 0.7rem;
+              font-size: 0.6rem;
+              line-height: 1rem;
+              border-radius: 1rem;
+            }
+          }
         }
       }
       

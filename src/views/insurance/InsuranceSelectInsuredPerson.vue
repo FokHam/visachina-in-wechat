@@ -8,13 +8,20 @@
       </div>
       <ul class="person-list wave-btm-bg">
         <li v-for="(person, index) in pList"
-            @click="toggleInsuredPerson(person.id)"
+            @click="toggleInsuredPerson(person)"
             class="person-item">
           <i :class="{ on: selectedPersonIds && (selectedPersonIds.indexOf(person.id) !== -1) }" class="icon-radio"></i>
           <div class="info-box">
-            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ (person.spell_surname ? person.spell_surname : "") + " " + person.spell_name }}</span></p>
-            <p class="item">{{ idTypeList[person.id_type] }} <span class="detail">{{ person.id_number }}</span></p>
-            <p class="item">出生日期 <span class="detail">{{ person.birthday }}</span></p>
+            <p class="name">{{ person.surname + person.name }}
+              <span class="detail">{{ (person.spell_surname ? person.spell_surname : "") + " " + person.spell_name }}</span>
+            </p>            
+            <div v-if="person.spell_surname!=''&& person.sexual!=null&&person.id_type!=''&&person.id_number!=''&&person.birthday!=''">
+              <p class="item">{{ idTypeList[person.id_type] }} <span class="detail">{{ person.id_number }}</span></p>
+              <p class="item">出生日期 <span class="detail">{{ person.birthday }}</span></p>          
+            </div>
+            <div v-else>
+              <p class="item">请先完善被保人信息</p>
+            </div>
           </div>
           <i class="icon-edit"
              @click.stop="editPerson(index)"></i>
@@ -81,8 +88,12 @@
         that.$store.commit("confirmInsuredPerson", arr);
         this.$router.go(-1);
       },
-      toggleInsuredPerson (id) {
-        this.$store.commit("toggleInsuredPerson", id);
+      toggleInsuredPerson (person) {
+        if(person.spell_surname!=''&& person.sexual!=null&&person.id_type!=''&&person.id_number!=''&&person.birthday!=''){
+          this.$store.commit("toggleInsuredPerson", person.id);
+        }else {
+          Toast('请先完善被保人信息');
+        }      
       },
       editPerson (n) {
         this.selectedDetail = this.pList[n];
@@ -101,6 +112,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .sp-page {
     position: fixed;
     width: 100%;

@@ -4,19 +4,19 @@
     <div class="item">
       <span>联系人</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.name">
+        <input type="text" v-model="clientinfo.name" maxlength="5">
       </div>      
     </div>
     <div class="item">
       <span>手机号</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.tel">
+        <input type="tel" v-model="clientinfo.tel" maxlength="11">
       </div>      
     </div>  
     <div class="item">
       <span>邮箱</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.email">
+        <input type="email" v-model="clientinfo.email" maxlength="30">
       </div>      
     </div>    
     
@@ -40,9 +40,17 @@ export default {
     }
   },
   methods:{
-    verifyData:function(){      
-      if (this.clientinfo.name != '' && this.clientinfo.tel != '' && this.clientinfo.email != '') {
-        this.submitData()
+    verifyData:function(){    
+      var reg_phone = /^1(3|4|5|7|8)\d{9}$/; 
+      var reg_email = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      if (this.clientinfo.name != '' && this.clientinfo.tel != '' && this.clientinfo.email != '') {        
+        if(!reg_phone.test(this.clientinfo.tel)){
+          Toast('手机号格式有误')
+        }else if(!reg_email.test(this.clientinfo.email)){
+          Toast('邮箱格式有误')
+        }else{
+          this.submitData()
+        }
       }else{
         Toast('请完善资料后再保存')
       }      
@@ -52,13 +60,13 @@ export default {
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
+          Toast('保存成功')
           this.$emit('submit','contact')
         }else {
           Toast(rst.msg)
         }
       });        
-    }
-    
+    }    
   }
 }
 </script>

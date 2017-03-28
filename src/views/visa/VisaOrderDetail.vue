@@ -1,6 +1,6 @@
 <template>
 <div class="order-detail" id="order-detail">
-  <div class="orderpage" v-if="orderData != ''">
+  <div class="orderpage" v-if="orderData != ''" :class="{hidden:emailDis}">
     <div class="order_tatus">
       <div class="status" :class="{paid:orderData.pay_status != 0}">订单状态：<span>{{ payStatusTxt[orderData.pay_status] }}</span></div>
     </div>
@@ -16,25 +16,25 @@
       </router-link>
     </div>
     <div class="order_items">
-      <div class="item" v-for="item in orderData.guests">
-        <div class="top" v-if="item.guestStatus > -1">
-          <router-link to="/progressDetail">
+      <div class="item" v-for="item in orderData.guests">        
+        <div class="top" v-if="orderData.pay_status == 0">
+            <div class="time">{{orderData.cdate}}</div>        
+            <div class="status">未支付</div>
+        </div>
+        <div class="top" v-else>
+          <router-link :to="'/progressDetail/'+item.id">
             <div class="time">{{item.cdate}}</div>        
             <div class="status">{{item.guestStatusName}}</div>
           </router-link>
-        </div>
-        <div class="top" v-else>
-            <div class="time">{{orderData.cdate}}</div>        
-            <div class="status" v-if="orderData.pay_status == 0">未支付</div>
-            <div class="status" v-else>{{statusList[item.guestStatus]}}</div>
         </div>
         <div class="center">
           <div class="name">{{item.value}}</div>
           <div class="email" @click="sendEmail(item.vgroup)">（{{typeList[item.vgroup-1]}}）发送所需资料</div>
         </div>
         <div class="bottom" v-if="orderData.pay_status!=0">
-          <div class="refund" @click="visaRefund(item.id)" v-if="item.guestStatus>=0&&item.guestStatus<5">退款</div>
-          <div class="express" v-if="false">顺丰快递 85463654654</div>
+          <div class="refund" @click="visaRefund(item.id)" v-if="item.guestStatus >= -1 && item.guestStatus <5 && item.refund.status != -2 && item.refund.status != 4">{{item.refund==false?'退款':'退款中'}}</div>
+          <div class="refund" @click="visaRefund(item.id)" v-if="item.refund.status == 4">退款完成</div>
+          <div class="finish" @click="comfirmFinish(item.id)" v-if="item.guestStatus == 8">确认收货</div>
         </div>
       </div>
     </div>
@@ -42,15 +42,15 @@
       <div class="title">邮寄信息</div>
       <div class="content">
         <div class="address">请确认材料原件无误，将材料原件邮寄到以下地址：<br>
-        <span class="black">深圳市罗湖区迎春路海外联谊大厦2919室</span> <span class="red">（此地址不接受快递到付，敬请谅解)</span></div>
-        <div class="contact">收件人：<span>周方晗</span><span>15692452605</span></div>
+        <span class="black">{{orderData.product.contact.company_province_name + orderData.product.contact.company_city_name + orderData.product.contact.company_zone_name + orderData.product.contact.company_address}}</span> <span class="red">（此地址不接受快递到付，敬请谅解)</span></div>
+        <div class="contact">收件人：<span>{{orderData.product.contact.company_user}}</span><span>{{orderData.product.contact.company_tell}}</span></div>
       </div>
     </div>
     <div class="contact_address">
       <div class="title">联系人信息</div>
       <div class="content">
         <dl><dd>姓名：</dd><dt>{{orderData.receipt_info.name}}</dt></dl>
-        <dl><dd>电话：</dd><dt>{{orderData.receipt_info.tel}}</dt></dl>
+        <dl><dd>电话：</dd><dt>{{orderData.receipt_info.phone}}</dt></dl>
         <dl><dd>邮箱：</dd><dt>{{orderData.receipt_info.email}}</dt></dl>
       </div>
     </div>
@@ -85,6 +85,7 @@
 <script>
 import { Indicator } from 'mint-ui'
 import { MessageBox } from 'mint-ui'
+import { Toast } from 'mint-ui'
 import wx from 'weixin-js-sdk'
 import Email from './visaDetail/Email'
 export default{
@@ -122,7 +123,11 @@ export default{
       var url = "/api/pay/index",send = {orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
         Indicator.close();
-        this.invokingWXPay(result.body)                
+        if (result.body.config.appId) {
+          this.invokingWXPay(result.body)
+        }else {
+          alert('调起微信支付失败，请重试')
+        }               
       });
     },
     invokingWXPay:function(rst){
@@ -156,6 +161,19 @@ export default{
     sendEmail (type) {
       this.gusttype = type
       this.emailDis = true
+    },
+    comfirmFinish (id) {
+      Indicator.open('正在确认');
+      let url = "/api/visa/confirm_harvest",send = {id:id}
+      this.$http.get(url,{params:send}).then(function(result){
+        Indicator.close();
+        let rst = JSON.parse(result.body)
+        if (rst.status == 1) {
+          this.getData()
+        }else{
+          Toast(rst.msg)
+        }
+      });
     }
   },
   components:{
@@ -165,7 +183,14 @@ export default{
 </script>
 
 <style lang="less" scoped>
+.orderpage.hidden{
+  position: absolute;
+  overflow: hidden;
+  height: 100%;
+  top: 0;
+}
 .order-detail{
+  padding-bottom: 2.5rem;
   .order_tatus{
     height: 4rem;
     background-image: url('/static/images/visa/order-bg.png');
@@ -300,6 +325,15 @@ export default{
           line-height: 1.5rem;
           padding: 0 0.8rem 0 0.8rem;
         }
+        .finish{
+          float: right;
+          border:1px solid #008be4;
+          border-radius: 0.2rem;
+          color: #008be4;
+          font-size: 0.7rem;
+          line-height: 1.5rem;
+          padding: 0 0.8rem 0 0.8rem;
+        }
         .express{
           float: right;
           font-size: 0.8rem;
@@ -357,6 +391,7 @@ export default{
       dl{
         position: relative;
         padding-left: 3.5rem;
+        height: 1.5rem;
         dd{
           font-size: 0.8rem;
           color: #999999;
@@ -395,9 +430,13 @@ export default{
       line-height: 1.4rem;
     }        
   }
-  .creatpay{height: 2.5rem;
+  .creatpay{
+    height: 2.5rem;
     background-color: #fff;
     overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     .price{
       float: left;
       line-height:2.5rem;
@@ -420,6 +459,9 @@ export default{
     }
   }
   .buyagain{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     display: block;
     background-color: #008BE4;
     line-height: 2.5rem;

@@ -4,13 +4,13 @@
     <div class="item">
       <span>联系人</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.name">
+        <input type="text" v-model="clientinfo.name" maxlength="5">
       </div>      
     </div>
     <div class="item">
       <span>手机号</span>
       <div class="ipt">
-        <input type="text" v-model="clientinfo.phone">
+        <input type="tel" v-model="clientinfo.phone" maxlength="11">
       </div>      
     </div>    
     <div class="item">
@@ -63,10 +63,15 @@ export default {
     },
     closeAddress:function(){
       this.addressDis = false
-    },
-    verifyData:function(){      
+    },   
+    verifyData:function(){   
+      var reg_phone = /^1(3|4|5|7|8)\d{9}$/;     
       if (this.clientinfo.name != '' && this.clientinfo.phone != '' && this.clientinfo.province != '' && this.clientinfo.address != '') {
-        this.submitData()
+        if(reg_phone.test(this.clientinfo.phone)){
+          this.submitData()
+        }else{
+          Toast('手机号格式有误')
+        }        
       }else{
         Toast('请完善资料后再保存')
       }      
@@ -76,6 +81,7 @@ export default {
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
+          Toast('保存成功')
           this.$emit('submit','address')
         }else {
           Toast(rst.msg)

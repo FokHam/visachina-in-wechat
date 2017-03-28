@@ -18,6 +18,10 @@
         <div class="desc">
           <span class="time">{{pagedata.pay_time}}</span>
         </div>
+        <div class="btns">
+          <div><span @click="checkOrder()">查看订单</span></div>
+          <div><router-link to="/home">返回首页</router-link></div>
+        </div>
       </div>
     </div>
   </div>
@@ -55,9 +59,11 @@ export default{
           }else {
             console.log(rst.msg)
           }
-        });
-        
+        });        
       });
+    },
+    checkOrder () {
+      history.go(-1)
     }
 
   }
@@ -139,6 +145,26 @@ export default{
         .time{
           color: #999999;
           font-size: 0.6rem;
+        }
+      }
+      .btns{
+        padding: 0 0 1.2rem;
+        overflow: hidden;
+        div{
+          display: block;
+          width: 50%;
+          float: left;
+          text-align: center;
+          a,span{
+            display: inline-block;
+            height: 1rem;
+            border: 1px solid #028DE4;
+            color: #028DE4;
+            padding: 0.1rem 0.7rem;
+            font-size: 0.6rem;
+            line-height: 1rem;
+            border-radius: 1rem;
+          }
         }
       }
     }

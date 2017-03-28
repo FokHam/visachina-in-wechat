@@ -1,7 +1,7 @@
 <template>
   <div class="message">
     <div class="close" @click="closePage()"></div>
-    <div class="text">{{text}}</div>
+    <div class="text"><div>{{text}}</div></div>
   </div>
 </template>
 
@@ -37,12 +37,16 @@
       margin-top: -2.5rem;
     }
     .text{
-      color: #fff;
-      font-size: 0.7rem;
       position: absolute;
       top: 50%;
-      margin: 0 1rem;
-      line-height: 1.5rem;
+      width: 100%;
+      div{
+        padding: 0 1rem;
+        color: #fff;
+        font-size: .7rem;
+        line-height: 1.5rem;
+        text-align: center;
+      }
     }
   }
 </style>

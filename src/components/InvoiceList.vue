@@ -1,8 +1,8 @@
 <template>
 <div class="invoice-list" id="invoice-list">
-  <div class="addbtn" @click="invoice.display=true">添加联系人</div>
+  <div class="addbtn" @click="invoice.display=true">添加发票抬头</div>
   <div class="invoiceList">
-    <ul v-if="invoiceList != ''">
+    <ul v-if="invoiceList.length > 0">
       <li v-for="item in invoiceList">
         <div class="info" @click="confirm(item)">
           <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.number}}</span></div>          
@@ -10,7 +10,7 @@
         <div class="editbtn" @click="invoice.display=true,invoice.data=item"></div>
       </li>
     </ul>
-    <div v-else class="empty">暂无常用联系人</div>
+    <div v-if="isempty" class="empty">暂无常用抬头</div>
   </div>
   <invoice-add
   v-if="invoice.display"
@@ -22,9 +22,11 @@
 
 <script>
 import InvoiceAdd from './InvoiceAdd'
+import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
 export default {
   created: function () {
+    Indicator.open('加载中...')
     const _this = this;
     var state = {  
       title: document.title,
@@ -38,20 +40,23 @@ export default {
   },
   data:function(){
     return{
-      invoiceList:'',
+      invoiceList:[],
       invoice:{"display":false,"data":""},
+      isempty:false
     }
   },
   methods:{
     getInvoice:function(){
       var url = '/api/member/invoice'
       this.$http.get(url).then(function(result){
+        Indicator.close()
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          if (rst.data) {
-            this.invoiceList = rst.data
-          }else{
-            this.invoiceList = ''
+          this.invoiceList = rst.data
+          if (rst.data.length == 0) {
+            this.isempty = true
+          }else {
+            this.isempty = false
           }
         }else {
           console.log(rst.msg)
@@ -80,6 +85,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 1001;
+  overflow-y: scroll;
   .addbtn{
     height: 2.25rem;line-height: 2.25rem;display: block;
     padding: 0 1rem;background-color: #fff;

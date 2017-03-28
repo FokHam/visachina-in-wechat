@@ -20,16 +20,15 @@
         </div>
       </div>
       <div class="hotel-more">
-        <router-link :to="'/hotelMap/' + hotelDetail.latitude + '/' + hotelDetail.longitude" class="item">
-        <div class="item">
+        <router-link :to="'/hotelMap/' + $route.params.id + '/' + hotelDetail.latitude + '/' + hotelDetail.longitude" class="item">
+        
           <span>{{ hotelDetail.address }}</span>
           <span class="location">{{ hotelDetail.ccity }}, {{ hotelDetail.ccountry }}</span>
-          <span class="more">地图<i class="icon-more"></i></span>
-        </div>
+          <span class="more">地图</span>        
         </router-link>
         <router-link :to="'/hotelIntro/' + $route.params.id" class="item">
           <span>酒店简介</span>
-          <span class="more">详情 <i class="icon-more"></i></span>
+          <span class="more">详情</span>
         </router-link>
         <div class="item"
           @click="pickingNation=true">
@@ -286,6 +285,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-diamond {
     display: inline-block;
     background: url(/static/images/hotel/diamond.png) no-repeat center;
@@ -370,7 +370,7 @@
       position: relative;
       padding: 0.6rem;
       padding-right: 3rem;
-      border-bottom: 0.05rem solid #c0c0c0;
+      border-bottom: 0.05rem solid #eeeeee;
       &:last-child {
         border-bottom: none;
       }
@@ -437,6 +437,7 @@
         position: relative;
         padding-right: 1rem;
         flex-basis: 75%;
+        font-size: 0.7rem;
         .name {
           min-height: 1.8rem;
           line-height: 0.9rem;

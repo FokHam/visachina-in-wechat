@@ -6,7 +6,7 @@
         <p>适合人群：{{ insuranceState.productDetail.web_position }}</p>
         <p>{{ "投保周期：" + startDate.format("yyyy.MM.dd") + " — " + endDate.format("yyyy.MM.dd") }}</p>
       </div>
-      <detail-content></detail-content>
+      <detail-content :isrDetail="insuranceDetail"></detail-content>
       <div class="order-info">
         <div class="person">
           <span class="label">被保人<i class="icon-question" @click="showTip(1)"></i></span>
@@ -64,7 +64,7 @@
           <i class="icon-write"></i>
         </div>
         <div class="person"
-          v-if="insuranceState.productDetail.web_visa_flag">
+          v-if="insuranceState.productDetail.web_visa_flag == 1">
           <span class="label">签证办理城市</span>
           <input type="text" name="" value="" v-model="visaCity" placeholder="填写签证办理城市">
           <i class="icon-write"></i>
@@ -190,7 +190,7 @@
         let send = {
           id: this.$route.params.id,
           beginDate: this.startDate.format("yyyy-MM-dd"),
-          endDate: this.endDate.format("yyyy-MM-dd"),
+          endDate: new Date(this.endDate.getTime() + 24*3600000).format("yyyy-MM-dd"),
           insureType: this.insureType,
           destination: this.destination,
           visaCity: this.visaCity,
@@ -219,6 +219,9 @@
             message = "请选择出行目的";
             break;
         }
+        if(this.insuranceState.productDetail.web_visa_flag == 1 && send.visaCity.length < 2){
+          message = "请填写签证办理城市，城市名不少于两个字";
+        }
         if (message !== "") {
           Toast({
             message: message,
@@ -246,6 +249,9 @@
     computed: {
       insuranceState () {
         return this.$store.state.insurance;
+      },
+      insuranceDetail () {
+        return this.$store.state.insurance.productDetail;
       },
       destination () {
         return this.$store.state.insurance.destination;
@@ -282,6 +288,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-arrow-right {
     position: absolute;
     right: 0.5rem;
@@ -341,7 +348,8 @@
       align-items: center;
       position: relative;
       height: 2.2rem;
-      border-bottom: 0.05rem solid #eee;
+      border-top: 0.05rem solid #eee;
+      &:first-child{border-top:none;}
       .destination-item {
         margin-right: 0.5rem;
       }
@@ -355,9 +363,12 @@
       }
       .label {
         position: relative;
-        margin-right: 0.5rem;
-        font-size: 0.7rem;
+        margin-right: .5rem;
+        font-size: .7rem;
         display: inline-block;
+        margin-left: -0.5rem;
+        border-left: 0.1rem solid #008BE4;
+        padding-left: 0.4rem;
       }
       .icon-question {
         display: inline-block;
@@ -402,10 +413,10 @@
     .person-list {
       margin: 0 0.5rem;
       margin-right: 0;
-      padding: 0.5rem 0 0.4rem;
+      padding:0 0 0.5rem;
       .person-item {
         position: relative;
-        border-bottom: 0.05rem solid #eee;
+        padding-bottom: 0.4rem;
         display: block;
         &:last-child {
           border-bottom: none;
@@ -418,8 +429,8 @@
         }
         .price {
           position: absolute;
-          right: 0.5rem;
-          top: 0.6rem;
+          right: .5rem;
+          bottom: 0.7rem;
           color: #f55301;
         }
         .icon-arrow-right {

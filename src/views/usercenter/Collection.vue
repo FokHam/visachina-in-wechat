@@ -12,15 +12,14 @@
       <div class="tit">签证</div>
       <div class="list" v-if="pageData.visa.length > 0">
         <ul>
-          <li v-for="item in pageData.visa">            
-              <div class="pic">
-                <img :src="'/static/images/visa/type'+item.type+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
-              </div>
-              <router-link :to="'/visaDetail/'+item.products">
-                <div class="name">{{item.name}}</div>
-              </router-link>
-              <div class="funcbtn" @click="unCollect('visa',item.products)"></div>
-              <div class="price">￥{{item.price}}</div>            
+          <li v-for="item in pageData.visa">
+            <router-link :to="'/visaDetail/'+item.products"></router-link>
+            <div class="pic">
+              <img :src="'/static/images/visa/type'+item.type+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
+            </div>              
+            <div class="name">{{item.name}}</div>              
+            <div class="funcbtn" @click="unCollect('visa',item.products)"></div>
+            <div class="price">￥{{item.price}}</div>            
           </li>
         </ul>
       </div>
@@ -33,15 +32,14 @@
       <div class="tit">酒店</div>
       <div class="list" v-if="pageData.hotel.length > 0">
         <ul>         
-          <li v-for="item in pageData.hotel">            
-              <div class="pic">
-                <img :src="item.image">
-              </div>
-              <router-link :to="'/hotelDetail/'+item.products">
-                <div class="name">{{item.name}}<span></span></div>
-              </router-link>
-              <div class="funcbtn" @click="unCollect('hotel',item.products)"></div>
-              <div class="price">￥{{item.price}}</div>            
+          <li v-for="item in pageData.hotel">
+            <router-link :to="'/hotelDetail/'+item.products"></router-link>
+            <div class="pic">
+              <img :src="item.image">
+            </div>              
+            <div class="name">{{item.name}}<span></span></div>              
+            <div class="funcbtn" @click="unCollect('hotel',item.products)"></div>
+            <div class="price">￥{{item.price}}</div>            
           </li>
         </ul>
       </div>
@@ -54,15 +52,14 @@
       <div class="tit">WIFI</div>
       <div class="list" v-if="pageData.wifi.length > 0">
         <ul>
-          <li v-for="item in pageData.wifi">            
-              <div class="pic">
-                <img :src="item.image">
-              </div>
-              <router-link :to="'/wifiDetail/'+item.products">
-                <div class="name">{{item.name}}</div>
-              </router-link>
-              <div class="funcbtn" @click="unCollect('wifi',item.products)"></div>
-              <div class="price">￥{{item.price}}</div>            
+          <li v-for="item in pageData.wifi">
+            <router-link :to="'/wifiDetail/'+item.products+'/'+item.attrs"></router-link>
+            <div class="pic">
+              <img :src="item.image">
+            </div>
+            <div class="name">{{item.name}}{{'（'+item.city_name+'取还）'}}</div>
+            <div class="funcbtn" @click="unCollect('wifi',item.products,item.attrs)"></div>
+            <div class="price">￥{{item.price}}</div>            
           </li>          
         </ul>
       </div>
@@ -75,12 +72,11 @@
       <div class="list" v-if="pageData.insur.length > 0">
         <ul>
           <li v-for="item in pageData.insur">
+            <router-link :to="'/insuranceDetail/'+item.products"></router-link>
               <div class="pic">
-                <img :src="item.image">
-              </div>
-              <router-link :to="'/insuranceDetail/'+item.products">
-                <div class="name">{{item.name}}</div>
-              </router-link>
+                <img :src="item.image" style="height:100%;width:auto;">
+              </div>              
+              <div class="name">{{item.name}}</div>
               <div class="funcbtn" @click="unCollect('insurance',item.products)"></div>
               <div class="price">￥{{item.price}}</div>
           </li>          
@@ -90,9 +86,6 @@
         暂无相关收藏
       </div>
     </div>
-
-
-
   </div>
   <picker
   v-if="typedis"
@@ -155,16 +148,19 @@ export default{
             break;
             case 'insurance':
             this.pageData.insur = d
-            break;            
+            break;             
           }          
         }else {
           console.log(rst.msg)
         }
       });
     },
-    unCollect:function(type,id){
-      var url = '/api/member/collect_create?type='+type+'&product_id=' + id
-      this.$http.get(url).then(function(result){
+    unCollect:function(type,id,area){
+      var url = '/api/member/collect_create',send = {type:type,product_id:id}
+      if (type == 'wifi') {
+        send.attrs = area
+      }      
+      this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           Toast('移除收藏成功')
@@ -219,6 +215,15 @@ export default{
             position: relative;padding: 10px;height: 3.5rem;
             border-bottom: 1px solid #f6f6f6;
             &:last-child{border-bottom:none;}
+            a{
+              display: block;
+              height: 100%;
+              position: absolute;
+              width: 100%;
+              z-index: 1;
+              top: 0;
+              left: -2rem;
+            }
             .pic{
               position: absolute;top: 10px;left: 10px;
               height: 3.5rem;width: 5rem;
@@ -248,14 +253,14 @@ export default{
         text-align: center;
         font-size: 0.7rem;
         color: #ccc;
-        line-height: 70px;
+        line-height: 3.5rem;
       }
     }
   }
   .mint-popup-bottom{width: 100%;}
   .closepop{
-    font-size: 0.7rem;line-height: 30px;border-bottom: 1px solid #ccc;
-    padding: 0 10px;color: #008BE4;text-align: right;
+    font-size: 0.7rem;line-height: 1.5rem;border-bottom: 1px solid #ccc;
+    padding: 0 0.5rem;color: #008BE4;text-align: right;
   }
 }
 </style>

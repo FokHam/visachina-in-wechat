@@ -3,17 +3,17 @@
     <ul class="info-list wave-btm-bg">
       <li class="info-item">
         <span class="label">中文名字</span>
-        <input v-model="pDetail.surname" class="info-input surname" type="text" placeholder="姓" value="">
-        <input v-model="pDetail.name" class="info-input name" type="text" placeholder="名" value="">
+        <input v-model="pDetail.surname" class="info-input surname" type="text" placeholder="姓" maxlength="2">
+        <input v-model="pDetail.name" class="info-input name" type="text" placeholder="名" maxlength="2">
       </li>
       <li class="info-item">
         <span class="label">英文名字</span>
-        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓：如Zhang" value="">
-        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名：如San" value="">
+        <input v-model="pDetail.spell_surname" class="info-input surname" type="text" placeholder="姓：如Zhang" maxlength="12">
+        <input v-model="pDetail.spell_name" class="info-input name" type="text" placeholder="名：如San" maxlength="12">
       </li>
       <li class="info-item">
         <span class="label">证件类型</span>
-        <input v-model="pDetail.id_number" type="text" class="number" value="" placeholder="输入正确的证件号">
+        <input v-model="pDetail.id_number" type="text" class="number" placeholder="输入正确的证件号" maxlength="18">
         <span class="show-more-btn"
           :class="{selected: typeof(pDetail.id_type) === 'number'}"
           @click.stop="idTypeSelecting = true">
@@ -30,7 +30,7 @@
       </li>
       <li class="info-item" @click="openBdatePicker">
         <span class="label">出生日期</span>
-        <input v-model="pDetail.birthday" class="info-input" type="text" placeholder="与证件保持一致" value="">
+        <input v-model="pDetail.birthday" class="info-input" type="text" placeholder="与证件保持一致"  readonly="readonly">
       </li>
     </ul>
     <div class="confirm-btn"
@@ -58,6 +58,7 @@
 
 <script>
   import Picker from '../../components/Picker';
+  import { Toast } from 'mint-ui';
 
   export default {
     props: [
@@ -94,25 +95,46 @@
       openBdatePicker () {
           this.$refs.bdatepicker.open();
       },
+      checkBirthday:function(){      
+        var arrB = this.pDetail.birthday.split("-");
+        if(arrB[0]==this.pDetail.id_number.substring(6,10)&&arrB[1]==this.pDetail.id_number.substring(10,12)&&arrB[2]==this.pDetail.id_number.substring(12,14)){
+          return true
+        }else{
+          return false
+        }      
+      },
       confirmBdate (day) {
         let m = day.getMonth() > 8 ? day.getMonth() + 1 : "0" + (day.getMonth() + 1),
             d = day.getDate() > 9 ? day.getDate() : "0" + day.getDate();
         this.pDetail.birthday = day.getFullYear() + "-" + m + "-" + d;
       },
       confirm () {
-        //保存信息
-        let url = "/api/member/passenger_create";
-        let send = this.pDetail;
-        console.log(send);
-        this.$http.get(url, {params: send}).then((response) => {
-          console.log(JSON.parse(response.body));
-          let body = JSON.parse(response.body);
-          if (body.status === 1) {
-            this.$emit("confirm");
-          }
-        }, (response) => {
-          console.log("服务器错误！");
-        });
+        if(this.pDetail.name!=''&&this.pDetail.surname!=''&&this.pDetail.spell_name!=''&&this.pDetail.spell_surname!=''&&this.pDetail.id_type!=''&&this.pDetail.id_number!=''&&this.pDetail.birthday!=''){
+          var reg_id = /^\d{6}(18|19|20)?\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/i;   
+          if(this.pDetail.id_type==1&&!reg_id.test(this.pDetail.id_number)){
+            Toast('身份证号格式有误')
+          }else{
+            if(this.pDetail.id_type==1&&!this.checkBirthday()){
+              Toast('出生日期与身份证号不一致')
+            }else{
+              //保存信息
+              let url = "/api/member/passenger_create";
+              let send = this.pDetail;
+              console.log(send);
+              this.$http.get(url, {params: send}).then((response) => {
+                console.log(JSON.parse(response.body));
+                let body = JSON.parse(response.body);
+                if (body.status === 1) {
+                  this.$emit("confirm");
+                }
+              }, (response) => {
+                console.log("服务器错误！");
+              });              
+            }
+          }    
+        }else{
+          Toast('请先完善被保人信息');
+        }
       },
       idTypeSet (v) {
         this.pDetail.id_type = this.idTypeSlots.indexOf(v);
@@ -125,6 +147,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-arrow-right {
     display: inline-block;
     width: 0.5rem;
@@ -196,6 +219,8 @@
       }
       .show-more-btn {
         color: #a9a9a9;
+        width: 50%;
+        text-align: right;
         &.selected {
           color: #333;
         }
@@ -208,6 +233,7 @@
         top: 2rem;
         width: 10rem;
         color: #999;
+        bottom: 0;left: 0;
       }
     }
   }

@@ -15,27 +15,27 @@
         <div class="txt">如果您的行程有变或其他原因可以申请退款，商家将停止办理您的签证。</div>
         <div class="btns">
           <span class="confirm" @click="agreeRefund()">申请退款</span>
-          <span class="contact">联系客服</span>
+          <span class="contact" @click="callTel()">联系客服</span>
         </div>
       </div>
       <div class="item" v-if="pageData.status == 0">
         <div class="txt">您已提交了退款申请，等待商家处理。</div>
         <div class="btn">
-          <span class="contact">联系客服</span>
+          <span class="contact" @click="callTel()">联系客服</span>
         </div>
       </div>
       <div class="item" v-if="pageData.status == 1">
         <div class="txt">同意以下退款事项，请尽快确认。如异议请联系客服。系统将会7天后自动确认</div>
         <div class="btns">
           <span class="confirm" @click="agreeMoney()">同意退款事项</span>
-          <span class="contact">联系客服</span>
+          <span class="contact" @click="callTel()">联系客服</span>
           <span></span>
         </div>
       </div>
       <div class="item" v-if="pageData.status == 2">
         <div class="txt">如没有需要退还的原件，无需关注物流信息。</div>
         <div class="btn">
-          <span class="contact">联系客服</span>
+          <span class="contact" @click="callTel()">联系客服</span>
           <span></span>
         </div>
       </div>
@@ -43,14 +43,14 @@
         <div class="txt">如收到退还的原件，请尽快确认。系统将会7天后自动确认退款完成。（如没有原件，无需关注物流信息）</div>
         <div class="btns">
           <span class="confirm" @click="confirmSuccess()">退款完成</span>
-          <span class="contact">联系客服</span>
+          <span class="contact" @click="callTel()">联系客服</span>
           <span></span>
         </div>
       </div>
       <div class="item" v-if="pageData.status == 4">
         <div class="txt">如收到退还的原件，请尽快确认。系统将会7天后自动确认退款完成。（如没有原件，无需关注物流信息）</div>
         <div class="btn">
-          <span class="contact">联系客服</span>
+          <span class="contact" @click="callTel()">联系客服</span>
           <span></span>
         </div>
       </div>
@@ -97,18 +97,20 @@
     data () {
       return{
         pageData:'',
+        proData:'',
         refundstep:1
       }
     },
     methods:{
       getData () {
         Indicator.open();
-        let url = '/api/visa/refund_detail',send = {id:this.$route.params.gid};
+        let url = '/api/refund/refund_detail',send = {id:this.$route.params.gid};
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
           let rst = JSON.parse(result.body);
           if (rst.status == 1) {
             this.pageData = rst.data.refund
+            this.proData = rst.data.order
           }else{
             console.log(rst.msg)
           }
@@ -153,6 +155,13 @@
             alert(rst.msg)
           } 
         });
+      },
+      callTel () {
+        if (this.proData.contact.company_tell != '') {
+          window.location.href = 'tel:'+this.proData.contact.company_tell
+        }else{
+          Toast('暂无电话')
+        }
       }
     }
 

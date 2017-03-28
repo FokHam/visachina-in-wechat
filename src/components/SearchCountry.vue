@@ -136,7 +136,9 @@ export default {
 .search-page{
   background: #ececec;
   .topipt{
-    position: fixed;top: 0;left: 0;width: 100%;z-index: 999;
+    width: 100%;
+    z-index: 999;
+    position: relative;
     .layer{
       position: relative;
       padding: 0.5rem 2.4rem 0.5rem 0.5rem;
@@ -178,7 +180,7 @@ export default {
   }
   .country-list{
   }
-  .wordsrecord{margin-bottom: 0.5rem;padding-top: 3rem !important;}
+  .wordsrecord{margin-bottom: 0.5rem;}
   .wordsrecord,.countrylist{
     background-color: #fff;
     padding: 0.5rem 0.25rem;

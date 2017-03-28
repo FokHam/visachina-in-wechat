@@ -1167,7 +1167,9 @@
   .search-nation{
     background: #ececec;
     .topipt{
-      position: fixed;top: 0;left: 0;width: 100%;z-index: 999;
+      width: 100%;
+      z-index: 999;
+      position: relative;
       .layer{
         position: relative;
         padding: 10px 48px 10px 10px;
@@ -1208,7 +1210,7 @@
     }
     .country-list{
     }
-    .wordsrecord{margin-bottom: 10px;padding-top: 60px !important;}
+    .wordsrecord{margin-bottom: 10px;}
     .wordsrecord,.countrylist{
       background-color: #fff;
       padding: 10px 5px;

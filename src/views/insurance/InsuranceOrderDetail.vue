@@ -43,9 +43,13 @@
         <span class="label">订单金额：</span>
         <span class="content enhance">￥{{ orderDetail.totalPrice }}</span>
       </div>
-      <div class="item">
-        <span class="label">承保状态：</span>
-        <span class="content enhance">{{ orderDetail.status_detail }}</span>
+      <div class="item" v-if="orderDetail.status > 0">
+        <span class="label">出单状态：</span>
+        <span class="content enhance">{{ orderDetail.insure_status }}</span>
+      </div>
+      <div class="item" v-if="orderDetail.status > 0">
+        <span class="label">保单状态：</span>
+        <span class="content enhance">{{ orderDetail.effective_status }}</span>
       </div>
     </div>
     <div class="order-info"
@@ -196,7 +200,11 @@
         var url = "/api/pay/index",send = {orderno:this.$route.params.id}
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
-          this.invokingWXPay(result.body)                
+          if (result.body.config.appId) {
+            this.invokingWXPay(result.body)
+          }else {
+            alert('调起微信支付失败，请重试')
+          }             
         });
       },
       invokingWXPay:function(rst){
@@ -241,6 +249,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .order-status {
     height: 4rem;
     background: url(/static/images/common/order-bg.png) no-repeat center;

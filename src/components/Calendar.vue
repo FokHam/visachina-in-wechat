@@ -1,6 +1,5 @@
 <template>
-  <div class="calendar-wrapper">
-    <div @click="confirm" class="qdan">确定</div>
+  <div class="calendar-wrapper">    
     <div class="type-selecter">
       <div @click="selectType = 1" :class="{ active: selectType === 1 }" class="type-box">
         <p class="title">{{ type1 + "日期" }}</p>
@@ -11,7 +10,7 @@
         <p class="selected-date">{{ dateFormat[1] }}</p>
       </div>
     </div>
-    <div class="calendar">
+    <div class="calendar" @touchmove="btndisplay = false" @touchend="btndisplay = true">
       <div class="week-day-list">
         <span class="weekend">日</span>
         <span>一</span>
@@ -42,6 +41,7 @@
         </div>
       </div>
     </div>
+    <div @click="confirm" class="qdan" :class="{hide:btndisplay==false}">确定</div>
   </div>
 </template>
 
@@ -99,7 +99,8 @@
       return {
         selectType: this.pickType,
         monthList: monthList,
-        selected: [ this.day1, this.day2 ]
+        selected: [ this.day1, this.day2 ],
+        btndisplay:true
       }
     },
     methods:{
@@ -197,22 +198,26 @@
 <style lang="less" scoped>
   .qdan {
     position: fixed;
-    background: #fff;
-    top: 0;
+    background: #008be0;
+    bottom: 0;
     left: 0;
     right: 0;
     z-index: 100;
     text-align: center;
-    font-size: 1rem;
-    padding: 0.5rem 0;
+    font-size: 0.8rem;
+    height: 2rem;
+    line-height: 2rem;
     border-radius: 0.1rem;
     border: 0.02rem solid #008be0;
-    color: #008be0;
+    color: #fff;
+    transition: ease-in-out 0.1s;
+    &.hide{
+      bottom: -2.2rem;
+    }
   }
   .calendar-wrapper {
     padding-top: 2.5rem;
-    display: block;
-    overflow-y: scroll;
+    display: block;    
     position: fixed;
     background-color: #fff;
     z-index: 10;
@@ -220,11 +225,19 @@
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 1001;
     .type-selecter {
-      display: flex;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      background: #fff;
+      top: 0;
+      z-index: 999;
       .type-box {
         text-align: center;
-        flex: 1;
+        width: 50%;
+        float: left;
+        border-bottom: 0.1rem solid #008be0;
         .title {
           color: #008BE4;
           font-size: 0.75rem;
@@ -245,12 +258,18 @@
       }
     }
     .calendar {
+      position: relative;
+      height: 100%;
       width: 100%;
+      overflow-y: scroll;
+      overflow-scrolling: touch;-webkit-overflow-scrolling: touch;
       .week-day-list {
         background: #fff;
-        display: flex;
+        overflow: hidden;
         span {
-          flex: 1;
+          display: block;
+          float: left;
+          width: 14.28%;
           text-align: center;
           line-height: 2rem;
         }
@@ -259,21 +278,19 @@
         }
       }
       .month {
-        display: flex;
-        flex-wrap: wrap;
+        overflow: hidden;
         margin-top: 0.5rem;
         .year-month {
-          flex: 1 1 100%;
           margin-bottom: 0.5rem;
           text-align: center;
           font-size: 0.8rem;
           line-height: 1.5rem;
         }
         .day {
-          flex: 1;
+          float: left;
           position: relative;
           background: #fff;
-          flex: 0 0 14.28%;
+          width: 14.28%;
           text-align: center;
           padding-bottom: 1rem;
           overflow: hidden;

@@ -12,7 +12,7 @@
               <span class="date" v-else>{{list.refund.mdate}}</span>
             </div>
             <div class="bottom">
-              <span class="status" v-if="list.refund == false">{{list.guestStatusName}}</span>
+              <span class="status" v-if="list.refund == false || list.refund.status == -2">{{list.guestStatusName}}</span>
               <span class="status" v-else>{{refundType[list.refund.status]}}</span>
             </div>
           </li>          

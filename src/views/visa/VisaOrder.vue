@@ -12,7 +12,7 @@
   </div>
   <div class="clientname">
     <div class="item-hd">
-      <div class="tit">申请人<i class="help">help</i></div>
+      <div class="tit">申请人</div>
       <div class="addbtn" @click="comDisplay.passenger=true,pushHistory()">添加申请人</div>
     </div>
     <div class="namelist" v-if="visaOrderData.passenger.length != 0">
@@ -24,15 +24,15 @@
   <div class="contactinfo">
     <div class="name item">
       <span class="txt">联系人</span>
-      <span class="ipt"><input v-model="visaOrderData.contact.name" type="text" placeholder="请填写联系人姓名"></span>
+      <span class="ipt"><input v-model="visaOrderData.contact.name" type="text" placeholder="请填写联系人姓名" maxlength="5"></span>
     </div>
     <div class="phone item">
       <span class="txt">手机号</span>
-      <span class="ipt"><input v-model="visaOrderData.contact.tel" type="text" placeholder="接收订单确认信息"></span>
+      <span class="ipt"><input v-model="visaOrderData.contact.tel" type="tel" placeholder="接收订单确认信息" maxlength="11"></span>
     </div>
     <div class="email item">
       <span class="txt">邮&#12288;箱</span>
-      <span class="ipt"><input v-model="visaOrderData.contact.email" type="text" placeholder="请填写联系人邮箱"></span>
+      <span class="ipt"><input v-model="visaOrderData.contact.email" type="email" placeholder="请填写联系人邮箱" maxlength="30"></span>
     </div>
     <div class="icon" @click="comDisplay.contact=true"></div>
   </div>
@@ -114,6 +114,7 @@ export default{
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.visaInfomation = rst.data
+          this.totalPrice = this.visaOrderData.passenger.length * this.visaInfomation.price
         }else {
           console.log(rst.msg)
         }
@@ -150,6 +151,8 @@ export default{
       window.history.pushState(state,document.title, document.location.href);
     },
     verifyData:function(){
+      var reg_phone = /^1(3|4|5|7|8)\d{9}$/; 
+      var reg_email = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/; 
       if (this.visaOrderData.passenger.length == 0) {
         Toast('您还未添加签证申请人')
         return false
@@ -160,7 +163,13 @@ export default{
         Toast('请选择收件地址')
         return false
       }else{
-        this.creatOrder()
+        if(!reg_phone.test(this.visaOrderData.contact.tel)){
+          Toast('手机号格式有误')
+        }else if(!reg_email.test(this.visaOrderData.contact.email)){
+          Toast('邮箱格式有误')
+        }else{
+          this.creatOrder()          
+        }
       }
     },
     creatOrder:function(){

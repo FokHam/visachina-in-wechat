@@ -15,7 +15,7 @@
       <div class="item">
         <div class="tit">发票明细</div>
         <div class="con txt">
-          <input type="text" v-model="visaOrderData.invoice.memo">
+          <input type="text" v-model="visaOrderData.invoice.memo" maxlength="30">
         </div>
       </div>
       <div class="item" @click="invoice=true">
@@ -49,8 +49,9 @@
 </template>
 
 <script>
-import AddressList from "../../components/AddressList"
+import AddressList from '../../components/AddressList'
 import InvoiceList from '../../components/InvoiceList'
+import { Toast } from 'mint-ui'
 export default {
   name:'invoice-form',
   created:function(){
@@ -80,11 +81,22 @@ export default {
       history.go(-1)
     },
     confirm:function(){
-      this.$store.commit('orderDataSave',this.visaOrderData);
-      history.go(-1)
+      if (this.visaOrderData.invoice.need == 0) {
+        this.$store.commit('orderDataSave',this.visaOrderData);
+        history.go(-1)
+      }else{
+        if (this.visaOrderData.invoice.header == '') {
+          Toast('请选择发票抬头')
+        }else if (this.visaOrderData.invoice.shippingId == '') {
+          Toast('请选择发票邮寄地址')
+        }else {
+          this.$store.commit('orderDataSave',this.visaOrderData);
+          history.go(-1)
+        }
+      }
     }
   },
-  components:{    
+  components:{
     AddressList,
     InvoiceList
   },

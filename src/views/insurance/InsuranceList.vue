@@ -3,7 +3,7 @@
     <router-link v-for="(item, index) in list" :to="'/insuranceDetail/' + item.id">
       <div class="insurance-item">
         <div class="img-wrapper">
-          <img :src="imgPath[index]" alt="保险产品图片">
+          <img :src="item.image" alt="保险产品图片">
           <p>{{ item.name }}{{ item.planName ? " - " + item.planName : "" }}</p>
           <div class="label-list">
             <span v-for="labelItem in item.label">{{ labelItem }}</span>
@@ -23,19 +23,26 @@
         </div>
       </div>
     </router-link>
+    <div class="empty" v-if="emptyDis">暂无相关产品</div>
   </div>
 </template>
 
 <script>
+import { Indicator } from 'mint-ui'
 export default {
   created () {
+    Indicator.open('加载中');
     let url = "/api/insurance/list";
     let send = { type: this.$route.params.type };
     this.$http.get(url, { params: send }).then((response) => {
+      Indicator.close()
       let body = JSON.parse(response.body);
       console.log(JSON.parse(response.body));
       if (body.status === 1) {
         this.list = body.data.rows;
+        if (body.data.rows.length == 0) {
+          this.emptyDis = true
+        }
       } else {
         console.log("服务器错误");
       }
@@ -45,89 +52,23 @@ export default {
   },
   data: function () {
     return {
-      imgPath: [
-        "/static/images/insurance/pic1.png",
-        "/static/images/insurance/pic2.png",
-        "/static/images/insurance/pic3.png",
-        "/static/images/insurance/pic1.png",
-        "/static/images/insurance/pic2.png",
-        "/static/images/insurance/pic3.png",
-        "/static/images/insurance/pic1.png",
-        "/static/images/insurance/pic2.png",
-        "/static/images/insurance/pic3.png",
-        "/static/images/insurance/pic1.png",
-        "/static/images/insurance/pic2.png",
-        "/static/images/insurance/pic3.png"
-      ],
-      list: [
-        {
-          name: "“乐游全球”境外旅行保障计划 黄金计划",
-          id: 123,
-          imgPath: "/static/images/insurance/pic1.png",
-          label: ["意外伤害", "意外伤害", "紧急救援"],
-          indemnity: [
-            {
-              name: "意外身故/伤残",
-              amount: "300,000"
-            }, {
-              name: "旅行变更",
-              amount: "100,00"
-            }, {
-              name: "意外及急性病医疗",
-              amount: "10,000,000"
-            }
-          ],
-          age: "18-85岁",
-          price: 222
-        },{
-          name: "“乐游全球”境外旅行保障计划 黄金计划",
-          id: 321,
-          imgPath: "/static/images/insurance/pic2.png",
-          label: ["意外伤害", "意外伤害", "意外起飞"],
-          indemnity: [
-            {
-              name: "意外身故/伤残",
-              amount: "1,000"
-            }, {
-              name: "旅行变更",
-              amount: "500"
-            }, {
-              name: "玩的不开心",
-              amount: "10,000"
-            }
-          ],
-          age: "1-100岁",
-          price: 886
-        },{
-          name: "“乐游全球”境外旅行保障计划 黄金计划",
-          id: 321,
-          imgPath: "/static/images/insurance/pic3.png",
-          label: ["意外伤害", "意外坠楼", "意外起飞"],
-          indemnity: [
-            {
-              name: "意外中彩票/伤残",
-              amount: "1,000"
-            }, {
-              name: "旅行变更",
-              amount: "500"
-            }, {
-              name: "玩的太开心",
-              amount: "10,000"
-            }
-          ],
-          age: "1-100岁",
-          price: 886
-        }
-      ]
+      list: [],
+      emptyDis: false
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
+  .empty {
+    text-align: center;
+    font-size: .7rem;
+    color: #ccc;
+    line-height: 6rem;
+  }
   .insurance-list {
     padding: 1rem 0;
-    background-color: #f0f0f0;
   }
   .insurance-item {
     margin: 0 0.5rem 1rem;

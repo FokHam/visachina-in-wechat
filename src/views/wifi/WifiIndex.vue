@@ -12,18 +12,20 @@
     <div class="grid_hot" v-if="pageData.hotCounties">
       <div class="tit">热门目的地WIFI</div>
       <div class="list">
-        <div class="ctrs" :style="{width:hotItemWidth+'px'}" v-for="item in pageData.hotCounties" @click="changeCountry(item.name,item.area_id)"><img :src="item.image"><span>{{item.name}}</span><div class="s"></div></div>
-        
+        <div class="ctrs" :style="{width:hotItemWidth+'px',background:'url('+item.image+') no-repeat center / cover'}" v-for="item in pageData.hotCounties" @click="changeCountry(item.name,item.area_id)"><img src="/static/images/common/190-131.png"><div class="name">{{item.name}}<span v-if="item.lower_price > 0">￥{{item.lower_price}}元/天起</span><span v-else>暂无产品</span></div><div class="s"></div></div>        
       </div>
     </div>
     <div class="grid_suggest">
       <div class="tit">爆款推荐</div>
       <div class="list">
-        <router-link v-for="item in pageData.hotProducts" class="item" :to="'/WifiDetail/'+item.id">
+        <router-link v-for="item in pageData.hotProducts" class="item" :to="'/WifiDetail/'+item.id+'/'+item.city">
           <div class="left" :style="{'background-image':'url('+item.image+')'}"></div>
           <div class="right">
-            <div class="name">{{item.name}}</div>
-            <div class="tags"><span>多人畅享</span><span>超低价</span></div>
+            <div class="name">{{item.name+'('+item.city_name+'取还)'}}</div>
+            <div class="tags">
+              <span class="b">{{item.speed}}</span>
+              <span class="r">{{item.take_place_num}}个取机点</span>
+            </div>
             <div class="price"><span>￥{{item.price}}</span>/天起</div>
           </div>
         </router-link>
@@ -61,8 +63,7 @@ export default {
     return{
       pageData:'',
       hotItemWidth:0,
-      searchdis:false
-      
+      searchdis:false      
     }
   },
   methods:{
@@ -108,11 +109,17 @@ export default {
       border: 1px solid #008BE1;border-radius: 13px;
       margin:8px 10px;
       span{
-        font-size: 0.6rem;display: inline-block;line-height: 25px;
-        overflow: hidden;padding-left: 22px;
-        background-image: url('/static/images/wifi/icon-search.png');
-        background-position: left center;background-size: 16px;
-        background-repeat: no-repeat;color: #999999;
+        font-size: .6rem;
+        line-height: 25px;
+        overflow: hidden;
+        padding-left: 22px;
+        background-image: url(/static/images/wifi/icon-search.png);
+        background-position: 0;
+        background-size: 16px;
+        background-repeat: no-repeat;
+        color: #999;
+        display: inline-block;
+        height: 25px;
       }
     }
     .banner{
@@ -142,9 +149,23 @@ export default {
         margin-right: 7px;float:left;border-radius: 3px;overflow: hidden;
         position: relative;margin-bottom: 7px;display: block;
         img{width: 100%;display: -webkit-box;}
-        span{
-          position: absolute;width: 100%;height: 2rem;line-height: 2rem;
-          left:0;top: 50%;text-align: center;margin-top: -1rem;font-size: 0.8rem;color: #fff;z-index: 1;
+        .name{
+          position: absolute;
+          width: 100%;
+          line-height: 1rem;
+          left: 0;
+          height: 2rem;
+          top: 50%;
+          text-align: center;
+          margin-top: -0.9rem;
+          font-size: .8rem;
+          color: #fff;
+          z-index: 1;
+          span {
+            display: block;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.5rem;
+          }
         }
         .s{
           position: absolute;height: 100%;width: 100%;
@@ -172,26 +193,20 @@ export default {
         }
         .right{
           padding-left: 80px;
-          .name{font-size: 0.7rem;margin-bottom: 0.5rem;}
+          .name{font-size: 0.7rem;}
           .tags{
-            height: 0.8rem;overflow: hidden;margin-bottom: 0.3rem;
-            overflow:hidden;
+            overflow: hidden;
+            margin: 0.25rem 0;
             span{
-              display:block; float: left;
-              padding-left: 1rem;color: #91d5fe;
-              background-image: url('/static/images/wifi/icon-yes.png');
-              background-position: left center;
-              background-size: 0.8rem;
-              background-repeat: no-repeat;
-              line-height: 0.8rem;
-              height: 0.8rem;
-              margin-right: 0.5rem;
-              font-size: 0.6rem;
+              display: inline-block;font-size: 0.6rem;
+              line-height: 18px;border-radius: 2px;padding: 0 5px;
+              &.b{border: 1px solid #008BE1;color: #008BE1;}
+              &.r{border: 1px solid #FD728C;color: #FD728C;}
             }
           }
           .price{
             font-size: 0.6rem;color: #666666;line-height: 20px;
-            span{font-size: 0.8rem;color: #D44D00;}
+            span{font-size: 0.7rem;color: #D44D00;}
           }
         }
       }

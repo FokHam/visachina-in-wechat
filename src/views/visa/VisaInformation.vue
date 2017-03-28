@@ -8,9 +8,9 @@
         <div class="con">
           <p>{{cate.description}}</p>
         </div>
-        <div class="example">
+        <!--<div class="example">
           <span v-for="file in cate.files" @click="checkPic(file.real_name,file.url)">{{file.real_name}}</span>
-        </div>
+        </div>-->
       </li>      
     </ul>
   </div>
@@ -66,8 +66,8 @@ export default{
     margin-bottom: 15px;
     border-bottom: 1px solid #C0C0C0;
     .title{
-      font-size: 0.7rem;color: #fff;display: inline-block;margin: 15px 0 10px;
-      background-color: #008BE4;border-radius: 3px;padding: 8px 24px;
+      font-size: 0.8rem;font-weight: bolder;color: #333;display: inline-block;
+      margin: 15px 0 10px;padding: 8px 0;
     }
     .list{
         li{

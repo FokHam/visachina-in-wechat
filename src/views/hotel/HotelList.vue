@@ -9,8 +9,7 @@
           <i class="icon-pulldown"></i>
         </div>
         <div class="input-wrapper"
-          @click="searchingCity=true">
-          <i class="icon-search"></i>
+          @click="searchingCity=true">          
           <input type="text" v-model="destination" name="" value="" placeholder="输入城市">
           <i class="clear-input" @click="clearInput" v-if="keyword"></i>
         </div>
@@ -300,6 +299,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .search-list {
     position: absolute;
     width: 100%;
@@ -433,12 +433,17 @@
     }
     .input-wrapper {
       position: relative;
+      -ms-flex: 1;
       flex: 1;
-      padding: 0.15rem 0.1rem;
+      padding: .15rem .1rem;
       padding-left: 1.5rem;
-      margin-right: 0.3rem;
-      border-radius: 0.2rem;
+      margin-right: .3rem;
+      border-radius: .2rem;
       background-color: #fff;
+      background-image: url(/static/images/hotel/search.png);
+      background-size: 0.9rem;
+      background-repeat: no-repeat;
+      background-position: 0.3rem center;
       input {
         display: block;
         width: 100%;

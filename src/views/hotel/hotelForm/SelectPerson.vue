@@ -10,10 +10,17 @@
         <li v-for="(person, index) in pList"
             @click="confirmPerson(person)"
             class="person-item">
-          <i :class="{ on: person.id === selectedPolicyHolderId }" class="icon-radio"></i>
           <div class="info-box">
-            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ person.phone }}</span></p>
-            <p class="item">{{ person.email }}</span></p>
+            <p class="name">{{ person.surname + person.name }}
+              <span class="detail">{{ person.spell_surname + person.spell_name }}</span>
+            </p>
+            <div v-if="person.spell_surname != ''&&person.phone!=''&&person.email!=''">
+              <p class="item">{{ person.phone }}</p>
+              <p class="item">{{ person.email }}</p>
+            </div>
+            <div v-else>
+              <p class="item">请先完善旅客信息</p>
+            </div>
           </div>
           <i class="icon-edit"
              @click.stop="editPerson(index)"></i>
@@ -21,8 +28,8 @@
       </ul>
       <edit-person
         v-if="editingPerson"
-        v-on:confirm="editConfirm"
-        :policyHolderDetail="selectedDetail">
+        @submit="editConfirm"
+        :info="selectedDetail">
       </edit-person>
     </div>
   </div>
@@ -31,17 +38,20 @@
 <script>
   import EditPerson from './EditPerson'
   import { Toast } from 'mint-ui'
+  import { Indicator } from 'mint-ui'
 
   export default {
     created () {
+      const _this = this;    
+      window.addEventListener("popstate", function(e) {  
+        _this.$emit('close');
+      }, false);
       this.getList();
     },
     props: [
       "selectType"
     ],
     data: function () {
-      let typeList = ["身份证", "护照", "出生证", "驾照", "港澳通行证", "军官证", "台胞证", "警官证"];
-      typeList[99] = "其他";
       return {
         editingPerson: false,
         selectedDetail: {},
@@ -54,9 +64,10 @@
         this.editingPerson = true;
       },
       getList () {
+        Indicator.open('加载旅客列表')
         let url = "/api/member/passenger";
         this.$http.get(url).then((response) => {
-          console.log(JSON.parse(response.body));
+          Indicator.close()
           let body = JSON.parse(response.body);
           if (body.status === 1) {
             this.pList = body.data;
@@ -70,11 +81,15 @@
         this.editingPerson = false;
       },
       confirmPerson (person) {
-        this.$store.commit("setHotelState", {
-          type: "hotelPerson",
-          data: person
-        });
-        this.$emit("confirm", person);
+        if (person.spell_surname == '' || person.phone == '' || person.email == '') {
+          Toast('请先完善联系人信息');
+        }else{
+          this.$store.commit("setHotelState", {
+            type: "hotelPerson",
+            data: person
+          });
+          this.$emit("confirm", person);
+        }        
       }
     },
     components: {
@@ -92,6 +107,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .sp-page {
     position: fixed;
     width: 100%;
@@ -164,7 +180,6 @@
       }
       .info-box {
         position: relative;
-        margin-left: 1.2rem;
         line-height: 1;
         p {
           margin-bottom: 0.3rem;

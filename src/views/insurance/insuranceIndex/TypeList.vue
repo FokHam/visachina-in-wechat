@@ -17,15 +17,15 @@ export default {
         {
           "name": "申根险",
           "imgPath": "/static/images/insurance/tab-sg.png",
-          "type": "sg"
+          "type": 1
         },{
           "name": "境外险",
           "imgPath": "/static/images/insurance/tab-jw.png",
-          "type": "jw"
+          "type": 2
         },{
           "name": "宝岛险",
           "imgPath": "/static/images/insurance/tab-bd.png",
-          "type": "bd"
+          "type": 3
         }
       ]
     };
@@ -34,6 +34,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
    nav {
      margin: 1rem 0.5rem;
      text-align: center;

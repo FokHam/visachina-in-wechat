@@ -1,11 +1,13 @@
 <template>
   <div class="isr-d-page">
     <detail-header
+      v-if="insuranceDetail.length != 0"
       :isrDetail="insuranceDetail"
       :iscollect="iscollect"
       @collectClick="addCollect"
     ></detail-header>
     <detail-content
+      v-if="insuranceDetail.length != 0"
       :isrDetail="insuranceDetail"
       :ageSelect="ageSelect"
       :withAge="true"

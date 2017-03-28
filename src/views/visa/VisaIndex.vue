@@ -2,7 +2,6 @@
   <div id="visa" class="visa" @touchmove="pagescroll">
     <div class="visaPage" v-show="searchdis == false">
       <div class="part-top">
-        <img src="/static/images/visa/banner.png">
         <div class="flag">
           <div class="inner">
             <img :src="'http://www.visachina.cn/resources/img/countrys/'+visaCondition.ct+'-1.png'">
@@ -24,17 +23,17 @@
         <div class="tabselecter" v-show="tabcount != 0">
           <div class="options" :class="{on1:tabcount == 1}">
             <ul>
-              <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.lx=index">{{item}}</li>
+              <li v-for="(item,index) in screenStr.type" :class="{on:index==visaCondition.lx}" @click="visaCondition.ty=index,getListData('reload')">{{item}}</li>
             </ul>
           </div>
           <div class="options" :class="{on2:tabcount == 2}">
             <ul>
-              <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data">{{item.text}}</li>
+              <li v-for="item in screenStr.rj" :class="{on:item.data==visaCondition.rj}" @click="visaCondition.rj=item.data,getListData('reload')">{{item.text}}</li>
             </ul>
           </div>
           <div class="options" :class="{on3:tabcount == 3}">
             <ul>
-              <li v-for="item in screenStr.fw" :class="{on:item.data==visaCondition.fw}" @click="visaCondition.fw=item.data">{{item.text}}</li>
+              <li v-for="item in screenStr.fw" :class="{on:item.data==visaCondition.fw}" @click="visaCondition.fw=item.data,getListData('reload')">{{item.text}}</li>
             </ul>
           </div>
         </div>
@@ -49,11 +48,11 @@
               <img :src="'/static/images/visa/type'+item.visatype+'.png'" onerror="javascript:this.src='/static/images/visa/defaultpic.png';">
             </div>
             <div class="visainfo">
-              <div class="tit">{{item.name}}</div>
-              <div class="type">
-                <span class="p" v-show="item.visatype == 0">贴纸签</span>
-                <span class="e" v-show="item.visatype == 1">电子签</span>
-                <span class="op" v-show="item.visatype == 2">另纸签</span>
+              <div class="tit">
+                <span v-show="item.visatype == 0">【贴纸签】</span>
+                <span v-show="item.visatype == 1">【电子签】</span>
+                <span v-show="item.visatype == 2">【另纸签】</span>
+                {{item.name}}
               </div>
               <div class="day-price">
                 <span class="day">受理天数：{{item.acceptancedays}}天</span>
@@ -63,6 +62,9 @@
           </router-link></li>
         </ul>
         <p class="page-infinite-loading" v-if="pagestatus">加载更多数据</p>      
+      </div>
+      <div class="empty" v-if="listdata.length == 0&&pagestatus == false">
+        暂无相关产品
       </div>
     </div>
     <countrys
@@ -140,14 +142,17 @@ export default {
       this.closeComp()
       this.visaCondition.ctname = name
       this.visaCondition.ct = id
+      this.getListData('reload')
     },
     choseProvice:function(name,id){
       this.closeComp()
       this.visaCondition.dqname = name
       this.visaCondition.dq = id
+      this.getListData('reload')
     },
     screenConfirm:function(obj){
       this.visaCondition = obj
+      this.getListData('reload')
     },
     closeComp:function(){
       this.provicedis = false
@@ -156,7 +161,7 @@ export default {
     },
     loadMore:function(){
       if (this.listdata.length != 0 && this.pagestatus) {
-        this.getListData()
+        this.getListData('loadmore')
       } 
     },
     getListData:function(t){
@@ -176,10 +181,10 @@ export default {
         if (rst.status == 1) {
           for (var i=0; i<rst.data.list.length; i++) {
             this.listdata.push(rst.data.list[i])
-          }            
-          if (this.visaCondition.page == rst.data.totalPage) {
+          }
+          if (this.visaCondition.page == rst.data.totalPage || rst.data.rows.length == 0) {
             this.pagestatus = false            
-          }           
+          }            
         }else {
           console.log(rst.msg)
         }
@@ -201,73 +206,80 @@ export default {
     visaCondition () {
       return this.$store.state.visa.visaCondition;
     }
-  },
-  watch:{
-    visaCondition:{
-      handler: function (obj) {
-        this.getListData('reload')
-      },
-      deep: true
-    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 .part-top{
-  position: relative;
-  z-index: 99;
+    position: relative;
+    z-index: 99;
+    background-image: url(/static/images/visa/banner.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 0.8rem 0;
   .flag{
     border: 1px solid rgba(255,255,255,0.3);
-    height: 60px;width: 60px;
+    height: 3rem;
+    width: 3rem;
     border-radius: 60px;
     padding: 2px;
-    position: absolute;
-    top: 10%;left: 50%;margin-left: -31px;
+    margin: 0 auto;
     .inner{
-      height: 60px;width: 60px;border-radius: 60px;overflow: hidden;
+      height: 3rem;
+      width: 3rem;
+      border-radius: 3rem;
     }
     img{
-      height: 60px;
-      border-radius: 60px;
-      width: 60px;
+      height: 3rem;
+      width: 3rem;
+      border-radius: 3rem;
     }
   }
   .location{
-    position: absolute;
-    left: 50%;margin-left: -30px;
-    top: 50%;
-    .c_name{color: #fff;font-size: 0.8rem;display: inline-block;width: 70px;text-align: center;}
-    .m_name{color: #fff;font-size: 0.6rem;
-      background-image: url('/static/images/visa/icon-location.png');
+    text-align: center;
+    position: relative;
+    padding: 0.6rem 0;
+    .c_name{
+      color: #fff;
+      font-size: .8rem;
+      display: block;
+      text-align: center;
+    }
+    .m_name{
+      color: #fff;
+      font-size: .6rem;
+      background-image: url(/static/images/visa/icon-location.png);
       background-position: left center;
-      background-size: 0.8rem;
+      background-size: .8rem;
       background-repeat: no-repeat;
       padding-left: 17px;
+      position: absolute;
+      top: -0.4rem;
+      left: 50%;
+      margin-left: 1.7rem;
     }
   }
   .search_btn{
-    width: 175px;
-    height: 25px;
+    width: 8.5rem;
+    height: 1.2rem;
     border: 2px solid rgba(255,255,255,0.3);
-    position: absolute;
-    top: 73%;
-    left: 50%;
     border-radius: 3px;
-    margin-left: -93px;
+    margin: 0 auto;
     span{
       display: block;
-      height: 25px;
+      height: 1.2rem;
       background: #fff;
-      line-height: 25px;
-      text-indent: 10px;
+      line-height: 1.2rem;
+      text-indent: 0.5rem;
       color: #ccc;
       font-size: 0.7rem;
       background-image: url('/static/images/visa/icon-search.png');
       background-position: right center;
-      background-size: 22px;
+      background-size: 1.1rem;
       background-repeat: no-repeat;
-      border-radius: 3px;
+      border-radius: 0.15rem;
     }
   }
 }
@@ -358,34 +370,35 @@ export default {
         background-color: #fff;
         margin-bottom: 10px;
         .visapic{
-          width: 4rem;
+          width: 5.2rem;
           position: absolute;
           left: 10px;top: 10px;
         }
         .visainfo{
-          padding-left: 4.5rem;
+          padding-left: 5.7rem;
           .tit{
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             text-align: justify;
-          }
-          .type{
-            padding: 5px 0 15px;
+            line-height: 1rem;
+            height: 2rem;
             span{
               font-size: 0.6rem;
-              border: 1px solid;
-              padding:1px 5px;
-              border-radius: 2px;
-              &.p{color: #008BE4;border-color: #008BE4;}
-              &.e{color: #D44D00;border-color: #D44D00;}
-              &.op{color: #8e00d5;border-color: #8e00d5;}
             }
           }
           .day-price{
             overflow: hidden;
-            .day{font-size: 0.6rem;color: #333333;float: left;}
+            .day{
+              font-size: 0.6rem;
+              color: #999;
+              float: left;
+              display: inline-block;
+              line-height: 1rem;
+            }
             .price{
               float: right;
-              font-size: 0.8rem;color: #F55600;
+              display: inline-block;
+              line-height: 1rem;
+              font-size: 0.7rem;color: #F55600;
               i{font-size: 0.6rem;font-style: normal;}
             }
           }
@@ -394,17 +407,17 @@ export default {
           margin-bottom: 0;
         }
       }
-    }
-    .empty{
-      line-height: 100px;
-      text-align: center;
-      font-size: 0.8rem;
-      color: #ccc;
-    }
+    }    
     .page-infinite-loading {
         line-height: 40px;
         text-align: center;
         font-size: 0.7rem;
     }
   }
+  .empty {
+      text-align: center;
+      font-size: .7rem;
+      color: #ccc;
+      line-height: 6rem;
+    }
 </style>

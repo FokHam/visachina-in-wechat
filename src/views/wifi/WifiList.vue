@@ -13,12 +13,12 @@
       infinite-scroll-disabled="loading"
       infinite-scroll-distance="40">
       <li v-for="item in listData">
-        <router-link :to="'/wifiDetail/'+item.id">
-          <div class="tit">{{item.name}}</div>
+        <router-link :to="'/wifiDetail/'+item.id+'/'+item.city">
+          <div class="tit">{{item.name+'('+item.city_name+'取还)'}}</div>
           <div class="desc">
             <div class="tags">
-              <span class="b">4G网络</span>
-              <span class="r">3个取机点</span>
+              <span class="b">{{item.speed}}</span>
+              <span class="r">{{item.take_place_num}}个取机点</span>
             </div>
             <div class="co_name">供应商：{{item.company}}</div>
           </div>
@@ -27,6 +27,9 @@
       </li>      
     </ul>
     <p class="page-infinite-loading" v-if="pagestatus">加载更多数据</p>   
+  </div>
+  <div class="empty" v-if="listData.length == 0&&pagestatus == false">
+    暂无相关产品
   </div>
   <country :isShow="countrydis" @choseCountry="changeCountry" @closePage="closeComp"></country>
   <province :isShow="provincedis" @choseGetType="changeGetType" @closePage="closeComp"></province>
@@ -77,7 +80,7 @@ export default {
               this.listData.push(rst.data.rows[i])
             }
           }
-          if (this.wifiCondition.page == rst.data.totalPage) {
+          if (this.wifiCondition.page == rst.data.totalPage || rst.data.rows.length == 0) {
             this.pagestatus = false            
           }                  
         }else {
@@ -130,12 +133,12 @@ export default {
           background-size: 16px;padding-left: 20px;
         }
         &.left span{background-image: url('/static/images/wifi/icon-destination.png')}
-        &.right span{background-image: url('/static/images/wifi/icon-location.png')}
+        &.right span{background-image: url('/static/images/wifi/icon-location-grey.png')}
         &.on{
           border-bottom: 1px solid #008be4;
           span{color: #008be4;}
           &.left span{background-image: url('/static/images/wifi/icon-destination-on.png')}
-          &.right span{background-image: url('/static/images/wifi/icon-location-on.png')}
+          &.right span{background-image: url('/static/images/wifi/icon-location-grey-on.png')}
         }
         
       }
@@ -181,6 +184,12 @@ export default {
         }
       }
     }
+  }
+  .empty {
+    text-align: center;
+    font-size: .7rem;
+    color: #ccc;
+    line-height: 6rem;
   }
   .page-infinite-loading {
         line-height: 40px;

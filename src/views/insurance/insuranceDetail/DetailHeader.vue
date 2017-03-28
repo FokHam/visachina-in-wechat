@@ -1,8 +1,9 @@
 <template>
   <div class="header">
-    <div class="header-left">
-      <img class="avator" src="/static/images/insurance/detail1.png" alt="保险详情产品图">
-    </div><div class="header-right">
+    <div class="header-left" :style="{'background-image':'url('+isrDetail.image+')'}">
+      
+    </div>
+    <div class="header-right">
       <p class="name">{{ isrDetail.companyName + " - " + isrDetail.name}}{{ isrDetail.planName ? (" - " + isrDetail.planName) : ""}}</p>
       <div class="spec-list">
         <div class="spec">
@@ -30,6 +31,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .header {
     background: #fff;
     position: relative;
@@ -43,6 +45,10 @@
       top: 0.8rem;
       left: 0.6rem;
       width: 4.5rem;
+      height: 4.5rem;
+      background-size: auto 4.5rem;
+      background-position: center center;
+      background-repeat: no-repeat;
       text-align: center;
       .avator {
         display: block;

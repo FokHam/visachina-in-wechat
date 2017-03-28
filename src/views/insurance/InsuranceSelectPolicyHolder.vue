@@ -12,8 +12,11 @@
             class="person-item">
           <i :class="{ on: person.id === selectedPolicyHolderId }" class="icon-radio"></i>
           <div class="info-box">
-            <p class="name">{{ person.surname + " " + person.name }}<span class="detail">{{ person.phone }}</span></p>
-            <p class="item">{{ person.email }}</span></p>
+            <div>
+              <p class="name">{{ person.surname + person.name }}<span class="detail">{{ person.phone }}</span></p>
+              <p class="item" v-if="person.spell_surname!=''&& person.sexual!=null&&person.id_type!=''&&person.id_number!=''&&person.birthday!=''&&person.phone!=''&&person.email!=''">{{ person.email }}</span></p> 
+              <p class="item" v-else>请先完善投保人信息</p>       
+            </div>
           </div>
           <i class="icon-edit"
              @click.stop="editPerson(index)"></i>
@@ -25,7 +28,7 @@
       </div>
       <edit-policy-holder
         v-if="editingPerson"
-        v-on:confirm="editConfirm"
+        @confirm="editConfirm"
         :policyHolderDetail="selectedDetail">
       </edit-policy-holder>
     </div>
@@ -76,10 +79,10 @@
         this.$router.go(-1);
       },
       togglePolicyHolder (id, n) {
-        if (!this.pList[n].phone || !this.pList[n].email) {
-          Toast("请先完善该投保人信息");
+        if (this.pList[n].spell_surname!=''&&this.pList[n].sexual!=null&&this.pList[n].id_type!=''&&this.pList[n].id_number!=''&&this.pList[n].birthday!=''&&this.pList[n].phone!=''&&this.pList[n].email!='') {
+            this.$store.commit("togglePolicyHolder", id);
         } else {
-          this.$store.commit("togglePolicyHolder", id);
+            Toast("请先完善该投保人信息");
         }
       },
       editConfirm () {
@@ -99,6 +102,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .sp-page {
     position: fixed;
     width: 100%;

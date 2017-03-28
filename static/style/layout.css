@@ -27,3 +27,14 @@
 .picker-slot {
   width: 100%;
 }
+.mint-indicator-wrapper{
+  z-index: 1000000;
+}
+.add-address .picker-items{
+  overflow: hidden;
+  display: block !important;
+}
+.add-address .picker-slot.picker-slot-center.address-slot {
+    float: left;
+    width: 33.33% !important;
+}

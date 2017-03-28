@@ -19,13 +19,18 @@
   <div class="empty" v-else>
     暂无在保中的保单
   </div>
+  <send-policy
+  v-if="sendpolicyObj.display"
+  :id="sendpolicyObj.id"
+  @close="sendpolicyObj.display = false">
+  </send-policy>
 </div>
 </template>
 
 <script>
 import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
-import { MessageBox } from 'mint-ui'
+import SendPolicy from './components/SendPolicy'
 export default{
   name:'insurance-policy',
   created: function () {
@@ -34,39 +39,31 @@ export default{
   },
   data:function(){
     return{
-      insuranceList:''
+      insuranceList:'',
+      sendpolicyObj:{'display':false,'id':''}
     }
   },
   methods:{
     getData:function(){
       Indicator.open('获取保单列表');
-      var url = '/api/orders/insurance'
+      let url = '/api/orders/insurance'
       this.$http.get(url).then(function(result){
         Indicator.close();
-        var rst = JSON.parse(result.body)
+        let rst = JSON.parse(result.body)
         if (rst.status == 1) {
           this.insuranceList = rst.data.rows
         }else {
-          console.log(rst.msg)
+          Toast(rst.msg)
         }
       });
     },
     sendPolicy:function(num){
-      MessageBox.prompt('请输入邮箱地址','').then(({ value, action }) => {
-        Indicator.open('正在发送邮件');
-        var url = '/api/insurance/send_insurepdf',send = {num:num,email:value};
-        this.$http.get(url,{params:send}).then(function(result){
-          Indicator.close();
-          var rst = JSON.parse(result.body)
-          if (rst.status == 1) {
-            Toast('发送成功')
-          }else {
-            Toast('发送失败')
-            this.sendPolicy(num)
-          }
-        });
-      });
+      this.sendpolicyObj.id = num
+      this.sendpolicyObj.display = true
     }
+  },
+  components:{
+    SendPolicy
   }
 }
 </script>

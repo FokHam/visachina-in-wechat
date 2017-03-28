@@ -141,66 +141,67 @@ export default {
     position: fixed;top: 0;left: 0;width: 100%;z-index: 999;
     .layer{
       position: relative;
-      padding: 10px 48px 10px 10px;
+      padding: 0.5rem 2.4rem 0.5rem 0.5rem;
       background-image: url('/static/images/visa/searchbg.png');
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
       .ipt{
         position: relative;
+        display: flex;
         input{
-          height: 28px;line-height: 28px;
-          border-radius: 4px;border: 1px solid #BFBFBF;
+          height: 1.5rem;line-height: 1.5rem;
+          border-radius: 0.2rem;border:none;
           width: 100%;font-size: 0.6rem;
           background-image: url('/static/images/visa/icon-search.png');
-          background-size: 22px;
-          background-position: 8px center;
+          background-size: 1.1rem;
+          background-position: 0.4rem center;
           background-repeat: no-repeat;
-          text-indent: 35px;
+          text-indent: 1.75rem;
         }
         .clearinput{
-          height: 20px;
-          width: 20px;
+          height: 1.5rem;
+          width: 1.5rem;
           position: absolute;
-          right: 5px;
-          top: 5px;
+          right: 0rem;
+          top: 0rem;
           background-image: url('/static/images/visa/icon-close.png');
-          background-size: 11px;
+          background-size: 0.6rem;
           background-position: center;
           background-repeat: no-repeat;
         }
       }
       .cancel{
         position: absolute;
-        color: #fff;right: 10px;top: 10px;
-        font-size: 0.7rem;line-height: 28px;
+        color: #fff;right: 0.5rem;top: 0.5rem;
+        font-size: 0.7rem;line-height: 1.5rem;
       }
     }
   }
   .country-list{
   }
-  .wordsrecord{margin-bottom: 10px;padding-top: 60px !important;}
+  .wordsrecord{margin-bottom: 0.5rem;padding-top: 3rem !important;}
   .wordsrecord,.countrylist{
     background-color: #fff;
-    padding: 10px 5px;
+    padding: 0.5rem 0.25rem;
     .item{
-      padding-bottom: 15px;
-      .tit{color: #999999;font-size: 0.7rem;padding: 0 5px;padding-bottom: 8px;}
+      padding-bottom: 0.75rem;
+      .tit{color: #999999;font-size: 0.7rem;padding: 0 0.25rem;padding-bottom: 0.4rem;}
       .namelist{
         overflow: hidden;
         li{
           float: left;
           width: 25%;
           overflow: hidden;
-          padding-bottom: 6px;
+          padding-bottom: 0.3rem;
           span{
             font-size: 0.6rem;
-            margin: 0 5px;
+            margin: 0 0.25rem;
             display: block;
             border: 1px solid #666666;
-            border-radius: 4px;
+            border-radius: 0.2rem;
             text-align: center;
-            height: 25px;line-height: 25px;
+            height: 1.25rem;line-height: 1.25rem;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
@@ -220,15 +221,15 @@ export default {
     overflow-scrolling: touch;-webkit-overflow-scrolling: touch;
     ul {
       background: #fff;
-      padding: 50px 10px 0 10px;
+      padding: 2.5rem 0.5rem 0 0.5rem;
       position: relative;
-      z-index: 99;      
+      z-index: 99;
       li {
         font-size: 0.7rem;
-        height: 30px;
-        line-height: 30px;
+        height: 1.5rem;
+        line-height: 1.5rem;
         border-bottom: 1px solid #dddddd;
-        text-indent: 10px;
+        text-indent: 0.5rem;
         &:last-child{
           border-bottom: none;
         }

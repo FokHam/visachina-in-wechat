@@ -4,8 +4,8 @@
     <div class="item">
       <span>中文名字</span>
       <div class="ipt name">
-        <input type="text" v-model="passengerInfo.surname" placeholder="姓">
-        <input type="text" v-model="passengerInfo.name" placeholder="名">
+        <input type="text" v-model="passengerInfo.surname" placeholder="姓" maxlength="2">
+        <input type="text" v-model="passengerInfo.name" placeholder="名" maxlength="2">
       </div>      
     </div>
     <div class="item select">

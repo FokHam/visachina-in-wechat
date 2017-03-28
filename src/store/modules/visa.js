@@ -1,5 +1,5 @@
 const state = {
-  visaCondition:{"ct":"24","ctname":"日本","dq":"141","dqname":"广东省","lx":0,"rj":0,"fw":0,"page":1},
+  visaCondition:{"ct":"24","ctname":"日本","dq":"141","dqname":"广东省","ty":0,"rj":0,"fw":0,"page":1},
   materialsData:{},
   orderPageData:{
     "passenger":[],

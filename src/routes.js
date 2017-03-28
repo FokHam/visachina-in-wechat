@@ -25,7 +25,6 @@ import WifiIndex from './views/wifi/WifiIndex'
 import WifiHelp from './views/wifi/WifiHelp'
 import WifiList from './views/wifi/WifiList'
 import WifiDetail from './views/wifi/WifiDetail'
-import WifiCounter from './views/wifi/WifiCounter'
 import WifiOrder from './views/wifi/WifiOrder'
 import WifiOrderDetail from './views/wifi/OrderDetail'
 import WifiSuccess from './views/wifi/Success'
@@ -117,13 +116,10 @@ var routes = [{
   path: "/wifiList",
   component: WifiList
 },{
-  path: "/wifiDetail/:id",
+  path: "/wifiDetail/:id/:city",
   component: WifiDetail
 },{
-  path: "/wifiCounter/:id",
-  component: WifiCounter
-},{
-  path: "/wifiOrder/:id",
+  path: "/wifiOrder/:id/:city",
   component: WifiOrder
 },{
   path: "/wifiOrderDetail/:id",
@@ -147,7 +143,7 @@ var routes = [{
   path: "/hotelRoomSelect",
   component: HotelRoomSelect
 },{
-  path: "/hotelMap/:lat/:lng",
+  path: "/hotelMap/:id/:lat/:lng",
   component: HotelMap
 },{
   path: "/hotelOrderDetail/:id",

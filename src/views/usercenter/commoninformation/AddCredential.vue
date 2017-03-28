@@ -74,6 +74,7 @@ export default {
       this.$http.get(url,{params:send}).then(function(result){
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
+          Toast('保存成功')
           this.$emit('submit','credential')
         }else {
           Toast(rst.msg)
@@ -111,46 +112,46 @@ export default {
       span{
         display: inline-block;
         font-size: 0.7rem;
-        line-height: 40px;
-        height: 38px;
-        padding: 0 15px;
-        border-bottom: 2px solid #f6f6f6;
+        line-height: 2rem;
+        height: 1.9rem;
+        padding: 0 0.75rem;
+        border-bottom: 0.1rem solid #f6f6f6;
         &.on{
           color: #008BE4;
-          border-bottom: 2px solid #008BE4;
+          border-bottom: 0.1rem solid #008BE4;
         }
       }
     }
   }
   .field{
-    margin: 0 10px;
+    margin: 0 0.5rem;
     background-color: #fff;
     background-image: url('/static/images/visa/borderbg.png');
     background-repeat:repeat-x ;background-position:bottom;
-    background-size: 10px;
-    padding: 0 10px 30px;
+    background-size: 0.5rem;
+    padding: 0 0.5rem 1.5rem;
     .item{
       position: relative;
-      height: 60px;
+      height: 3rem;
       border-bottom: 1px solid #EEEEEE;
       .ipt{
-        padding: 0 20px 0 90px;        
+        padding: 0 1rem 0 4.5rem;        
         background-repeat:no-repeat;background-position:right center;
-        background-size: 16px;
+        background-size: 0.8rem;
         input{
-          height: 60px;border: none;background: #fff;width: 100%;
+          height: 3rem;border: none;background: #fff;width: 100%;
           font-size: 0.7rem;color: #666666;text-align: right;
         }
         &.select{background-image: url('/static/images/visa/icon-right.png');}
         .txt{
-          height: 60px;
-          line-height: 60px;
+          height: 3rem;
+          line-height: 3rem;
           text-align: right;
           font-size: 0.7rem;
           color: #666666;
         }
         &.street{
-          padding: 30px 20px 0 0;
+          padding: 1.5rem 1rem 0 0;
           input{
             text-align: left;
           }
@@ -159,33 +160,32 @@ export default {
       .idipt{
         position: absolute;
         bottom: 0;
-        height: 20px;width: 200px;
+        height: 1rem;width: 10rem;
         input{
-          height: 20px;display: block;width: 200px;
-          border: none;font-size: 12px;
+          height: 1rem;display: block;width: 10rem;
+          border: none;font-size: 0.6rem;
         }
       }
       span{
         font-size: 0.7rem;
-        height: 60px;line-height: 60px;
+        height: 3rem;line-height: 3rem;
         position: absolute;
-        left: 0;top: 0;width: 90px;
+        left: 0;top: 0;width: 4.5rem;
       }
       &:last-child{border-bottom: none;}
     }
   }
   .save{
     font-size: 0.8rem;color: #fff;
-    line-height: 35px;margin: 50px 10px 15px;
+    line-height: 1.75rem;margin: 2.5rem 0.5rem 0.75rem;
     text-align: center;background-color: #008be4;
-    border-radius: 4px;
+    border-radius: 0.2rem;
   }
   .delete{
     font-size: 0.8rem;color: #fff;
-    line-height: 35px;margin: 0 10px 25px;
+    line-height: 1.75rem;margin: 0 0.5rem 1.25rem;
     text-align: center;background-color: #F95800;
-    border-radius: 4px;
-  }
- 
+    border-radius: 0.2rem;
+  } 
 }
 </style>

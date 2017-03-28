@@ -5,7 +5,7 @@
       <div class="status" :class="{paid:orderData.pay_status != 0}">订单状态：<span>{{ payStatusTxt[orderData.pay_status] }}</div>
     </div>
     <div class="proname">
-      <router-link :to="'/wifiDetail/'+orderData.product">{{orderData.productName}}</router-link>
+      <router-link :to="'/wifiDetail/'+orderData.product +'/'+ orderData.city">{{orderData.productName}}</router-link>
     </div>
     <div class="orderinfo">
       <dl><dd>订单金额：</dd><dt><span>￥{{orderData.totalPrice}}</span></dt></dl>
@@ -112,7 +112,11 @@ export default{
       var url = "/api/pay/index",send = {orderno:this.$route.params.id}
       this.$http.get(url,{params:send}).then(function(result){
         Indicator.close();
-        this.invokingWXPay(result.body)                
+        if (result.body.config.appId) {
+          this.invokingWXPay(result.body)
+        }else {
+          alert('调起微信支付失败，请重试')
+        }             
       });
     },
     invokingWXPay:function(rst){
@@ -149,6 +153,7 @@ export default{
 
 <style lang="less" scoped>
 .order-detail{
+  padding-bottom: 2.5rem;
   .order_tatus{
     height: 4rem;
     background-image: url('/static/images/visa/order-bg.png');
@@ -220,6 +225,8 @@ export default{
     margin-bottom: 0.5rem;
   }  
   .order-button {
+    position: fixed;
+    bottom: 0;
     font-size: 0;    
     width: 100%;
     .button {

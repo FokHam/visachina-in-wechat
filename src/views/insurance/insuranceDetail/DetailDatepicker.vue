@@ -1,5 +1,5 @@
 <template>
-  <div class="datepicker" @click="trial">
+  <div class="datepicker">
     <calendar
       v-if="pickingDate"
       v-on:confirm="setDate"
@@ -75,6 +75,9 @@
     props: [
       "ageSelect"
     ],
+    created () {
+      //this.trial()
+    },
     data: function () {
       return {
         weekDay: ["日", "一", "二", "三", "四", "五", "六"],
@@ -91,12 +94,14 @@
           day1: day1,
           day2: day2
         });
+        this.trial()
       },
       changeAnnual () {
         this.annualMulti = !this.annualMulti;
         this.changingAnnual = false;
+        this.trial();
       },
-      trial () {
+      trial () {        
         let url = "/api/insurance/trial";
         let send = {
           id: this.$route.params.id,
@@ -105,7 +110,6 @@
           endDate: new Date(this.endDate.getTime() + 24*3600000).format("yyyy-MM-dd"), //试算时结束日期需加一天
           insureType: this.insureType ? (this.annualMulti ? 4 : 3) : 0
         };
-        console.log(send);
         this.$http.get(url, {params: send}).then((response) => {
           console.log(JSON.parse(response.body));
           let respMsg = JSON.parse(response.body);
@@ -169,18 +173,26 @@
             this.$store.commit("setInsuranceEndDate", {
               endDate: new Date(this.startDate.getTime() + 24*60*60*1000*(this.minDay - 1))
             });
+            this.trial()
             break;
           case 1:
           case 2:
             this.$store.commit("setInsuranceEndDate", {
               endDate: new Date(this.startDate.getTime() + 24*60*60*1000*364)
             });
+            this.trial()
             break;
         }
         this.$store.commit("setInsureType", this.insureType ? (this.annualMulti ? 4 : 3) : 0);
       },
       annualMulti () {
         this.$store.commit("setInsureType", this.insureType ? (this.annualMulti ? 4 : 3) : 0);
+      },
+      ageSelect (val, oldVal) {
+        this.trial()
+      },
+      birthdayList (val, oldVal) {
+        this.trial()
       }
     },
     components: {
@@ -190,6 +202,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-arrow-down {
     position: absolute;
     right: 0.5rem;

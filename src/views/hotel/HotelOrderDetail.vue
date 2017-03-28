@@ -1,6 +1,9 @@
 <template lang="html">
   <div class="hotel-order-detail">
     <div class="page-empty" v-if="orderDetail != ''">
+      <div class="countdown" v-if="downcount.total > 0 && downcount.time != ''">
+        请在{{downcount.time}}内支付
+      </div>
       <div class="order-info"
         @click="goHotelDetail">
         <div class="item">
@@ -28,7 +31,7 @@
         </div>
       </div>
       <div class="hotel-link">
-        <router-link :to="'/hotelMap/' + orderDetail.latitude + '/' + orderDetail.longitude" class="link"><i class="icon-address"></i>酒店地图</router-link>
+        <router-link :to="'/hotelMap/'+ orderDetail.product + '/' + orderDetail.latitude + '/' + orderDetail.longitude" class="link"><i class="icon-address"></i>酒店地图</router-link>
         <span class="link" @click="callTel(orderDetail.telephone)"><i class="icon-phone"></i>酒店电话</span>
       </div>
       <div class="order-info">
@@ -63,7 +66,7 @@
           <span class="content">{{orderDetail.contact.phone}}</span>
         </div>
       </div>
-      <div class="order-button" v-if="orderDetail.pay_status == 0">
+      <div class="order-button" v-if="orderDetail.pay_status == 0&&orderDetail.pay_status == 0">
         <span class="button cancel-button" @click="cancelOrder">取消订单</span>
         <span class="button pay-button" @click="payOrder">立即支付</span>
       </div>
@@ -94,7 +97,8 @@
     data () {
       return {
         orderDetail: '',
-        refundMsg:false
+        refundMsg:false,
+        downcount:{"total":"","time":""},
       }
     },
     created () {
@@ -110,6 +114,8 @@
           console.log(response.body);
           let body = JSON.parse(response.body);
           this.orderDetail = body.data;
+          this.downcount.total = body.data.pay_countdown;
+          this.setCountDown();
         }, (response) => {
           console.log("服务器错误");
         });
@@ -159,7 +165,11 @@
         let url = "/api/pay/index",send = {orderno:this.$route.params.id}
         this.$http.get(url,{params:send}).then(function(result){
           Indicator.close();
-          this.invokingWXPay(result.body)                
+          if (result.body.config.appId) {
+            this.invokingWXPay(result.body)
+          }else {
+            alert('调起微信支付失败，请重试')
+          }
         });
       },
       invokingWXPay:function(rst){
@@ -186,6 +196,39 @@
             }
           });
         });
+      },
+      setCountDown () {
+        const _this = this
+        setInterval(function(){
+          if (_this.downcount.total > 0) {
+            _this.downcount.total -= 1
+            _this.formatSeconds(_this.downcount.total)
+          }else {
+            _this.downcount.getOrder()
+            clearInterval()
+          }          
+        },1000)
+      },
+      formatSeconds (value) {
+        var theTime = parseInt(value);// 秒
+        var theTime1 = 0;// 分
+        var theTime2 = 0;// 小时
+        if(theTime > 60) {
+          theTime1 = parseInt(theTime/60);
+          theTime = parseInt(theTime%60);
+          if(theTime1 > 60) {
+            theTime2 = parseInt(theTime1/60);
+            theTime1 = parseInt(theTime1%60);
+          }
+        }
+        var result = ""+parseInt(theTime)+"秒";
+        if(theTime1 > 0) {
+          result = ""+parseInt(theTime1)+"分"+result;
+        }
+        if(theTime2 > 0) {
+          result = ""+parseInt(theTime2)+"小时"+result;
+        }
+        this.downcount.time = result;
       }
     },
     components: {
@@ -195,6 +238,15 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
+  .countdown{
+    background: #c0c0c0;
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+    line-height: 2rem;
+    text-align: center;
+    color: #fff;
+  }
   .hotel-order-detail {
     padding-bottom: 3rem;
   }
@@ -227,7 +279,7 @@
   .content {
     flex: 1;
     &.enhance {
-      color: #58a6ea;
+      color: #008CE4;
     }
     small {
       color: #999;
@@ -271,7 +323,7 @@
       color: #333;
     }
     .pay-button {
-      background-color: #58a6ea;
+      background-color: #008CE4;
       color: #fff;
     }
   }

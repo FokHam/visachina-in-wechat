@@ -23,17 +23,19 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .create-order {
-    display: flex;
     position: fixed;
     bottom: 0;
     width: 100%;
+    overflow: hidden;
     .total, .button {
-      flex: 1;
       line-height: 2.5rem;
       text-align: center;
     }
     .total {
+      width: 45%;
+      float: left;
       background: #fff;
       font-size: 0.8rem;
       .price {
@@ -42,7 +44,8 @@
       }
     }
     .button {
-      flex: 1 1 20%;
+      width: 55%;
+      float: left;
       background-color: #008ce4;
       color: #fff;
       font-size: 0.85rem;

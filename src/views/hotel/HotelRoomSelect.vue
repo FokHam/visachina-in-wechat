@@ -80,6 +80,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-pull-right {
     position: absolute;
     right: 0.5rem;

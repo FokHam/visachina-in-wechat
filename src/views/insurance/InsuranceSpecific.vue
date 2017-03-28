@@ -62,6 +62,7 @@
 </script>
 
 <style lang="less" scoped>
+  p,span,a{font-size: 0.7rem;}
   .icon-tick {
     position: absolute;
     height: 0.7rem;
@@ -83,9 +84,10 @@
     background-size: contain;
   }
   .tab-bar {
-    display: flex;
+    overflow: hidden;
     span {
-      flex: 1;
+      float: left;
+      width: 33.33%;
       text-align: center;
       line-height: 2rem;
       background-color: #fff;

@@ -2,7 +2,7 @@
 <div class="contact-list" id="apply-list">
   <div class="addbtn" @click="contacter.display=true">添加联系人</div>
   <div class="contactList">
-    <ul v-if="contactList != ''">
+    <ul v-if="contactList.length > 0">
       <li v-for="(item,index) in contactList">
         <div class="info" @click="confirm(item)">
           <div class="name"><span class="left">{{item.name}}</span><span class="right">{{item.tel}}</span></div>
@@ -11,7 +11,7 @@
         <div class="editbtn" @click="contacter.display=true,contacter.data=item"></div>
       </li>
     </ul>
-    <div v-else class="empty">暂无常用联系人</div>
+    <div v-if="isempty" class="empty">暂无常用联系人</div>
   </div>
   <contact-add 
   v-if="contacter.display"
@@ -23,9 +23,11 @@
 
 <script>
 import ContactAdd from './ContactAdd'
+import { Indicator } from 'mint-ui'
 import { Toast } from 'mint-ui'
 export default {
   created: function () {
+    Indicator.open('加载中...')
     const _this = this;
     var state = {  
       title: document.title,
@@ -39,20 +41,23 @@ export default {
   },
   data:function(){
     return{
-      contactList:'',
+      contactList:[],
       contacter:{"display":false,"data":""},
+      isempty:false
     }
   },
   methods:{
     getPassenger:function(){
       var url = '/api/member/contact'
       this.$http.get(url).then(function(result){
+        Indicator.close()
         var rst = JSON.parse(result.body)
         if (rst.status == 1) {
-          if (rst.data) {
-            this.contactList = rst.data
-          }else{
-            this.contactList = ''
+          this.contactList = rst.data
+          if (rst.data.length == 0) {
+            this.isempty = true
+          }else {
+            this.isempty = false
           }
         }else {
           console.log(rst.msg)
@@ -81,6 +86,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 1001;
+  overflow-y: scroll;
   .addbtn{
     height: 2.25rem;line-height: 2.25rem;display: block;
     padding: 0 1rem;background-color: #fff;

@@ -13,11 +13,10 @@
 export default {
   props: ['pics'],
   data: function(){
-    //chuli
     return {
       isactive: 0
     }
-  }  
+  }
 }
 </script>
 

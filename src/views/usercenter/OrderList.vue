@@ -20,24 +20,25 @@
         v-for="order in orderList"
         v-if="status === 1 || (order.status === orderStatus && order.pay_status === payStatus) || (order.status === orderStatus && order.deleteFlag === deleteStatus) || (order.pay_status === payStatus && order.deleteFlag === deleteStatus)">
         <!-- hotel -->
-        <div class="detail-box" v-if="order.type === 'hotel'">
-          <p class="name" @click="goToDetail(order.type,order.orderno)">{{ order.productName }}</p>
+        <div class="orderno">订单号：<span>{{order.orderno}}</span></div>
+        <div class="detail-box" v-if="order.type === 'hotel'" @click="goToDetail(order.type,order.orderno)">
+          <p class="name">{{ order.productName }}</p>
           <p class="address">{{ order.address }}</p>
           <p class="date">{{ order.dateRange }}<span>{{ order.quantity }}</span></p>
         </div>
         <!-- visa -->
-        <div class="detail-box" v-if="order.type === 'visa'">
-          <p class="name" @click="goToDetail(order.type,order.orderno)">{{ order.productName }}</p>
+        <div class="detail-box" v-if="order.type === 'visa'" @click="goToDetail(order.type,order.orderno)">
+          <p class="name">{{ order.productName }}</p>
           <p class="date">{{ order.cdate }}<span> 共{{ order.quantity }}人</span></p>
         </div>
         <!-- wifi -->
-        <div class="detail-box" v-if="order.type === 'wifi'">
-          <p class="name" @click="goToDetail(order.type,order.orderno)">{{ order.productName }}</p>
+        <div class="detail-box" v-if="order.type === 'wifi'" @click="goToDetail(order.type,order.orderno)">
+          <p class="name">{{ order.productName }}</p>
           <p class="date">{{ order.dateRange }}<span>{{ order.quantity }}</span></p>
         </div>
         <!-- insurance -->
-        <div class="detail-box" v-if="order.type === 'insurance'">
-          <p class="name" @click="goToDetail(order.type,order.orderno)">{{ order.productName }}</p>
+        <div class="detail-box" v-if="order.type === 'insurance'" @click="goToDetail(order.type,order.orderno)">
+          <p class="name">{{ order.productName }}</p>
           <p class="date">{{ order.dateRange }}<span>{{ order.quantity }}</span></p>
         </div>
         <!-- verify -->
@@ -240,13 +241,14 @@
 
 <style lang="less" scoped>
   .tabs {
-    display: flex;
+    overflow: hidden;
     background-color: #fff;
     text-align: center;
     border-bottom: 0.05rem solid #f0f0f0;
     .tab-btn {
       padding: 0.6rem 0;
-      flex: 1;
+      width: 25%;
+      float: left;
       font-size: 0.8rem;
       color: #666;
       &.active {
@@ -259,9 +261,20 @@
     background-color: #fff;
     margin-bottom: 0.5rem;
     border-bottom: 0.05rem solid #C0C0C0;
+    .orderno {
+      padding: 0 0 0 2rem;
+      font-size: 0.7rem;
+      line-height: 1.6rem;
+      border-bottom: 1px solid #eeeeee;
+      span{
+        color: #999999;
+        font-size: 0.7rem;
+      }
+    }
     .detail-box {
       padding: 0.8rem 1rem 0;
       padding-left: 2rem;
+      font-size: 0.7rem;
       .name {
         padding-left: 1.3rem;
         margin-left: -1.3rem;
@@ -291,7 +304,7 @@
       justify-content: space-between;
       font-size: 0;
       padding: 0.8rem 1rem;
-      padding-left: 1.5rem;
+      padding-left: 2rem;
       border-top: 0.05rem solid #eee;
       span {
         line-height: 1;

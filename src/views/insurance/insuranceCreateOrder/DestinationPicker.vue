@@ -143,6 +143,7 @@
 </script>
 
 <style lang="less">
+  p,span,a{font-size: 0.7rem;}
   .destination-picker {
     background: #fff;
     padding-top: 6.6rem;
